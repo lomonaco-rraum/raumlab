@@ -1,0 +1,891 @@
+/* espacio.INM — layout y estética propios del módulo, sobre los tokens
+   compartidos de raumlab-chrome.css (--bg-navy, --text-color, --border-fine,
+   --font-geist, --font-space, --header-h, --footer-h). Sin fondo propio: deja
+   ver el fondo con grano de la página (.rc-bg-layer) atrás, igual que
+   trans_FORMA/in_SITE. Ninguna de las tres columnas lleva background-color
+   ni bordes de separación — solo el espacio entre ellas y el contenido
+   (botones, diagrama, miniaturas) marcan la composición. */
+
+/* Sin scroll de página en escritorio (ver regla de "debe encajar" abajo en
+   .tool-main) — hidden en los dos ejes a propósito, explícito en los dos
+   a la vez: dejar uno sin declarar hace que el navegador lo trate como
+   "auto" igual (acoplamiento del spec de overflow), reabriendo una barra
+   de scroll aunque no haya nada real que ver. En mobile se libera (ver
+   media query al final). */
+html, body.rc-body {
+  overflow: hidden;
+}
+
+/* ================= Modos / pestañas ================= */
+.mode-content,
+.tab-content {
+  display: none;
+}
+
+.mode-content.active,
+.tab-content.active {
+  display: block;
+}
+
+/* ================= Layout de 3 columnas =================
+   Alto fijo entre header y footer (mismo criterio que #editor-layout de
+   in_SITE): nada de scroll de página — el contenido tiene que entrar en el
+   alto disponible. La columna izquierda tampoco scrollea (tiene que
+   entrar); la derecha sí puede, con la barra fina de siempre, si su
+   contenido no entra. Medidas (gap 56px, padding 36px/48px, columnas
+   300px, padding interno del riel 25px) calcadas de in_SITE — "Volver al
+   Inicio" ya no vive acá, es el .rc-back-link fijo de raumlab-chrome.css,
+   igual que en trans_FORMA (mismo elemento en todos los módulos, no una
+   imitación por columna). Selectores de 3 clases a propósito: más
+   específicos que ".mode-content.active"/".tab-content.active" de arriba
+   (2 clases), para que el grid nunca quede pisado sin importar el orden
+   en el archivo — bug ya documentado en la versión anterior de este CSS. */
+.tool-main {
+  grid-template-columns: 300px 1fr 300px;
+  gap: 56px;
+  height: calc(100vh - var(--header-h) - var(--footer-h));
+  padding: 36px 48px;
+  box-sizing: border-box;
+}
+
+.tab-content.active.tool-main,
+.mode-content.active.tool-main {
+  display: grid;
+}
+
+.rail-izquierdo,
+.rail-derecho {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 0 25px;
+}
+
+.rail-izquierdo {
+  overflow: hidden;
+}
+
+.rail-derecho {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-fine) transparent;
+}
+.rail-derecho::-webkit-scrollbar { width: 3px; }
+.rail-derecho::-webkit-scrollbar-track { background: transparent; }
+.rail-derecho::-webkit-scrollbar-thumb { background: var(--border-fine); }
+.rail-derecho::-webkit-scrollbar-thumb:hover { background: var(--text-color); }
+
+.center-column {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  height: 100%;
+}
+
+/* El ancho porcentual de .cube-diagram (ver más abajo) necesita una base
+   definida — sin esto, al ser hijos de un flex container centrado
+   (ancho "shrink-to-fit"), el porcentaje colapsaba casi a 0. */
+.center-column > * {
+  width: 100%;
+  min-width: 0;
+}
+
+/* ================= Encabezados de sección =================
+   Título fino (100), no en negrita — la jerarquía la marca el peso de las
+   OPCIONES (activa 500 / inactiva 300), no la del título de la sección. */
+.settings-heading {
+  font-family: var(--font-geist);
+  font-size: 0.7rem;
+  font-weight: 100;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-color);
+  margin: 0 0 10px;
+}
+
+.settings-group + .settings-group {
+  margin-top: 18px;
+}
+
+/* ================= Desplegable (Operación / Modo / Resolución) =========
+   Mismo patrón que el selector de capa de trans_FORMA: no es un <select>
+   nativo (el navegador no deja tematizar el fondo de sus opciones
+   desplegadas) — es un botón + lista propia en HTML normal, transparente
+   con blur al abrir. */
+.picker {
+  position: relative;
+}
+
+.picker-boton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  text-align: left;
+  background: none;
+  border: 1px solid var(--border-fine);
+  border-radius: 4px;
+  padding: 8px 10px;
+  font-family: var(--font-geist);
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--text-color);
+  cursor: pointer;
+}
+.picker-boton:hover { border-color: var(--text-color); }
+
+.picker-boton-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.picker-chevron {
+  font-size: 0.7rem;
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+.picker-lista {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 50;
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  background: rgba(6, 9, 16, 0.92);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--surface-border);
+  border-radius: 4px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.picker-lista[hidden] { display: none; }
+
+.picker-opcion {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 7px 8px;
+  border-radius: 3px;
+  font-family: var(--font-geist);
+  font-size: 0.78rem;
+  font-weight: 300;
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+.picker-opcion:hover { background: rgba(255, 255, 255, 0.06); }
+
+.picker-opcion.active { font-weight: 500; }
+
+.picker-opcion-detalle {
+  font-family: var(--font-geist);
+  font-size: 0.65rem;
+  font-weight: 300;
+  opacity: 0.55;
+  margin-left: 2px;
+}
+
+/* ================= Nombre de proyecto ================= */
+.project-name-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.project-name-row label {
+  font-family: var(--font-geist);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--text-color);
+  opacity: 0.7;
+}
+
+.project-name-row input {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-geist);
+  font-size: 0.85rem;
+  color: var(--text-color);
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border-fine);
+  padding: 4px 2px;
+}
+
+.project-name-row input:focus {
+  outline: none;
+  border-bottom-color: var(--text-color);
+}
+
+/* ================= Botones ================= */
+.btn-text,
+.btn-primary {
+  font-family: var(--font-geist);
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--text-color);
+  cursor: pointer;
+  padding: 9px 16px;
+  border-radius: 4px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-full { width: 100%; box-sizing: border-box; }
+
+.btn-text {
+  background: none;
+  border: 1px solid var(--border-fine);
+}
+.btn-text:hover:not(:disabled) { border-color: var(--text-color); }
+
+.btn-primary {
+  background: rgba(242, 239, 233, 0.5);
+  border: 1px solid transparent;
+  color: var(--bg-navy);
+  font-weight: 500;
+}
+.btn-primary:hover:not(:disabled) { background: rgba(242, 239, 233, 0.65); }
+
+.btn-text:disabled,
+.btn-primary:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.status {
+  font-family: var(--font-geist);
+  font-size: 0.72rem;
+  color: var(--text-color);
+  opacity: 0.75;
+  min-height: 1.2em;
+}
+
+.reset-row {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-fine);
+}
+
+/* ================= Diagrama de cubemap (cruz) ================= */
+.cube-diagram {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(3, 1fr);
+  grid-template-areas:
+    ".    top    .     ."
+    "left front right back"
+    ".    bottom .     .";
+  gap: 0;
+  /* Ancho tope: el menor entre 640px, el ancho disponible, y el ancho
+     equivalente al alto disponible (columna central ya limitada por
+     .tool-main) — así nunca se pasa de alto ni de ancho, sin importar cuál
+     de los dos sea el límite real en cada pantalla. */
+  width: min(640px, 100%, calc((100vh - var(--header-h) - var(--footer-h) - 48px) * 4 / 3));
+  aspect-ratio: 4 / 3;
+  margin: 0 auto;
+}
+
+.cube-diagram-cell {
+  position: relative;
+  border: 1px solid var(--border-fine);
+  margin: -0.5px;
+}
+
+.cube-diagram-cell.face-top    { grid-area: top; }
+.cube-diagram-cell.face-left   { grid-area: left; }
+.cube-diagram-cell.face-front  { grid-area: front; }
+.cube-diagram-cell.face-right  { grid-area: right; }
+.cube-diagram-cell.face-back   { grid-area: back; }
+.cube-diagram-cell.face-bottom { grid-area: bottom; }
+
+.cube-diagram-cell .file-btn {
+  width: 100%;
+  height: 100%;
+  font-size: 2rem;
+  border: none;
+  box-sizing: border-box;
+  background: none;
+}
+
+.cube-diagram-cell img {
+  display: none;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: none;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.cube-diagram-cell .file-btn img {
+  object-fit: cover;
+}
+
+.cube-diagram-cell span {
+  position: absolute;
+  bottom: 5px;
+  left: 7px;
+  right: 5px;
+  font-family: var(--font-geist);
+  font-size: 0.6rem;
+  font-weight: 300;
+  line-height: 1.25;
+  letter-spacing: 0.02em;
+  color: var(--text-color);
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+/* Fuente "Mapa de cubos": la celda "Adelante" (centro visual de la cruz,
+   misma celda donde cae el disparador en "6 caras" — front, no top, para
+   que el diagrama no salte al cambiar de modo) hace de disparador de
+   carga (botón + rótulo) hasta que se sube la imagen — ahí el propio JS
+   oculta el botón/rótulo y queda la vista previa igual que las otras 5
+   celdas. #sheet-source necesita position:relative para el status
+   superpuesto (ver .status-sheet-overlay) sin afectar el alto del panel. */
+#sheet-source {
+  position: relative;
+}
+#sheet-source .cube-diagram-cell.face-front {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+#sheet-source .cube-diagram-cell.face-front .file-btn {
+  width: 44px;
+  height: 44px;
+  font-size: 1.5rem;
+  border: 1px solid var(--border-fine);
+  border-radius: 4px;
+}
+#sheet-source .cube-diagram-cell.face-front span {
+  position: static;
+  text-align: center;
+  font-size: 0.62rem;
+  opacity: 0.8;
+}
+
+/* Fuera del flujo a propósito: si sumara alto real, "6 caras" y "Mapa de
+   cubos" quedarían centrados a alturas distintas dentro de la columna
+   central, y el diagrama saltaría de posición al cambiar de modo. */
+.status-sheet-overlay {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 10px;
+  text-align: center;
+}
+
+/* ================= Editor de cara seleccionada ================= */
+.face-editor-empty {
+  font-family: var(--font-geist);
+  font-size: 0.8rem;
+  font-weight: 300;
+  color: var(--text-color);
+  opacity: 0.7;
+  margin: 0;
+}
+
+.face-editor-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.face-editor-label {
+  font-family: var(--font-geist);
+  font-size: 0.72rem;
+  color: var(--text-color);
+  opacity: 0.75;
+}
+.face-editor-label #face-editor-label { opacity: 1; font-weight: 500; }
+
+#face-editor-preview {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border: 1px solid var(--border-fine);
+  border-radius: 4px;
+}
+
+.face-editor-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.face-editor-row {
+  display: flex;
+  gap: 8px;
+}
+
+.face-editor-row button {
+  flex: 1;
+  aspect-ratio: 1 / 1;
+  font-size: 1rem;
+  border: 1px solid var(--border-fine);
+  border-radius: 4px;
+  background: none;
+  color: var(--text-color);
+  cursor: pointer;
+}
+.face-editor-row button:hover { border-color: var(--text-color); }
+
+/* ================= Orientación inicial / Fondo ================= */
+.orient-buttons,
+.bg-picker-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.orient-btn {
+  font-family: var(--font-geist);
+  font-size: 0.72rem;
+  font-weight: 300;
+  color: var(--text-color);
+  background: none;
+  border: 1px solid var(--border-fine);
+  border-radius: 4px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.orient-btn.active {
+  font-weight: 500;
+  border-color: var(--text-color);
+}
+
+.bg-preset {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--border-fine);
+  border-radius: 4px;
+  background: none;
+  color: var(--text-color);
+  font-size: 1rem;
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bg-preset.active {
+  border-color: var(--text-color);
+  border-width: 2px;
+}
+
+.bg-preset img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.bg-picker .file-btn.bg-upload-btn {
+  width: 40px;
+  height: 40px;
+  font-size: 1.1rem;
+  border: 1px solid var(--border-fine);
+  border-radius: 4px;
+  background: none;
+  color: var(--text-color);
+}
+
+/* ================= Canal alfa ================= */
+.alpha-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-geist);
+  font-size: 0.78rem;
+  font-weight: 300;
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+/* ================= RA ================= */
+.ar-toggle-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ================= Colección RaumLab =================
+   Lista vertical, una tarjeta debajo de la otra (no una grilla de varias
+   columnas) — si no entran todas en el alto disponible, scrollea la lista
+   sola en vertical, con la barra fina de siempre. .rail-izquierdo no
+   scrollea en el resto del módulo, pero acá el contenido es variable. */
+.collection-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-fine) transparent;
+}
+.collection-grid::-webkit-scrollbar { width: 3px; }
+.collection-grid::-webkit-scrollbar-track { background: transparent; }
+.collection-grid::-webkit-scrollbar-thumb { background: var(--border-fine); }
+.collection-grid::-webkit-scrollbar-thumb:hover { background: var(--text-color); }
+
+/* Mismo componente que .pieza-card de in_SITE (ver css/coleccion.css de ese
+   módulo): tarjeta tipográfica, sin miniatura, toda el área es el botón —
+   no un botón "Ver" aparte. */
+.collection-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 20px 18px;
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--border-fine);
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.25s ease;
+  box-sizing: border-box;
+}
+.collection-card:hover {
+  border-color: var(--text-color);
+  background: rgba(255, 255, 255, 0.06);
+}
+.collection-card.active {
+  border-color: var(--text-color);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.collection-card-titulo {
+  font-family: var(--font-geist);
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--text-color);
+}
+
+/* ================= Fuente (única / 6 caras) ================= */
+.source-panel {
+  display: none;
+}
+
+.source-panel.active {
+  display: block;
+}
+
+.cube-face {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.cube-face span {
+  font-family: var(--font-geist);
+  font-size: 0.8rem;
+  font-weight: 300;
+  color: var(--text-color);
+}
+
+.file-btn {
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  margin: 0;
+  border: 1px solid var(--border-fine);
+  border-radius: 4px;
+  background: none;
+  font-size: 1.6rem;
+  font-weight: 300;
+  color: var(--text-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.file-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* ================= Visor =================
+   Tamaño contenido a propósito en las pantallas normales (no ocupa todo
+   el ancho disponible) — para verlo grande está el botón de pantalla
+   completa del propio visor (Panolens ya lo trae en su barra de
+   controles). El de la Vista previa (modal) no lleva este tope: ahí el
+   propósito es justamente verlo más grande. */
+.viewer-panel {
+  width: 100%;
+}
+
+.center-column .viewer-panel {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+#viewer, #viewer-eqr, #viewer-solo, #viewer-coleccion {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--border-fine);
+  border-radius: 4px;
+  background: #000;
+  box-sizing: border-box;
+}
+
+/* ================= Vista previa (modal superpuesto) =================
+   Mismo patrón que la Vista previa del editor de in_SITE: se superpone a
+   la pantalla de construcción del cubemap, que sigue viva detrás. */
+.rc-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: rgba(6, 9, 16, 0.85);
+  backdrop-filter: blur(6px);
+}
+
+.rc-modal[hidden] { display: none; }
+
+.rc-modal-panel {
+  position: relative;
+  width: min(1100px, 100%);
+}
+
+.rc-modal-close {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  background: none;
+  border: none;
+  color: var(--text-color);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 8px;
+}
+.rc-modal-close:hover { font-weight: 700; }
+
+/* ================= Panolens UI ================= */
+.panolens-infobar,
+.panolens-control-bar input,
+.panolens-control-bar select,
+.panolens-control-bar option {
+  font-family: var(--font-geist) !important;
+  font-size: 0.72rem !important;
+}
+
+/* ================= Introducción =================
+   Margen izquierdo 35px — estándar acordado para esta pantalla en los tres
+   módulos (in_SITE, trans_FORMA, espacio_INM), distinto del padding 32px
+   que usa el resto de las pantallas de acá. */
+.mode-intro-content {
+  padding: 24px 32px 24px 35px;
+}
+
+/* ================= Tutoriales / Instrucciones =================
+   Mismo criterio de layout que Crear/Visualizar/Colección (rail fijo +
+   panel central), pero con 2 columnas en vez de 3 — no hace falta una
+   columna de edición acá. La lista de modos (.instr-nav) nunca scrollea,
+   igual que .rail-izquierdo en el resto del módulo; el panel de contenido
+   sí puede, porque el texto de un modo puntual puede superar el alto
+   disponible en pantallas chicas. */
+.instr-layout {
+  display: flex;
+  gap: 56px;
+  height: calc(100vh - var(--header-h) - var(--footer-h));
+  padding: 36px 48px;
+  box-sizing: border-box;
+}
+
+.instr-nav {
+  width: 300px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 25px;
+}
+
+.instr-nav-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-geist);
+  font-size: 0.82rem;
+  font-weight: 300;
+  color: var(--text-color);
+  background: none;
+  border: none;
+  border-left: 2px solid transparent;
+  padding: 10px 0 10px 14px;
+  cursor: pointer;
+  transition: font-weight 0.2s ease, border-color 0.2s ease;
+}
+.instr-nav-item:hover { font-weight: 500; }
+.instr-nav-item.active {
+  border-left-color: var(--text-color);
+  font-weight: 500;
+}
+
+.instr-panel {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-fine) transparent;
+  padding-right: 12px;
+}
+.instr-panel::-webkit-scrollbar { width: 3px; }
+.instr-panel::-webkit-scrollbar-track { background: transparent; }
+.instr-panel::-webkit-scrollbar-thumb { background: var(--border-fine); }
+.instr-panel::-webkit-scrollbar-thumb:hover { background: var(--text-color); }
+
+.instr-body { display: none; max-width: 560px; }
+.instr-body.active { display: block; }
+
+.instr-body h2 {
+  font-family: var(--font-geist);
+  font-size: 1rem;
+  font-weight: 300;
+  letter-spacing: 0.03em;
+  color: var(--text-color);
+  margin: 0 0 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-fine);
+}
+
+.instr-body h3 {
+  font-family: var(--font-geist);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-color);
+  margin: 24px 0 10px;
+}
+
+.instr-body p {
+  font-family: var(--font-geist);
+  font-size: 0.88rem;
+  font-weight: 300;
+  line-height: 1.7;
+  color: var(--text-color);
+  margin: 0 0 12px;
+}
+
+.instr-body strong { font-weight: 500; }
+
+.instr-body ol { padding-left: 20px; }
+
+.instr-body li {
+  font-family: var(--font-geist);
+  font-size: 0.88rem;
+  font-weight: 300;
+  line-height: 1.7;
+  color: var(--text-color);
+  margin-bottom: 10px;
+}
+
+/* ================= Mobile =================
+   El "debe encajar sin scroll" es una regla de escritorio (ver arriba) —
+   en celular vuelve a apilarse y a scrollear normalmente, mismo criterio
+   que el resto de RaumLab. */
+@media (max-width: 900px) {
+  /* La regla de escritorio de arriba (html, body.rc-body { overflow:
+     hidden }) se libera acá: en celular el contenido apila y necesita
+     poder scrollear verticalmente. Horizontal se mantiene oculto (ver
+     .cube-diagram-cell span más abajo, por qué hace falta). */
+  html, body.rc-body { overflow-y: visible; overflow-x: hidden; }
+
+  .tool-main,
+  .mode-content.tool-main {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    height: auto;
+    margin: 0;
+    padding: calc(var(--header-h) + 20px) 20px 20px;
+  }
+
+  .rail-izquierdo,
+  .rail-derecho {
+    height: auto;
+    overflow: visible;
+    padding-bottom: 0;
+  }
+
+  .center-column {
+    height: auto;
+  }
+
+  .cube-diagram {
+    width: min(420px, 100%);
+  }
+
+  .cube-diagram-cell span {
+    font-size: 0.58rem;
+    left: 4px;
+    right: 3px;
+    bottom: 4px;
+  }
+
+  .instr-layout {
+    flex-direction: column;
+    height: auto;
+    gap: 24px;
+    padding: calc(var(--header-h) + 20px) 20px 20px;
+  }
+
+  .instr-nav {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px 20px;
+    padding: 0;
+  }
+
+  .instr-panel {
+    height: auto;
+    overflow-y: visible;
+    padding-right: 0;
+  }
+
+  .mode-intro-content {
+    padding: calc(var(--header-h) + 20px) 20px 20px 35px;
+  }
+}

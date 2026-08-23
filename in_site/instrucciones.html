@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutoriales — in_SITE</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100;300;400;500;700;800&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="../raumlab/raumlab-chrome.css">
+    <link rel="stylesheet" href="css/instrucciones.css">
+</head>
+<body class="rc-body">
+
+    <div class="rc-bg-layer" aria-hidden="true"></div>
+
+    <div class="rc-header-stack">
+        <header class="rc-topbar">
+            <button class="rc-hamburger-btn" id="navToggle" type="button" aria-expanded="false" aria-controls="navPanel" aria-label="Abrir menú">
+                <span class="rc-hamburger-icon" aria-hidden="true">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </span>
+            </button>
+            <a href="../raumlab/index.html" class="rc-topbar-logo">
+                <span class="logo-raum">RAUM</span><span class="logo-lab">LAB</span>
+            </a>
+            <button class="rc-lang-pill" type="button" title="Selector de idioma — próximamente EN / FR / PT">ES</button>
+        </header>
+        <div class="rc-header-rule"></div>
+        <div class="rc-module-subheader">
+            <p class="rc-breadcrumb">/in_SITE</p>
+            <nav class="rc-subnav">
+                <a href="editor.html">Proyectos</a>
+                <a href="viewer.html">Visualizador</a>
+                <a href="coleccion.html">Galería</a>
+                <a href="instrucciones.html" class="active">Tutoriales</a>
+            </nav>
+        </div>
+    </div>
+
+    <div class="rc-nav-scrim" id="navScrim"></div>
+
+    <nav class="rc-nav-panel" id="navPanel">
+        <ul class="rc-nav-list rc-nav-modes">
+            <li class="rc-nav-item"><a class="rc-nav-link" href="editor.html">Proyectos</a></li>
+            <li class="rc-nav-item"><a class="rc-nav-link" href="viewer.html">Visualizador</a></li>
+            <li class="rc-nav-item"><a class="rc-nav-link" href="coleccion.html">Galería</a></li>
+            <li class="rc-nav-item"><a class="rc-nav-link active" href="instrucciones.html">Tutoriales</a></li>
+        </ul>
+        <ul class="rc-nav-list">
+            <li class="rc-nav-item has-sub open" id="recursosItem">
+                <a class="rc-nav-link" href="../raumlab/index.html#recursos">Recursos</a>
+                <ul class="rc-nav-sublist" id="recursosSub" style="max-height: 220px;">
+                    <li><a href="../espacio_inm/espacio-inm/espacio-inm.html">espacio_INM</a></li>
+                    <li><a href="index.html" class="active">in_SITE</a></li>
+                    <li><a href="../mono_plano/index.html">trans_FORMA</a></li>
+                </ul>
+            </li>
+            <li class="rc-nav-item"><a class="rc-nav-link" href="../raumlab/index.html#investigacion">Investigación</a></li>
+            <li class="rc-nav-item"><a class="rc-nav-link" href="../raumlab/index.html#educacion">Educación</a></li>
+            <li class="rc-nav-item"><a class="rc-nav-link" href="../raumlab/index.html#novedades">Novedades</a></li>
+            <li class="rc-nav-item"><a class="rc-nav-link" href="../raumlab/index.html#contacto">Contacto</a></li>
+        </ul>
+    </nav>
+
+    <div class="instr-layout">
+
+        <!-- Lista de modos — sin ítem activo por defecto: el panel arranca
+             mostrando el texto general, elegir un modo lo reemplaza. -->
+        <aside class="instr-nav">
+            <button type="button" class="instr-nav-item" data-instr="instr-proyectos">Proyectos</button>
+            <button type="button" class="instr-nav-item" data-instr="instr-visualizador">Visualizador</button>
+            <button type="button" class="instr-nav-item" data-instr="instr-galeria">Galería</button>
+        </aside>
+
+        <div class="instr-panel">
+
+            <div class="instr-body active" id="instr-general">
+                <h2>¿Qué es in_SITE?</h2>
+                <p>
+                    in_SITE es una herramienta para armar y visualizar salas
+                    expositivas virtuales en 3D. Pensada originalmente para
+                    muestras de arte, también sirve como recurso para
+                    entornos pedagógicos y educativos — cualquier situación
+                    donde sea útil montar y recorrer un espacio expositivo
+                    sin necesidad de un espacio físico.
+                </p>
+                <p>Elegí un modo de la lista para ver sus instrucciones.</p>
+            </div>
+
+            <div class="instr-body" id="instr-proyectos">
+                <h2>Proyectos</h2>
+                <p>
+                    El editor. Acá armás la sala: definís sus dimensiones,
+                    agregás imágenes, videos y esculturas (.obj), las ubicás
+                    en el espacio, y completás la ficha técnica de cada pieza
+                    (título, artista, año, técnica, descripción,
+                    especificaciones de traslado y montaje).
+                </p>
+
+                <h3>Armar una sala, paso a paso</h3>
+                <ol>
+                    <li>Definí el ancho y el largo de la sala.</li>
+                    <li>Agregá las piezas: imágenes o videos (para colgar en la pared) y modelos .obj (para esculturas).</li>
+                    <li>Seleccioná cada pieza (clickeándola en la sala o en la lista de miniaturas) y ajustá su posición, rotación y dimensiones reales.</li>
+                    <li>Completá la ficha técnica de cada pieza.</li>
+                    <li>Guardá el progreso con <strong>Guardar Proyecto</strong> — genera un archivo <code>.json</code> editable para retomar la edición más adelante.</li>
+                    <li>Cuando la sala esté lista, usá <strong>Exportar</strong> para generar el archivo <code>.glb</code> final (y su <code>.json</code> de fichas técnicas vinculado).</li>
+                    <li>Andá a <strong>Visualizador</strong>, cargá esos dos archivos, y recorré la sala terminada — o compartí los archivos para que otra persona los visualice desde ahí.</li>
+                </ol>
+
+                <h3>Sobre el video</h3>
+                <p>
+                    Se reproduce en vivo mientras armás la sala en el editor,
+                    y también en la vista de escritorio de Visualizador y
+                    Galería (como una textura real, respetando la
+                    perspectiva de la pared). En Realidad Aumentada, en
+                    cambio, se ve como una imagen fija — es una limitación
+                    del formato <code>.glb</code> en sí, no de la aplicación.
+                </p>
+                <p>
+                    Se recomienda comprimir los videos antes de subirlos
+                    (menos de 30&nbsp;MB) — los archivos muy pesados pueden
+                    agotar la memoria del navegador al exportar la sala.
+                </p>
+            </div>
+
+            <div class="instr-body" id="instr-visualizador">
+                <h2>Visualizador</h2>
+                <p>
+                    El visor. Acá cargás una sala que ya exportaste desde
+                    Proyectos (un archivo <code>.glb</code>, opcionalmente
+                    junto con su <code>.json</code> de fichas técnicas) para
+                    recorrerla en 3D, ver la información de cada pieza, y
+                    activar la Realidad Aumentada en el celular.
+                </p>
+
+                <h3>Sobre el video</h3>
+                <p>
+                    Se reproduce en vivo, como una textura real que respeta
+                    la perspectiva de la pared. En Realidad Aumentada se ve
+                    como una imagen fija — es una limitación del formato
+                    <code>.glb</code> en sí, no de la aplicación.
+                </p>
+            </div>
+
+            <div class="instr-body" id="instr-galeria">
+                <h2>Galería</h2>
+                <p>
+                    Las muestras y piezas propias del estudio, ya armadas y
+                    disponibles para visitar directamente, sin necesidad de
+                    subir ningún archivo.
+                </p>
+
+                <h3>Sobre el video</h3>
+                <p>
+                    Se reproduce en vivo, como una textura real que respeta
+                    la perspectiva de la pared. En Realidad Aumentada se ve
+                    como una imagen fija — es una limitación del formato
+                    <code>.glb</code> en sí, no de la aplicación.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <a href="index.html" class="rc-back-link">
+        <img src="../raumlab/flecha_derecha_ui.png" alt="" class="back-arrow-img">
+        VOLVER
+    </a>
+
+    <footer class="rc-footer">
+        <div class="rc-footer-rule"></div>
+        <p class="rc-footer-copyright">© 2026 RAUMLAB<br>Rosario, Argentina</p>
+    </footer>
+
+    <script src="../raumlab/raumlab-chrome.js"></script>
+    <script>
+        document.querySelectorAll('.instr-nav-item').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.instr-nav-item').forEach((b) => {
+                    b.classList.toggle('active', b === btn);
+                });
+                document.querySelectorAll('.instr-body').forEach((p) => p.classList.remove('active'));
+                document.getElementById(btn.dataset.instr).classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

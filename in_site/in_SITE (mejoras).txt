@@ -1,0 +1,37 @@
+raumlab.org/in_SITE
+
+Hoy//
+Modo galería_
+Visualización de archivos de coleccción raumlab.
+Cargar archivos:
+Escena (en formato GLB)
+Se puede tambíen incorporar la ficha técnica (JSON) [carga opcional]
+Una vez cargado (al  menos el archivo GLB) se puede visualizar la escena en el visor o en RA en los móviles.
+En el visor si te acercás a una pieza y clickeas, obtenes el la descripción de la ficha técnica de la pieza incluida.
+
+Modo proyecto_
+Definición de las dimensiones de la sala en metros. Aplicación de dimensiones.
+Posibiñidad de agregar archivos a la escena 2D (JPG y PNG) y 3D (OBJ).
+De cada pieza se puede definir su posición con respecto a un centro, ya sea mediante el ingreso de valores como también moviendo manualmente.
+Se puede modificar su escala global y rotar en sentido únicamente de un eje vertical.
+Se puede incorporar información de cada una de las piezas.
+Existe un botón de vista previa, pero no lleva a ningún lado. 
+Guardar atributos--> exporta archivo JSON
+Exportar galeria --> exporta archivo GLB. 
+
+
+Diagnóstico y mejoras_
+La base de dimensión de sala, no debe ser exprtable, o se debe dar la posibilidad al usuario de incluirla o no, [Pordía ser mediante una casilla para tildar en la parte de "exportación o una ventana emergente]
+Sólo se agregan imagenes 2D JPG y PNG agregar la inserción de videos.
+Lss imágenes PNG, en la zona de transparencia debería respetarse tan transparencia. 
+Una vez insertadas:
+-posibilidad de modificar la escala mediante: a) definir escala global; b) definir valor para dimensión X, Y y Z (sin
+ modificar proporción); c) ajustar valores de objeto a la simensión de la escala.
+-rotación a partir de los 3 ejes XYZ, no solo en el vertical: a) modificando los valores para cada uno de los ejes; b) manualmente.
+-Cuando se mueve manualmente, faciliar al usuario unir elementos 2D: cuando se acerca determinada distancia, se una con magnetistismo.
+-En descripción de ficha técnica agregar campo "especificaciones para traslado y montaje".
+Cuando se pone exportar, que sea un sólo botón--> se abre una ventana donde se le puede dar nombre a la sala, después dos casillas de verificación: a) incluir plano base; b) exportar archivo de atributos vinculado (JSON)
+Al inicio, cuando sólo aparecen pestañas Galería / Proyecto. 
+En RA (posibilidad que se da con los móviles) agregar las atiquetas de las piezas gráficas, a modo de tarjeta técnica (como en museos)
+
+Estructura: proyectos / galería / coleción raumlab / instrucciones.

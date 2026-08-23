@@ -1,0 +1,67 @@
+/* ==========================================================================
+   COLECCIÓN RRAUM.LAB — grilla de piezas (tarjetas tipográficas, sin fotos)
+   ========================================================================== */
+.coleccion-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pieza-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 20px 18px;
+    background: transparent;
+    border: 1px solid var(--border-fine);
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.25s ease;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.pieza-card:hover {
+    border-color: var(--text-color);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.pieza-card.active {
+    border-color: var(--text-color);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.pieza-card-titulo {
+    font-family: var(--font-geist);
+    font-size: 0.78rem;
+    font-weight: 400;
+    color: var(--text-color);
+}
+
+.pieza-card-anio {
+    font-family: var(--font-geist);
+    font-size: 0.7rem;
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-color);
+}
+
+/* Este placeholder flota sobre el viewport 3D (claro), no sobre el fondo
+   oscuro de la página — por eso es la única excepción a "letras blancas". */
+.coleccion-placeholder {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--font-geist);
+    font-size: 0.85rem;
+    font-weight: 300;
+    color: #8a8a80;
+    text-align: center;
+    max-width: 280px;
+    pointer-events: none;
+    z-index: 5;
+}

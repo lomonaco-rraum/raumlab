@@ -1,0 +1,55 @@
+/* ==========================================================================
+   APP-SHELL — encaje del contenido propio de espacio_INM contra el
+   header/footer fijos de raumlab-chrome.css. Basado en
+   mono_plano/src/css/app-shell.css (equivalente al module-shell.css de
+   in_SITE), con una diferencia a propósito: acá overflow-y es "hidden", no
+   "auto". espacio_INM tiene la regla de "debe encajar en pantalla sin
+   scroll" — el layout ya está calculado para entrar exacto (ver
+   .tool-main en espacio-inm.css), así que "hidden" actúa como resguardo
+   silencioso ante un redondeo de sub-píxel (zoom/escalado de pantalla no
+   entero), en vez de "auto", que dispara una barra de scroll visible ante
+   ese mismo redondeo aunque no haya contenido real por ver.
+   ========================================================================== */
+
+/* Reseteo universal — in_SITE y trans_FORMA lo traen cada uno en su propio
+   styles.css (cargado antes que raumlab-chrome.css); espacio_INM no tiene
+   un archivo equivalente y nunca lo tuvo, así que cualquier elemento que no
+   fije su propio margin/padding explícito se quedaba con el valor por
+   defecto del navegador — más alto/desplazado que en los otros módulos con
+   los mismos elementos compartidos (.rc-breadcrumb, .rc-footer-copyright).
+   Mismo bug, mismo motivo, que ya se había dado una vez con la tipografía
+   del logo RAUMLAB en trans_FORMA (ver comentario en
+   mono_plano/src/css/styles.css). */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+#app-main {
+    position: fixed;
+    top: var(--header-h);
+    left: 0;
+    right: 0;
+    bottom: var(--footer-h);
+    z-index: 2;
+    overflow-y: hidden;
+}
+
+.screen {
+    width: 100%;
+    height: 100%;
+}
+
+@media (max-width: 768px) {
+    #app-main {
+        position: relative;
+        min-height: calc(100vh - var(--header-h) - var(--footer-h));
+        padding: calc(var(--header-h) + 20px) 20px 20px;
+    }
+
+    .screen {
+        height: auto;
+        min-height: 100%;
+    }
+}

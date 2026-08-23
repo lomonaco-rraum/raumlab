@@ -1,0 +1,1209 @@
+:root {
+    --bg-color: #f8f9fa;
+    /* Texto oscuro propio de las pantallas todavía sin reskinear (workspace
+       de rectificación) — distinto de --text-color (blanco), que define
+       raumlab-chrome.css para el header/nav/footer y las pantallas ya
+       migradas. Nombre separado a propósito: son dos paletas conviviendo
+       durante la migración progresiva del módulo, no el mismo token. */
+    --legacy-text-color: #18181b;
+    --accent-color: #18181b;
+    --border-color: #d4d4d8;
+    --gray-900: #18181b;
+    --gray-700: #3f3f46;
+    --gray-500: #71717a;
+    --gray-300: #d4d4d8;
+    --gray-100: #f4f4f5;
+    /* 300px: mismo ancho de columna izquierda que in_SITE/espacio_INM —
+       la derecha se deja más ancha (--ancho-sidebar) porque acá sí hay
+       harto contenido (tabla de puntos, GSD, etc.) que lo justifica. */
+    --ancho-rail: 300px;
+    --ancho-sidebar: 380px;
+    /* Máximo del cuadro de diálogo — no un bloque fijo de este alto, se
+       achica al contenido (ver #panel-dialogo). Alcanza para ~3-4 líneas
+       de mensaje; si hace falta más (ej. preguntarOpciones con varios
+       botones), scrollea en vez de crecer. */
+    --alto-dialogo: 90px;
+    /* Distancia entre el borde inferior de #app-main y el borde inferior
+       del cuadro de diálogo — el final de las columnas del workspace
+       (.workspace-layout) se alinea a esta misma altura. */
+    --workspace-bottom-reserve: 84px;
+}
+
+/* Sin font-family acá a propósito (había un reset a fuente de sistema,
+   leftover de antes del reskin a Geist): un elemento que no fija su propia
+   tipografía tiene que HEREDAR la de su padre — .rc-body ya pone Geist a
+   nivel body en raumlab-chrome.css. Un reset por selector universal le
+   gana a esa herencia (una regla explícita, aunque sea "*", siempre le
+   gana a heredar), y eso es justo lo que rompía "RAUMLAB" en el header:
+   los spans .logo-raum/.logo-lab no fijan tipografía propia (solo peso),
+   dependen de heredarla — quedaban en la fuente del sistema en vez de
+   Geist. */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-navy);
+}
+
+.screen {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.app-header h1 {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.app-header h1 span {
+    font-weight: 300;
+    color: #6c757d;
+}
+
+.drop-zone-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    color: var(--text-color);
+}
+
+.inicio-acciones {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.drop-box {
+    width: 100%;
+    max-width: 600px;
+    height: 350px;
+    border: 2px dashed var(--border-color);
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #ffffff;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.drop-box:hover {
+    border-color: var(--accent-color);
+    background: #f4f4f5;
+}
+
+.drop-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    color: #71717a;
+}
+
+/* Único botón con relleno de la pantalla (acción principal) — mismo
+   criterio que in_SITE (.viewer-btn-main): 50% de opacidad, nunca un
+   bloque blanco sólido contra el fondo oscuro. */
+.btn-primary {
+    background: rgba(242, 239, 233, 0.5);
+    color: var(--bg-navy);
+    border: none;
+    padding: 10px 22px;
+    border-radius: 4px;
+    font-family: var(--font-geist);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover {
+    background: var(--text-color);
+    font-weight: 600;
+}
+
+/* Botón "fantasma" (acción secundaria) — borde fino, sin relleno. */
+.btn-text {
+    background: none;
+    border: 1px solid var(--border-fine);
+    color: var(--text-color);
+    padding: 10px 22px;
+    border-radius: 4px;
+    font-family: var(--font-geist);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.8rem;
+    margin-top: 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-text:hover {
+    border-color: var(--text-color);
+    background-color: rgba(255, 255, 255, 0.07);
+}
+
+.btn-text:disabled,
+.btn-text[aria-disabled="true"] {
+    opacity: 0.45;
+    cursor: default;
+}
+
+/* Estilos para el Espacio de Trabajo con Paneles — sin fondo propio: deja
+   ver el fondo con grano de la página (.rc-bg-layer) atrás, igual que
+   in_SITE. Ninguna de las tres columnas (rail-izquierdo/canvas/rail-derecho)
+   lleva background-color ni bordes de separación — solo el espacio entre
+   ellas y el contenido (botones, miniaturas) marcan la composición. */
+.workspace-layout {
+    flex: 1;
+    display: flex;
+    gap: 32px;
+    /* padding izquierdo/derecho 48px: mismo margen que in_SITE y
+       espacio_INM (ver module-shell.css / .tool-main), para que el
+       contenido arranque a la misma distancia del borde en los tres
+       módulos. El padding-bottom deja el final de las columnas (la
+       imagen incluida) a la misma altura que el cuadro de diálogo — ver
+       #panel-dialogo y .workspace-cerrar-proyecto, que comparten esa
+       referencia. */
+    padding: 24px 48px var(--workspace-bottom-reserve);
+    background: transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Pantalla de introducción — mismo criterio que in_SITE y espacio_INM:
+   texto de presentación del módulo (.rc-intro-lede/.rc-intro-detail,
+   compartidas en raumlab-chrome.css), antes de elegir Fotoplano/Fotomosaico.
+   A diferencia del workspace, sí tiene sentido en celular (es solo texto,
+   no requiere pantalla de escritorio), así que no se oculta en el media
+   query de abajo. Margen izquierdo 35px — estándar acordado para esta
+   pantalla en los tres módulos, distinto del padding 48px del workspace. */
+.mode-intro-content {
+    padding: 24px 48px 24px 35px;
+}
+
+/* Pantalla de Tutoriales — mismo patrón que espacio_INM: rail fijo con la
+   lista de modos (.instr-nav, ancho --ancho-rail para alinear con el resto
+   del módulo) + panel de contenido central que scrollea si el texto de un
+   modo puntual no entra (.instr-panel). Vive directo dentro de .screen
+   (flex column, height:100%), así que "flex:1" alcanza para heredar el
+   alto fijo que ya resuelve #app-main — no hace falta repetir el cálculo
+   de calc(100vh - header - footer) acá. */
+.instr-layout {
+    flex: 1;
+    display: flex;
+    gap: 56px;
+    padding: 24px 48px;
+    min-height: 0;
+}
+
+.instr-nav {
+    width: var(--ancho-rail);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.instr-nav-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    font-family: var(--font-geist);
+    font-size: 0.82rem;
+    font-weight: 300;
+    color: var(--text-color);
+    background: none;
+    border: none;
+    border-left: 2px solid transparent;
+    padding: 10px 0 10px 14px;
+    cursor: pointer;
+    transition: font-weight 0.2s ease, border-color 0.2s ease;
+}
+.instr-nav-item:hover { font-weight: 500; }
+.instr-nav-item.active {
+    border-left-color: var(--text-color);
+    font-weight: 500;
+}
+
+.instr-panel {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-fine) transparent;
+    padding-right: 12px;
+}
+.instr-panel::-webkit-scrollbar { width: 3px; }
+.instr-panel::-webkit-scrollbar-track { background: transparent; }
+.instr-panel::-webkit-scrollbar-thumb { background: var(--border-fine); }
+.instr-panel::-webkit-scrollbar-thumb:hover { background: var(--text-color); }
+
+.instr-body { display: none; max-width: 640px; }
+.instr-body.active { display: block; }
+
+.instr-body h2 {
+    font-family: var(--font-geist);
+    font-size: 0.95rem;
+    font-weight: 300;
+    letter-spacing: 0.03em;
+    color: var(--text-color);
+    margin: 0 0 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-fine);
+}
+
+.instr-body h3 {
+    font-family: var(--font-geist);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-color);
+    margin: 24px 0 10px;
+}
+
+.instr-body p {
+    font-family: var(--font-geist);
+    font-size: 0.88rem;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--text-color);
+    margin: 0 0 12px;
+}
+
+.instr-body strong {
+    font-weight: 500;
+}
+
+.instr-body ol {
+    padding-left: 20px;
+}
+
+.instr-body li {
+    font-family: var(--font-geist);
+    font-size: 0.88rem;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+/* Aviso de reemplazo en celular — ver app-shell.css: Fotoplano/Fotomosaico
+   son una pantalla de escritorio únicamente (marcar puntos sobre una
+   imagen no tiene un equivalente razonable angosto), así que en vez de
+   achicar el workspace se reemplaza por este texto. */
+.workspace-mobile-notice {
+    display: none;
+}
+
+.canvas-area {
+    flex: 1;
+    display: flex;
+    position: relative;
+    /* min-height/min-width:0: sin esto, un hijo más grande que el
+       contenedor (la imagen con zoom aplicado) infla el propio .canvas-area
+       más allá del espacio que la fila de 3 columnas le tiene asignado —
+       es lo que hacía que "el recuadro de la imagen" pareciera achicarse
+       (el layout entero se reacomodaba) y que la grilla/los dibujos del
+       resultado quedaran desalineados. */
+    min-height: 0;
+    min-width: 0;
+    /* auto en vez de hidden: con zoom activo la imagen es más grande que el
+       contenedor y hace falta poder desplazarla para verla completa — ver
+       aplicarEscala() en app.js. Sin zoom (tamaño "encajado") no hay
+       overflow real, así que no cambia nada visualmente en el caso normal. */
+    overflow: auto;
+    scrollbar-width: none;
+}
+.canvas-area::-webkit-scrollbar {
+    display: none;
+}
+
+/* #image-wrapper se centra con margin:auto (no justify-content/align-items
+   en el contenedor) a propósito: con overflow:auto, centrar por
+   justify-content dejaba la mitad del contenido que se sale fuera de
+   alcance del scroll — eso es lo que causaba que el zoom siempre pareciera
+   "irse" hacia abajo a la derecha en vez de centrarse en el cursor. */
+#image-wrapper {
+    margin: auto;
+}
+
+/* Pestañas "Imagen Original / Fotoplano" — en su propia fila arriba del
+   lienzo (ya no flotan encima de la imagen), mismo criterio liviano que
+   Analítico/Geométrico: texto + subrayado en la activa, sin fondo/caja. */
+.view-mode-tabs {
+    display: none;
+    flex-shrink: 0;
+    gap: 24px;
+    padding: 0 4px 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--surface-border);
+}
+.view-mode-tabs button {
+    background: none;
+    border: none;
+    padding: 2px 0;
+    color: var(--text-color);
+    font-family: var(--font-geist);
+    font-weight: 300;
+    font-size: 0.8rem;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    opacity: 0.55;
+}
+.view-mode-tabs button.active {
+    opacity: 1;
+    border-bottom-color: var(--text-color);
+    font-weight: 400;
+}
+
+.sidebar-panel {
+    width: var(--ancho-sidebar);
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+}
+
+.method-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    background: #f4f4f5;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 1rem;
+    border: none;
+    background: none;
+    font-weight: 500;
+    cursor: pointer;
+    color: #71717a;
+    transition: all 0.2s;
+}
+
+.tab-btn.active {
+    background: #ffffff;
+    color: var(--legacy-text-color);
+    border-bottom: 2px solid var(--accent-color);
+}
+
+.panel-content {
+    padding: 1.5rem;
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* Barra de desplazamiento fina — mismo criterio que in_SITE
+   (module-shell.css: #sidebar-right/.cedula-panel) en todo lugar donde
+   pueda aparecer una barra nativa dentro del módulo. */
+.panel-content,
+#panel-dialogo,
+.controles-table tbody,
+.capa-selector-lista {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-fine) transparent;
+}
+.panel-content::-webkit-scrollbar,
+#panel-dialogo::-webkit-scrollbar,
+.controles-table tbody::-webkit-scrollbar,
+.capa-selector-lista::-webkit-scrollbar {
+    width: 3px;
+}
+.panel-content::-webkit-scrollbar-track,
+#panel-dialogo::-webkit-scrollbar-track,
+.controles-table tbody::-webkit-scrollbar-track,
+.capa-selector-lista::-webkit-scrollbar-track {
+    background: transparent;
+}
+.panel-content::-webkit-scrollbar-thumb,
+#panel-dialogo::-webkit-scrollbar-thumb,
+.controles-table tbody::-webkit-scrollbar-thumb,
+.capa-selector-lista::-webkit-scrollbar-thumb {
+    background: var(--border-fine);
+}
+.panel-content::-webkit-scrollbar-thumb:hover,
+#panel-dialogo::-webkit-scrollbar-thumb:hover,
+.controles-table tbody::-webkit-scrollbar-thumb:hover,
+.capa-selector-lista::-webkit-scrollbar-thumb:hover {
+    background: var(--text-color);
+}
+
+.method-section {
+    display: none;
+}
+
+.method-section.active {
+    display: block;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+    color: #475569;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+/* Panel de diálogo persistente (reemplaza alert()/confirm()) — mismo ancho
+   que la columna izquierda (miniaturas/zoom). Alto según el contenido, no
+   fijo: --alto-dialogo pasa a ser el máximo (~3-4 líneas), no un bloque
+   vacío de ese tamaño para un mensaje de una línea. Rectángulo recto (sin
+   redondear, sin borde), bien transparente y texto blanco pleno. Oculto
+   hasta entrar a un modo — la columna de la izquierda le reserva el mismo
+   alto con padding-bottom, así nunca queda superpuesto con el zoom o el
+   selector/"+". "Cerrar Proyecto" (.workspace-cerrar-proyecto) va arriba
+   de este cuadro — ver esa regla para la altura que le reserva. */
+#panel-dialogo {
+    display: none;
+    position: fixed;
+    left: 48px;
+    bottom: calc(var(--footer-h) + var(--workspace-bottom-reserve));
+    width: var(--ancho-rail);
+    max-height: var(--alto-dialogo);
+    background: rgba(242, 239, 233, 0.28);
+    color: var(--text-color);
+    border: none;
+    border-radius: 0;
+    font-family: var(--font-geist);
+    font-size: 0.75rem;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+#panel-dialogo.visible {
+    display: block;
+}
+
+#panel-dialogo .dialogo-mensaje {
+    padding: 0.6rem 0.7rem;
+    display: flex;
+    gap: 0.4rem;
+    align-items: flex-start;
+    line-height: 1.4;
+}
+
+#panel-dialogo .dialogo-icono {
+    flex-shrink: 0;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+#panel-dialogo .dialogo-opciones {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 0 0.7rem 0.7rem;
+}
+
+#panel-dialogo .dialogo-opciones button {
+    background: none;
+    color: var(--text-color);
+    border: 1px solid var(--border-fine);
+    border-radius: 0;
+    padding: 0.35rem 0.6rem;
+    font-family: var(--font-geist);
+    font-size: 0.7rem;
+    font-weight: 300;
+    cursor: pointer;
+    text-align: left;
+}
+
+#panel-dialogo .dialogo-opciones button:hover {
+    border-color: var(--text-color);
+    background: rgba(255, 255, 255, 0.07);
+}
+
+/* Columna izquierda completa: general/carga — apila el selector Crear/
+   Proyecto arriba y las miniaturas + zoom debajo. Sin fondo ni borde propio
+   (ver nota de .workspace-layout) — flota directo sobre el fondo con grano. */
+.rail-izquierdo {
+    width: var(--ancho-rail);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-height: 0;
+}
+
+/* Columna derecha completa: controles de la estación de rectificación
+   (Analítico/Geométrico → Área → GSD, y Medir/Dibujar sobre el resultado).
+   Sin fondo ni borde propio, igual criterio que la izquierda. */
+.rail-derecho {
+    width: var(--ancho-sidebar);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    color: var(--text-color);
+}
+
+/* Miniaturas de proyecto (Fotomosaico multi-imagen, y Fotoplano con una
+   sola). Sin fondo/borde propio: solo el espacio y las tarjetas de cada
+   miniatura marcan la columna. */
+.miniaturas-rail {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    /* .workspace-layout ya reserva --workspace-bottom-reserve al pie de
+       toda la fila; esto suma la altura del cuadro de diálogo (fixed,
+       mismo ancho) para que tampoco tape el zoom ni el selector/"+". */
+    padding-bottom: var(--alto-dialogo);
+    overflow: hidden;
+}
+
+/* Solo esta lista scrollea — el resto de la columna (botones, zoom) se
+   mantiene siempre visible sin que las miniaturas los empujen afuera. */
+.miniaturas-lista {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.miniatura-item {
+    border: 2px solid transparent;
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    background: #ffffff;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.miniatura-item.activa {
+    border-color: #e4e4e7;
+}
+
+.miniatura-item img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    display: block;
+}
+
+.miniatura-item .miniatura-estado {
+    font-size: 0.7rem;
+    padding: 0.25rem;
+    color: #3f3f46;
+    background: #f4f4f5;
+}
+
+/* "Cerrar Proyecto": fijo, arriba del cuadro de diálogo (que a su vez
+   arranca en --workspace-bottom-reserve y puede crecer hasta
+   --alto-dialogo) — nunca entre el cuadro y "Volver al Inicio". Mismo
+   botón fantasma de borde fino que el resto del módulo (.btn-text) — no
+   un enlace de texto suelto — del mismo ancho que las demás acciones de
+   la columna. */
+.workspace-cerrar-proyecto {
+    position: fixed;
+    left: 48px;
+    bottom: calc(var(--footer-h) + var(--workspace-bottom-reserve) + var(--alto-dialogo) + 14px);
+    width: var(--ancho-rail);
+    z-index: 260;
+    text-align: center;
+}
+
+/* Botón "+" de agregar imagen al riel de miniaturas — borde fino, mismo
+   criterio que los botones fantasma del panel derecho (no un cuadrado
+   gris sólido como antes). */
+.miniatura-add-btn {
+    width: 100%;
+    padding: 10px;
+    background: none;
+    border: 1px solid var(--border-fine);
+    color: var(--text-color);
+    border-radius: 4px;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+.miniatura-add-btn:hover {
+    border-color: var(--text-color);
+    background-color: rgba(255, 255, 255, 0.07);
+}
+
+/* ==========================================================================
+   PESTAÑAS OSCURAS (Crear/Proyecto en la izquierda, Analítico/Geométrico en
+   la derecha) — mismo criterio que Disposición/Atributos en el editor de
+   in_SITE: Geist fino para las etiquetas, subrayado en la pestaña activa,
+   botones de borde fino (nunca cuadros sólidos), sin fondo propio. Selector
+   con ancestro (.panel-crear-proyecto/.rail-derecho) para no afectar
+   .method-tabs/.tab-btn en páginas que todavía no se reskinearon.
+   ========================================================================== */
+.panel-crear-proyecto .method-tabs,
+.rail-derecho .method-tabs {
+    background: none;
+    padding: 0 4px 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--surface-border);
+}
+
+/* Mismo padding/tamaño que .view-mode-tabs (columna central): las tres
+   filas de pestañas (Crear/Proyecto, Imagen Original/Fotoplano,
+   Analítico/Geométrico) arrancan a la misma altura — antes esta seguía
+   con el padding:1rem viejo, mucho más alto que el de la columna central. */
+.panel-crear-proyecto .tab-btn,
+.rail-derecho .tab-btn {
+    padding: 2px 0;
+    font-family: var(--font-geist);
+    font-weight: 300;
+    font-size: 0.8rem;
+    color: var(--text-color);
+    opacity: 0.55;
+}
+
+.panel-crear-proyecto .tab-btn.active,
+.rail-derecho .tab-btn.active {
+    background: none;
+    color: var(--text-color);
+    opacity: 1;
+    border-bottom: 2px solid var(--text-color);
+}
+
+.panel-crear-proyecto .panel-content,
+.rail-derecho .panel-content {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.panel-crear-proyecto .method-section,
+.rail-derecho .method-section {
+    display: none;
+}
+.panel-crear-proyecto .method-section.active,
+.rail-derecho .method-section.active {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.panel-crear-proyecto {
+    display: flex;
+    flex-direction: column;
+    color: var(--text-color);
+}
+
+.btn-full {
+    width: 100%;
+}
+
+/* ==========================================================================
+   CONTROLES (Analítico/Geométrico → Área → GSD) — columna derecha. Mismo
+   vocabulario visual que el resto del módulo: Geist, texto blanco pleno
+   (la jerarquía se marca con peso, nunca con gris/opacidad de color),
+   bordes finos, sin cajas sólidas salvo tablas (excepción de tarjeta/dato).
+   ========================================================================== */
+.controles-panel {
+    font-family: var(--font-geist);
+}
+
+.controles-heading {
+    font-size: 0.85rem;
+    font-weight: 100;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-color);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* "?" junto a cada título de sección — reemplaza el párrafo explicativo
+   fijo: al tocarlo, la explicación aparece en el cuadro de diálogo en vez
+   de ocupar lugar permanente en la columna. */
+.controles-help-btn {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 1px solid var(--border-fine);
+    background: none;
+    color: var(--text-color);
+    font-family: var(--font-geist);
+    font-size: 0.62rem;
+    line-height: 1;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-transform: none;
+    letter-spacing: 0;
+    opacity: 0.6;
+}
+.controles-help-btn:hover {
+    opacity: 1;
+    border-color: var(--text-color);
+}
+
+.controles-hint {
+    font-size: 0.75rem;
+    font-weight: 300;
+    line-height: 1.5;
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+.controles-hint-box {
+    font-size: 0.72rem;
+    font-weight: 300;
+    line-height: 1.5;
+    color: var(--text-color);
+    border: 1px solid var(--border-fine);
+    border-radius: 4px;
+    padding: 8px 10px;
+    margin-bottom: 12px;
+}
+
+.controles-table-wrap {
+    border: 1px solid var(--border-fine);
+    border-radius: 4px;
+    margin-bottom: 10px;
+    /* Recorta el borde redondeado sobre el tbody scrolleable de abajo. */
+    overflow: hidden;
+}
+
+/* Encabezado fijo sin fondo propio: en vez de position:sticky (que
+   necesita un color detrás para que la fila que pasa por debajo no se
+   superponga con el texto — y eso siempre terminaba leyéndose como una
+   "caja"), thead y tbody quedan como bloques indepen­dientes. Así el
+   encabezado directamente no está en la zona que scrollea: lo que se
+   desplaza es solo tbody, con su propio alto y su propio recorte — un
+   punto que sube de más queda oculto por el overflow, no tapado por un
+   color. table-layout:fixed + mismas columnas en los dos bloques
+   (thead/tbody) es lo que mantiene alineadas las columnas entre ambos. */
+.controles-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-geist);
+    font-size: 0.7rem;
+    color: var(--text-color);
+}
+
+.controles-table thead {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.controles-table tbody {
+    display: block;
+    width: 100%;
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.controles-table tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.controles-table thead tr {
+    text-align: left;
+}
+
+.controles-table th,
+.controles-table td {
+    padding: 6px 8px;
+    font-weight: 300;
+    white-space: nowrap;
+}
+
+.controles-table th {
+    font-weight: 100;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* Campos numéricos ingresados por teclado (coordenadas reales, ancho/alto,
+   GSD): sin recuadro, solo un fondo claro translúcido — nunca un input con
+   apariencia de formulario nativo — y sin flechas de incremento/decremento
+   en ningún lado del módulo. */
+.controles-table input[type="number"],
+.controles-input-num {
+    background: rgba(242, 239, 233, 0.5);
+    border: none;
+    border-radius: 3px;
+    color: var(--legacy-text-color);
+    font-family: var(--font-geist);
+}
+.controles-table input[type="number"] {
+    width: 100%;
+    padding: 3px 5px;
+    font-size: 0.7rem;
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.controles-table-empty {
+    text-align: center;
+    opacity: 0.6;
+}
+
+.controles-btn-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.controles-subbox {
+    border: 1px solid var(--border-fine);
+    border-radius: 4px;
+    padding: 12px;
+    margin-bottom: 14px;
+    font-size: 0.75rem;
+}
+
+.controles-subbox-title {
+    font-weight: 100;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-color);
+    margin-bottom: 8px;
+}
+
+.controles-field-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    color: var(--text-color);
+    font-weight: 300;
+}
+
+.controles-input-num {
+    width: 55px;
+    padding: 5px 6px;
+    font-size: 0.75rem;
+}
+
+.controles-btn-icon {
+    padding: 5px 8px;
+    font-size: 0.75rem;
+}
+
+.controles-divider {
+    border: 0;
+    border-top: 1px solid var(--surface-border);
+    margin: 14px 0;
+}
+
+.controles-step-disabled {
+    opacity: 0.35;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.controles-radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: var(--text-color);
+}
+.controles-radio-group label {
+    cursor: pointer;
+}
+
+.controles-checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-geist);
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: var(--text-color);
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.controles-select-label {
+    display: block;
+    font-family: var(--font-geist);
+    font-weight: 100;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-color);
+    margin-bottom: 6px;
+}
+
+/* Desplegable de capa/color para Dibujar — HTML propio, no <select> nativo:
+   los navegadores no dejan tematizar el fondo/texto de la lista abierta de
+   un <select>, así que con eso se leía mal (texto gris sobre blanco). */
+.capa-selector {
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.capa-selector-boton {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: none;
+    border: 1px solid var(--border-fine);
+    border-radius: 4px;
+    color: var(--text-color);
+    font-family: var(--font-geist);
+    font-weight: 300;
+    font-size: 0.78rem;
+    cursor: pointer;
+    text-align: left;
+}
+.capa-selector-boton:hover,
+.capa-selector-boton[aria-expanded="true"] {
+    border-color: var(--text-color);
+}
+
+.capa-selector-swatch {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+    border-radius: 2px;
+    border: 1px solid var(--border-fine);
+}
+
+.capa-selector-lista {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 4px);
+    z-index: 20;
+    list-style: none;
+    margin: 0;
+    padding: 4px;
+    /* Traslúcida (no un panel opaco) — mismo criterio que el panel de
+       navegación (raumlab-chrome.css: .rc-nav-panel). */
+    background: rgba(6, 9, 16, 0.92);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-fine);
+    border-radius: 4px;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.capa-selector-opcion {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    background: none;
+    border: none;
+    border-radius: 3px;
+    color: var(--text-color);
+    font-family: var(--font-geist);
+    font-weight: 300;
+    font-size: 0.78rem;
+    text-align: left;
+    cursor: pointer;
+}
+.capa-selector-opcion:hover {
+    background: rgba(255, 255, 255, 0.07);
+}
+.capa-selector-opcion.activa {
+    font-weight: 500;
+}
+
+/* Pantalla de Puntos Homólogos (Fotomosaico) — columna central con las dos
+   imágenes a fusionar lado a lado, en vez de la única imagen del resto del
+   módulo. Mismo criterio sin fondo/borde propio en el contenedor. */
+.homologos-centro {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    gap: 16px;
+}
+
+.canvas-homologo-mitad {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: auto;
+    scrollbar-width: none;
+}
+.canvas-homologo-mitad::-webkit-scrollbar {
+    display: none;
+}
+
+.canvas-homologo-wrapper {
+    position: relative;
+    display: inline-block;
+    cursor: crosshair;
+}
+
+.canvas-homologo-wrapper canvas {
+    display: block;
+    max-width: 100%;
+    max-height: calc(100vh - var(--header-h) - var(--footer-h) - 48px);
+    border-radius: 4px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+.canvas-homologo-wrapper svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+/* Botones de herramienta con ícono en vez de texto (Consultar medidas /
+   Dibujar) — mismo borde fino que el resto, ícono centrado, título nativo
+   como tooltip. */
+.controles-icon-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background: none;
+    border: 1px solid var(--border-fine);
+    border-radius: 4px;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.controles-icon-btn:hover {
+    border-color: var(--text-color);
+    background-color: rgba(255, 255, 255, 0.07);
+}
+.controles-icon-btn.activo {
+    border-color: var(--text-color);
+    background-color: rgba(255, 255, 255, 0.07);
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.btn-eliminar-entidad {
+    background: none;
+    border: 1px solid var(--border-fine);
+    color: var(--text-color);
+    border-radius: 3px;
+    font-size: 0.65rem;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+.btn-eliminar-entidad:hover {
+    border-color: var(--text-color);
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.fotoplano-canvas-area {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.fotoplano-canvas-placeholder {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-color);
+    opacity: 0.5;
+    font-family: var(--font-geist);
+    font-weight: 300;
+    font-size: 0.85rem;
+}
+
+@media (max-width: 768px) {
+    .mode-intro-content {
+        padding: 24px 20px 24px 35px;
+    }
+    .workspace-layout {
+        display: none;
+    }
+    .workspace-mobile-notice {
+        display: block;
+        color: var(--text-color);
+        font-family: var(--font-geist);
+        font-weight: 300;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        padding: 60px 24px;
+        text-align: center;
+    }
+
+    .instr-layout {
+        flex-direction: column;
+        padding: 24px 20px;
+        gap: 24px;
+    }
+    .instr-nav {
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 4px 20px;
+    }
+    .instr-panel {
+        overflow-y: visible;
+        padding-right: 0;
+    }
+}

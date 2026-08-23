@@ -1,0 +1,257 @@
+/* ==========================================================================
+   DISEÑO PARA COMPUTADORAS (ESCRITORIO)
+   Medidas del layout de 3 columnas (anchos, gaps, radio/sombra del visor):
+   ver css/module-shell.css, compartido con editor.html — no repetir acá.
+   ========================================================================== */
+
+.viewer-group {
+    margin-bottom: 35px;
+}
+
+.sidebar-section-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-color);
+    margin-bottom: 15px;
+    font-weight: 100;
+}
+
+#viewer-canvas-container {
+    width: 100%;
+    height: 100%;
+    background-color: #FAFAFA;
+}
+
+#viewer-canvas-container canvas {
+    display: block;
+}
+
+/* Flecha propia del proyecto (raumlab/flecha_derecha_ui.png): el archivo
+   apunta hacia arriba — se rota -90° para "volver"/izquierda, como ya hace
+   el mismo ícono en raumlab/style.css (.back-arrow-img). ".rc-back-link"
+   (el "Volver al Inicio" fijo) trae su propia copia de esta regla en
+   raumlab-chrome.css — la de acá queda solo para .btn-volver-salas. */
+.back-arrow-img {
+    display: block;
+    width: 14px;
+    height: 14px;
+    transform: rotate(-90deg);
+    transition: transform 0.15s ease;
+}
+.btn-volver-salas:hover .back-arrow-img {
+    transform: rotate(-90deg) scale(1.2);
+}
+
+.viewer-btn {
+    display: block;
+    width: 100%;
+    padding: 10px 14px;
+    text-align: center;
+    background: transparent;
+    color: var(--text-color);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid var(--border-fine);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.78rem;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+.viewer-btn:hover, .viewer-btn.active-item {
+    border-color: var(--text-color);
+    background-color: rgba(255, 255, 255, 0.07);
+    font-weight: 600;
+}
+
+.viewer-btn-file {
+    display: block;
+    width: 100%;
+    padding: 10px 12px;
+    text-align: center;
+    background: transparent;
+    color: var(--text-color);
+    font-weight: 400;
+    border: 1px solid var(--border-fine);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+.viewer-btn-file:hover {
+    border-color: var(--text-color);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Único botón con relleno (acción "de cierre": Exportar / Guardar / etc.) —
+   al 50% para no leerse como un bloque blanco sólido contra el fondo oscuro. */
+.viewer-btn-main {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 10px 12px;
+    margin-top: 14px;
+    background: rgba(242, 239, 233, 0.5);
+    color: var(--bg-navy);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 400;
+    transition: background-color 0.2s ease;
+}
+.viewer-btn-main:hover {
+    background: var(--text-color);
+    font-weight: 600;
+}
+
+#ar-button {
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+    padding: 14px 22px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(6px);
+    color: var(--text-color);
+    font-weight: 300;
+    border: 1px solid var(--border-fine);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 20;
+}
+#ar-button:hover {
+    border-color: var(--text-color);
+    background: var(--text-color);
+    color: var(--bg-navy);
+    font-weight: 500;
+}
+
+/* ==========================================================================
+   PANEL CENTRALIZADO DE EXPOSICIÓN (DERECHA)
+   ========================================================================== */
+
+/* Botón "volver" de la ficha de sala, en la columna izquierda */
+.btn-volver-salas {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 0 0 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--surface-border);
+    color: var(--text-color);
+    font-weight: 300;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: font-weight 0.2s ease;
+}
+
+.btn-volver-salas:hover {
+    font-weight: 500;
+}
+
+/* Contenedor del listado de obras */
+.panel-indice-wrapper {
+    max-height: 40%;
+    overflow-y: auto;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--surface-border);
+}
+
+.lista-obras-links {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Contenedor de la ficha técnica activa */
+.cedula-content-active {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.cedula-artista {
+    font-family: var(--font-geist);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.85rem;
+    color: var(--text-color);
+    margin-bottom: 6px;
+}
+
+.cedula-titulo {
+    font-family: var(--font-geist);
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--text-color);
+    margin-bottom: 8px;
+    line-height: 1.2;
+}
+
+.cedula-metadatos {
+    font-family: var(--font-geist);
+    font-size: 0.8rem;
+    font-weight: 300;
+    color: var(--text-color);
+    margin-bottom: 20px;
+}
+
+.cedula-descripcion {
+    font-family: var(--font-geist);
+    font-size: 0.85rem;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--text-color);
+    flex: 1;
+    overflow-y: auto;
+}
+
+.cedula-instalacion {
+    font-family: var(--font-geist);
+    font-size: 0.75rem;
+    font-weight: 300;
+    line-height: 1.5;
+    color: var(--text-color);
+    border-top: 1px solid var(--surface-border);
+    margin-top: 15px;
+    padding-top: 12px;
+}
+
+.placeholder-text {
+    font-family: var(--font-geist);
+    font-size: 0.85rem;
+    font-weight: 300;
+    color: var(--text-color);
+    text-align: center;
+    margin-top: 40px;
+}
+
+/* ==========================================================================
+   ADAPTABILIDAD PARA CELULARES
+   ========================================================================== */
+@media (max-width: 768px) {
+    .viewer-group { margin-bottom: 15px; }
+    .viewer-btn-main { margin-top: 10px; }
+    #ar-button { bottom: 20px; left: 20px; padding: 12px 18px; font-size: 0.75rem; }
+    .panel-indice-wrapper { max-height: 30vh; margin-bottom: 15px; }
+}

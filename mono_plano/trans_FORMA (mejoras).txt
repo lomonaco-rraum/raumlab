@@ -1,0 +1,46 @@
+raumlab.org/trans_FORMA
+
+Hoy//
+Modos: arrastrar fotografía / +nuevo proyecto / Abrir proyecto (rlab)
+Visual: visor de zoom arriba a la derecha, proporción apaisada.
+Modos: perstaña analítico/geométrico.
+
+_Analítico:
+Definición de cuatro puntos de control. 
+Al presionar "+ MArcar puntos" surge un carte que avisa que está activo el control (Solicita "apectar" para continuar").
+Permite identificar los putnos de forma continua. Cada uno se identifica con números progresivos.
+Estos puntos se incorporan en una tabla editable donde si describen los putnos xy de la imágen y se incorporan manualmente los valores del objeto real.
+_Geométrico:
+Al poner "+Recta vertical" o "+Recta horizontal" aparece un cartel que indica el sentido de trazado que requiere la acción.
+Al hacer click en el priemr punto, dice que el punto está registrado, y requiere de poner "aceptar". Cada lánea se registra y contea.
+Luego se definen ancho y alto real del objeto, definiendo un valor, y luego identificándolo en la imagen mediante dos puntos. 
+En la definición de una dimensión, al apretar el botón de medir, aparece un cuadro de diálogo que dice que tenés que hacer dos clickls en la imagen.
+Al hacer el primero, sale cuadro de diálogo para indicar el segundo. Cuando se indica el segundo, sale cuadro de diálogo de que la distancia se registró. 
+
+Una vez que la tabla está completa, se activa la posibilidad de indicar el área de la rectificación. 
+Una vez que se definen los vértices, para concluir el polígono se presiona enter.
+Luego se difine en una casilla de varificación la calidad de la imagen final (fotoplano)
+Una vez deifnido, se pone "generar fotoplano". Si hay error, sale un cartel que indica que no se puedo hacer.
+Cuando el fotoplano está listo, aparece en una nueva pestaña: a) Ver original; b) Ver fotoplano rectificado; c) descargar foto plano. 
+
+Diagnóstico y mejoras.
+En primer lugar aparecen tres formas de empezar, pero no son modos concretos de trabajar.
+Acá habrá un cambia sustancial, dos modos que refieren a la rectificaicón: Fotoplano / Fotomosaico.
+En el primero se trabaja con una única imagen, con el segundo [a desarrollar] se rectifican dos imagenes y se fusionan/unen mediante la definición de al menos un punto homólogo.
+Lo que está desarrollado hasta el momento es "fotoplano" (trabajo con una única imágen). 
+En el modo fotoplano, se da la opción de trabajar con analítico y geométrico [funciona correctamente el procesamiento de imagenes].
+En cuanto a lo visual, el visor del zoom debería tener proporción más cuadrada, que permita entender mejor el entorno. Podría ubicarse hacia la izquierda, no ubicarla del mismo lado de donde se encuentran las tablas.
+Evitar los mensajes emergentes --> remplazar con un espacio de indicaciones donde diga los pasos a seguir, o si los puntos han sido registrados, etc. Y además complementar con la indicación de completado, o correcto, a medida que los pasos van avanzando con un tilde a modo de (ok). 
+Cuando el fotoplano se crea correctamente, aparece en una nueva pestaña: ok. 
+La nueva pestaña de "descargar fotoplano" no debe existir. Al poner crear, y ser creado, se habilita abajo del botón "crear fotoplano", un botón que diga "descargar".
+Una vez que se ponga descargar--> emerge una ventana donde se indica: el nombre del fotoplano y en qué formato de imagen.
+
+Módulo a agregar, con la misma lógica de lo anterior analítico / geométrico. 
+Se trabaja con dos imágenes, deben cumplir con el requisito de tener al menos dos punto homólogo que garantice la fusión de la imagen.
+Si existen diferencias, se pregunta al usuario que imágenes se tomo como la principal, de la cual, de haber errores, se toma como cierta para el escalado.
+Este módulo hay que revisarlo, y analizar si los pasos son los correctos, o se hace falta definir algo más.
+
+_En todos los casos, ya sea fotoplano/fotomosaico, al obtener la imagen rectificado, en la pestaña ""Fotoplano rectificado", aparece en el panel de la derecha la posibilidad de medir.
+a) medida lieneal [mediante dos puntos]; b) superficie [mediante definición de un polígono para definir área].
+También se permite: "dibujar". Podrán dibujarse: puntos, líneas, superficies y que se podrán exportar en un archivo DXF o similar.
+

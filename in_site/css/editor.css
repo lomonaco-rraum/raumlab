@@ -1,0 +1,566 @@
+/* ==========================================================================
+   ESTILOS ESPECÍFICOS DEL EDITOR (Proyectos)
+   El layout de 3 columnas (anchos, gaps, radio/sombra del visor) vive en
+   css/module-shell.css. Los botones base (viewer-btn / viewer-btn-file /
+   viewer-btn-main) y .placeholder-text vienen de css/viewer.css — no se
+   repiten acá. "Volver al Inicio" es el .rc-back-link fijo compartido de
+   raumlab-chrome.css (no un botón propio de este módulo).
+   ========================================================================== */
+
+/* "NOMBRE: [título de la sala]" — arriba de todo en el panel izquierdo */
+.editor-nombre-sala {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-color);
+    font-weight: 100;
+    margin-bottom: 24px;
+}
+
+/* Agrupaciones de controles — el aire ENTRE los 6 sectores (Nombre /
+   Continuar proyecto / Ficha de la sala / Dimensiones / Agregar piezas /
+   acciones finales) vive acá, repartido parejo entre todos. */
+.control-group {
+    margin-bottom: 26px;
+}
+
+.control-group h3 {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-color);
+    margin-bottom: 10px;
+    font-weight: 100;
+}
+
+/* Fila de campo apilada (label arriba, input abajo) — para texto largo:
+   título, artista, técnica, descripción. */
+.input-row {
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.input-row label {
+    font-size: 0.7rem;
+    color: var(--text-color);
+    font-weight: 100;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Fila de campo compacta (label a la izquierda, cuadro chico a la derecha)
+   — para valores numéricos: dimensiones, posición, rotación, año. */
+.input-row-inline {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.input-row-inline label {
+    font-size: 0.7rem;
+    color: var(--text-color);
+    font-weight: 100;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    flex: 1;
+}
+
+.editor-sidebar .input-row-inline input[type="number"],
+.editor-sidebar .input-row-inline input[type="text"] {
+    width: 78px;
+    flex-shrink: 0;
+    text-align: center;
+    padding: 8px 6px;
+}
+
+/* Ancho/Largo en una sola línea real: label, cuadro con la unidad adentro,
+   label, cuadro — no dos columnas apiladas. */
+.dimension-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.dimension-row label {
+    font-size: 0.68rem;
+    font-weight: 100;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-color);
+    flex-shrink: 0;
+}
+
+.input-unit-box {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    border: 1px solid var(--border-fine);
+    border-radius: 4px;
+    padding-right: 8px;
+}
+
+.editor-sidebar .input-unit-box input[type="number"],
+.editor-sidebar .input-unit-box input[type="text"] {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+    border: none;
+    text-align: center;
+    padding: 8px 2px 8px 8px;
+}
+
+.input-unit-box .input-unit {
+    font-size: 0.68rem;
+    font-weight: 100;
+    color: var(--text-color);
+    opacity: 0.55;
+    flex-shrink: 0;
+}
+
+/* Tres botones de ícono en una sola fila (Imagen / Video / Volumen) */
+.icon-buttons-row {
+    display: flex;
+    gap: 10px;
+}
+
+.icon-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    background: transparent;
+    color: var(--text-color);
+    border: 1px solid var(--border-fine);
+    border-radius: 4px;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+    border-color: var(--text-color);
+    background-color: rgba(255, 255, 255, 0.07);
+}
+
+/* Tira de miniaturas en fila (no en grilla), con flechas para lo que no entra */
+.pieces-row-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.pieces-arrow {
+    flex-shrink: 0;
+    width: 20px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.pieces-arrow-img {
+    width: 11px;
+    height: 11px;
+    transition: transform 0.15s ease;
+}
+
+.pieces-arrow-img-left { transform: rotate(-90deg); }
+.pieces-arrow-img-right { transform: rotate(90deg); }
+
+.pieces-arrow:hover .pieces-arrow-img-left { transform: rotate(-90deg) scale(1.3); }
+.pieces-arrow:hover .pieces-arrow-img-right { transform: rotate(90deg) scale(1.3); }
+
+/* Entradas de datos: campos numéricos, selects y textareas */
+.editor-sidebar input[type="number"],
+.editor-sidebar input[type="text"],
+.editor-sidebar select,
+.editor-sidebar textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border-fine);
+    border-radius: 4px;
+    font-size: 0.78rem;
+    color: var(--text-color);
+    background-color: transparent;
+    font-family: var(--font-geist);
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+.editor-sidebar input:focus,
+.editor-sidebar select:focus,
+.editor-sidebar textarea:focus {
+    border-color: var(--text-color);
+    outline: none;
+}
+
+/* Sin flechas arriba/abajo en los campos numéricos — solo teclado */
+.editor-sidebar input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+.editor-sidebar input[type="number"]::-webkit-outer-spin-button,
+.editor-sidebar input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Placeholders siempre blancos y legibles — nunca grises ni transparentes */
+.editor-sidebar input::placeholder,
+.editor-sidebar textarea::placeholder,
+.modal-box input::placeholder,
+.modal-box textarea::placeholder {
+    color: var(--text-color);
+    opacity: 1;
+    font-weight: 300;
+}
+
+.align-buttons-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.align-buttons-row .viewer-btn {
+    margin-bottom: 0;
+    padding: 8px 5px;
+    font-size: 0.68rem;
+    text-align: center;
+}
+
+.checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: var(--text-color);
+    margin-bottom: 12px;
+    cursor: pointer;
+}
+
+.checkbox-row input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    accent-color: var(--text-color);
+    cursor: pointer;
+}
+
+/* Botón "Ficha de la Sala" con indicador de completado — necesita su propio
+   flex (en vez del display:block que trae .viewer-btn) para poder repartir
+   texto a la izquierda y el tilde a la derecha. */
+.btn-ficha-sala {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.ficha-check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: var(--text-color);
+    color: var(--bg-navy);
+    font-size: 0.6rem;
+    flex-shrink: 0;
+}
+
+/* Último de los 6 sectores. Flex + gap en vez de márgenes individuales:
+   los 3 botones quedan siempre separados lo mismo (antes "Vista Previa" y
+   "Guardar Proyecto" se tocaban). Ya no usa margin-top:auto — "Volver al
+   Inicio" quedó fijo aparte, así que el aire se reparte entre los 6
+   sectores en vez de acumularse todo en un solo hueco antes de este bloque. */
+.bottom-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.bottom-group .viewer-btn-main {
+    margin-top: 0;
+}
+
+/* Eliminar pieza: blanco como el resto, con ícono de tacho al lado del texto */
+.btn-delete {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* Ocultar input nativo feo de archivos */
+.hidden-file-input {
+    display: none !important;
+}
+
+/* Capa informativa flotante ARRIBA del visor (no encima ni en caja) */
+#canvas-overlay-info {
+    position: absolute;
+    top: -30px;
+    left: 4px;
+    right: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.72rem;
+    font-weight: 100;
+    letter-spacing: 0.03em;
+    color: var(--text-color);
+    pointer-events: none;
+}
+
+#selected-object-indicator {
+    font-weight: 500;
+}
+
+/* Estados dinámicos de la interfaz */
+.hidden {
+    display: none !important;
+}
+
+/* ==========================================================================
+   PESTAÑAS DISPOSICIÓN / ATRIBUTOS (panel derecho)
+   ========================================================================== */
+.editor-tabs {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 22px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--surface-border);
+}
+
+.editor-tab {
+    background: none;
+    border: none;
+    padding: 0 0 2px;
+    font-family: var(--font-geist);
+    font-size: 0.85rem;
+    font-weight: 300;
+    color: var(--text-color);
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: font-weight 0.2s ease, border-color 0.2s ease;
+}
+
+.editor-tab:hover {
+    font-weight: 500;
+}
+
+.editor-tab.active {
+    font-weight: 500;
+    border-bottom-color: var(--text-color);
+}
+
+.editor-tab-panel {
+    display: none;
+}
+
+.editor-tab-panel.active {
+    display: block;
+}
+
+/* ==========================================================================
+   MODALES (Ficha de la Sala / Exportar / Vista previa)
+   ========================================================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(6, 9, 16, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 400;
+}
+
+.modal-box {
+    width: 100%;
+    max-width: 380px;
+    background: var(--bg-navy);
+    border: 1px solid var(--surface-border);
+    border-radius: 6px;
+    padding: 30px 25px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    font-family: var(--font-geist);
+}
+
+.modal-box h3 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-color);
+    font-weight: 400;
+    margin-bottom: 20px;
+    font-family: var(--font-geist);
+}
+
+.modal-box .input-row {
+    margin-bottom: 16px;
+}
+
+.modal-box input,
+.modal-box textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border-fine);
+    border-radius: 4px;
+    font-size: 0.78rem;
+    color: var(--text-color);
+    background-color: transparent;
+    font-family: var(--font-geist);
+    box-sizing: border-box;
+}
+
+.modal-box input:focus,
+.modal-box textarea:focus {
+    border-color: var(--text-color);
+    outline: none;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.modal-actions .viewer-btn,
+.modal-actions .viewer-btn-main {
+    margin-bottom: 0;
+}
+
+/* Vista previa (in-page, no navega a otra pestaña) */
+.modal-box-preview {
+    max-width: 900px;
+    height: 85vh;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.preview-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.preview-modal-header h3 {
+    margin-bottom: 0;
+}
+
+.btn-preview-close {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    line-height: 1;
+    color: var(--text-color);
+    font-weight: 300;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+#preview-model-viewer {
+    flex: 1;
+    width: 100%;
+    background-color: #FAFAFA;
+    border-radius: 4px;
+}
+
+/* ==========================================================================
+   TIRA DE MINIATURAS DE PIEZAS (arriba del todo en el panel derecho)
+   ========================================================================== */
+#pieces-list-section {
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--surface-border);
+}
+
+.pieces-grid {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+}
+
+.piece-thumb {
+    width: 56px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.piece-thumb-image {
+    width: 56px;
+    height: 56px;
+    border-radius: 4px;
+    border: 1px solid var(--border-fine);
+    background: rgba(255, 255, 255, 0.9);
+    object-fit: contain;
+    transition: border-color 0.2s ease;
+}
+
+.piece-thumb:hover .piece-thumb-image {
+    border-color: var(--text-color);
+}
+
+.piece-thumb.active .piece-thumb-image {
+    border-color: #d97a3d;
+    box-shadow: 0 0 0 1px #d97a3d;
+}
+
+.piece-thumb-label {
+    font-size: 0.6rem;
+    font-weight: 100;
+    color: var(--text-color);
+    text-align: center;
+    max-width: 56px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ==========================================================================
+   ADAPTABILIDAD PARA CELULARES
+   (posición/tamaño del layout: ver module-shell.css)
+   ========================================================================== */
+@media (max-width: 768px) {
+    #sidebar-left {
+        overflow: visible;
+    }
+    #canvas-overlay-info {
+        position: static;
+        margin-bottom: 10px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+    input, textarea, select {
+        font-size: 16px !important; /* iOS hace zoom si el font es < 16px */
+    }
+}

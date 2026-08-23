@@ -1,0 +1,483 @@
+/* ==========================================================================
+   RAUMLAB-CHROME — header, panel de navegación y footer compartidos por
+   TODOS los módulos de RaumLab (in_SITE, trans_FORMA, espacio_INM).
+
+   ÚNICO archivo real — no hay una copia por módulo. Antes cada módulo tenía
+   su propia copia de este archivo ("sin build step, no hay forma de
+   compartir un solo archivo real" fue la decisión original), y terminaron
+   desincronizándose sin que nadie lo notara hasta compararlos lado a lado:
+   font-weight/color faltante en el body de dos de los tres (letra más
+   fina/gruesa entre módulos), el mecanismo de "Volver al Inicio" de
+   in_SITE quedado atrás. Vive acá (en raumlab/, el ancestro común de los
+   tres) precisamente para que eso deje de poder pasar — no hace falta build
+   step para que tres carpetas hermanas referencien un mismo archivo por
+   ruta relativa, que es todo lo que esto necesitaba en realidad.
+
+   Si algo necesita ser distinto en un módulo puntual, ese módulo lo
+   sobreescribe en SU PROPIO CSS (cargado después de este) — no se vuelve a
+   bifurcar este archivo.
+   ========================================================================== */
+
+:root {
+    --bg-navy: #0d1b2e;
+    --surface-border: rgba(255, 255, 255, 0.09);
+    --border-fine: rgba(242, 239, 233, 0.3);
+    --text-color: #ffffff;
+    --font-geist: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-space: 'Space Grotesk', sans-serif;
+    --header-h: 118px;
+    --footer-h: 72px;
+}
+
+html {
+    background-color: var(--bg-navy);
+}
+
+body.rc-body {
+    color: var(--text-color);
+    font-family: var(--font-geist);
+    font-weight: 300;
+    min-height: 100vh;
+    background-color: var(--bg-navy);
+    position: relative;
+}
+
+/* CAPA DE FONDO — imagen rotada 180° (negro a la izquierda). Este archivo
+   vive en raumlab/, la misma carpeta que fondo.jpg — ruta relativa directa,
+   sin niveles que ajustar por módulo. */
+/* filter: grayscale — mismo criterio que .bg-layer en raumlab/style.css
+   (el fondo de la landing), para que los 3 módulos no queden con el fondo
+   a color mientras el hub está en blanco y negro. */
+.rc-bg-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background-color: var(--bg-navy);
+    background-image: url("fondo.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transform: rotate(180deg);
+    filter: grayscale(1);
+}
+
+/* CONTENEDOR FIJO (BARRA SUPERIOR) */
+.rc-header-stack {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 300;
+}
+
+.rc-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 32px 10px;
+}
+
+.rc-hamburger-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    line-height: 1;
+}
+
+.rc-hamburger-icon {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.rc-hamburger-icon .bar {
+    display: block;
+    width: 20px;
+    height: 1.5px;
+    background: var(--text-color);
+}
+
+.rc-topbar-logo {
+    font-family: var(--font-geist);
+    font-size: 1.15rem;
+    letter-spacing: 0.12em;
+    text-decoration: none;
+    color: var(--text-color);
+}
+
+.rc-topbar-logo .logo-raum { font-weight: 400; }
+.rc-topbar-logo .logo-lab { font-weight: 100; }
+
+.rc-header-rule {
+    height: 0.5px;
+    margin: 0 32px;
+    background: var(--text-color);
+}
+
+.rc-lang-pill {
+    font-family: var(--font-geist);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    color: var(--text-color);
+    background: transparent;
+    border: none;
+    padding: 5px 10px;
+    cursor: default;
+}
+
+/* PANEL DE NAVEGACIÓN (toggle) */
+.rc-nav-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 320px;
+    z-index: 250;
+    background: rgba(10, 10, 10, 0.92);
+    backdrop-filter: blur(10px);
+    padding: calc(var(--header-h) + 30px) 32px 40px;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+}
+
+.rc-nav-panel.open {
+    transform: translateX(0);
+}
+
+.rc-nav-list {
+    list-style: none;
+    font-family: var(--font-space);
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    margin: 0;
+    padding: 0;
+}
+
+.rc-nav-link {
+    display: inline-block;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 0.95rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    cursor: pointer;
+    padding: 0;
+    font-family: inherit;
+}
+
+.rc-nav-link:hover,
+.rc-nav-link:focus-visible { font-weight: 700; }
+
+.rc-nav-link.active {
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.rc-nav-link[aria-disabled="true"] {
+    cursor: default;
+    opacity: 0.45;
+}
+.rc-nav-link[aria-disabled="true"]:hover { font-weight: 400; }
+
+.rc-nav-sublist {
+    list-style: none;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease;
+    padding-left: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* El espacio antes del primer ítem va en el hijo, no en el propio <ul>:
+   con box-sizing:border-box, un padding/margin puesto directo en el
+   elemento que se colapsa (max-height:0) no se recorta — el padding
+   empuja el alto mínimo del propio elemento por encima de max-height, y
+   el margin (probado antes) queda afuera de lo que overflow:hidden
+   recorta. Puesto en el <li>, en cambio, sí queda contenido dentro del
+   área que el <ul> recorta al colapsar. Mismo fix que raumlab/style.css. */
+.rc-nav-sublist li:first-child {
+    margin-top: 12px;
+}
+
+.rc-nav-item.has-sub.open .rc-nav-sublist {
+    max-height: 220px;
+}
+
+.rc-nav-sublist a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 300;
+    letter-spacing: 0.03em;
+}
+
+.rc-nav-sublist a:hover,
+.rc-nav-sublist a:focus-visible { font-weight: 700; }
+
+.rc-nav-sublist a.active {
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.rc-nav-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 240;
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.rc-nav-scrim.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* CONTENIDO PRINCIPAL — solo lo usan las páginas de in_SITE que scrollean
+   normalmente (portada, sin layout fijo de 3 columnas). trans_FORMA y
+   espacio_INM no lo necesitan (su contenido va directo en #app-main). */
+.rc-main {
+    position: relative;
+    z-index: 2;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: calc(var(--header-h) + 40px) 32px calc(var(--footer-h) + 40px);
+}
+
+/* PANTALLA DE INTRODUCCIÓN — texto de presentación del módulo, mismo en
+   los tres (in_SITE, trans_FORMA, espacio_INM), tal cual aparece en su card
+   de la landing: lede (regular) + detalle (fino), misma distinción de peso
+   que .card-lede/.card-detail en raumlab/style.css. Vive acá porque la
+   comparten los tres, no solo in_SITE (que antes la tenía en su propio
+   portada.css, fusionada en un solo párrafo de un solo peso).
+
+   .rc-intro-screen es el contenedor de esta pantalla en in_SITE — a
+   propósito NO usa .rc-main (que tiene max-width:1180px + margin:0 auto,
+   o sea se centra en pantallas anchas): acá el margen izquierdo tiene que
+   medirse desde el borde real de la ventana, igual que en espacio_INM y
+   trans_FORMA (que no tienen ningún centrado), no desde una caja centrada. */
+.rc-intro-screen {
+    position: relative;
+    z-index: 2;
+    padding: calc(var(--header-h) + 24px) 32px calc(var(--footer-h) + 40px) 35px;
+}
+
+.rc-intro-lede {
+    max-width: 420px;
+    font-family: var(--font-geist);
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--text-color);
+    margin: 0 0 12px;
+}
+
+.rc-intro-detail {
+    max-width: 420px;
+    font-family: var(--font-geist);
+    font-size: 0.9rem;
+    font-weight: 100;
+    line-height: 1.7;
+    color: var(--text-color);
+    margin: 0;
+}
+
+/* MIGA DE PAN + SUBNAV DEL MÓDULO — variante "suelta", para dentro de
+   .rc-main (scrollea con la página). La variante fija para layouts de 3
+   columnas es .rc-module-subheader más abajo, que sobreescribe estas mismas
+   clases anidándolas. */
+.rc-breadcrumb {
+    font-family: var(--font-space);
+    font-size: 0.78rem;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    color: var(--text-color);
+    margin-bottom: 18px;
+}
+
+.rc-subnav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    margin-bottom: 48px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--surface-border);
+}
+
+/* a: navegación real entre páginas (in_SITE). button: cambio de modo
+   dentro de una sola página (trans_FORMA, espacio_INM). */
+.rc-subnav a,
+.rc-subnav button {
+    font-family: var(--font-geist);
+    font-size: 0.85rem;
+    font-weight: 300;
+    letter-spacing: 0.03em;
+    color: var(--text-color);
+    text-decoration: none;
+    background: none;
+    border: none;
+    padding-bottom: 14px;
+    margin: 0 0 -15px;
+    white-space: nowrap;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: font-weight 0.2s ease, border-color 0.2s ease;
+}
+
+.rc-subnav a:hover,
+.rc-subnav button:not(:disabled):hover {
+    font-weight: 500;
+}
+
+.rc-subnav a.active,
+.rc-subnav button.active {
+    border-bottom-color: var(--text-color);
+    font-weight: 500;
+}
+
+.rc-subnav button:disabled {
+    cursor: default;
+    opacity: 0.4;
+}
+
+/* Variante compacta del breadcrumb+subnav para páginas con layout fijo de
+   3 columnas (editor, visualizador, colección, trans_FORMA, espacio_INM) —
+   va dentro del header fijo en vez de scrollear con el contenido. Grid de
+   3 columnas simétricas para que el subnav quede centrado en la página,
+   con el breadcrumb pegado a la izquierda sin correrlo. */
+.rc-module-subheader {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding: 12px 32px 14px;
+}
+
+.rc-module-subheader .rc-breadcrumb {
+    grid-column: 1;
+    justify-self: start;
+    margin-bottom: 0;
+}
+
+.rc-module-subheader .rc-subnav {
+    grid-column: 2;
+    justify-self: center;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+    gap: 28px;
+    flex-wrap: nowrap;
+}
+
+.rc-module-subheader .rc-subnav a,
+.rc-module-subheader .rc-subnav button {
+    padding-bottom: 2px;
+    margin: 0;
+    white-space: nowrap;
+}
+
+/* ENLACE DE RETORNO AL HUB — fijo, siempre visible sobre cualquier
+   pantalla del módulo (no vive dentro del contenido que se reemplaza),
+   igual posición exacta en TODOS los módulos de RaumLab. */
+.rc-back-link {
+    position: fixed;
+    left: 32px;
+    bottom: calc(var(--footer-h) + 18px);
+    z-index: 260;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--text-color);
+    text-decoration: none;
+    cursor: pointer;
+    font-family: var(--font-geist);
+    font-weight: 300;
+    font-size: 0.85rem;
+    letter-spacing: 0.03em;
+}
+
+.rc-back-link .back-arrow-img {
+    display: block;
+    width: 14px;
+    height: 14px;
+    transform: rotate(-90deg);
+    transition: transform 0.15s ease;
+}
+
+.rc-back-link:hover,
+.rc-back-link:focus-visible {
+    font-weight: 700;
+}
+.rc-back-link:hover .back-arrow-img {
+    transform: rotate(-90deg) scale(1.2);
+}
+
+/* FOOTER — fijo al borde inferior real de la ventana. Sin scroll de página
+   en ningún módulo (ver la regla propia de cada uno), así que esto es
+   literalmente siempre lo último visible, en el mismo lugar. */
+.rc-footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 300;
+    padding: 0 0 20px;
+    text-align: center;
+}
+
+.rc-footer-rule {
+    height: 0.5px;
+    margin: 0 32px 16px;
+    background: var(--text-color);
+}
+
+.rc-footer-copyright {
+    margin: 0;
+    font-size: 0.7rem;
+    color: var(--text-color);
+    font-family: var(--font-geist);
+    line-height: 1.4;
+}
+
+/* Enlaces de modo del módulo dentro del panel de navegación — solo existen
+   para celular, donde reemplazan a la fila fija .rc-module-subheader (no
+   entra en un ancho angosto). En escritorio esos mismos enlaces ya están
+   en el header. */
+.rc-nav-modes {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    :root {
+        --header-h: 65px;
+    }
+
+    .rc-module-subheader {
+        display: none;
+    }
+
+    .rc-nav-modes {
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+        margin-bottom: 22px;
+        padding-bottom: 22px;
+        border-bottom: 1px solid var(--surface-border);
+    }
+
+    .rc-main { padding: calc(var(--header-h) + 24px) 20px calc(var(--footer-h) + 24px); }
+    .rc-intro-screen { padding: calc(var(--header-h) + 20px) 20px calc(var(--footer-h) + 24px) 35px; }
+    .rc-nav-panel { width: 100%; }
+    .rc-back-link { left: 20px; }
+}

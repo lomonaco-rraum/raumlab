@@ -1,0 +1,150 @@
+/* ==========================================================================
+   TUTORIALES — reskineado al shell oscuro compartido de RaumLab (antes esta
+   página tenía su propia estética clara/Georgia, sin header/nav/footer
+   compartidos — quedaba desalineada del resto de in_SITE y de los otros dos
+   módulos). Layout: lista de modos a la izquierda (.instr-nav, nunca
+   scrollea) + panel de contenido al centro (.instr-panel, sí puede) —
+   mismo patrón que espacio_INM/trans_FORMA, con position:fixed en vez de
+   flex:1 porque acá no hay un contenedor de SPA que ya resuelva el alto
+   (mismo criterio que #editor-layout/#viewer-layout de module-shell.css).
+   ========================================================================== */
+
+.instr-layout {
+    display: flex;
+    align-items: stretch;
+    gap: 56px;
+    width: 100vw;
+    height: calc(100vh - var(--header-h) - var(--footer-h));
+    position: fixed;
+    top: var(--header-h);
+    left: 0;
+    padding: 36px 48px;
+    box-sizing: border-box;
+    background: transparent;
+    color: var(--text-color);
+}
+
+.instr-nav {
+    width: 300px;
+    flex-shrink: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0 25px;
+}
+
+.instr-nav-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    font-family: var(--font-geist);
+    font-size: 0.82rem;
+    font-weight: 300;
+    color: var(--text-color);
+    background: none;
+    border: none;
+    border-left: 2px solid transparent;
+    padding: 10px 0 10px 14px;
+    cursor: pointer;
+    transition: font-weight 0.2s ease, border-color 0.2s ease;
+}
+.instr-nav-item:hover { font-weight: 500; }
+.instr-nav-item.active {
+    border-left-color: var(--text-color);
+    font-weight: 500;
+}
+
+.instr-panel {
+    flex: 1;
+    min-width: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-fine) transparent;
+    padding-right: 12px;
+}
+.instr-panel::-webkit-scrollbar { width: 3px; }
+.instr-panel::-webkit-scrollbar-track { background: transparent; }
+.instr-panel::-webkit-scrollbar-thumb { background: var(--border-fine); }
+.instr-panel::-webkit-scrollbar-thumb:hover { background: var(--text-color); }
+
+.instr-body { display: none; max-width: 640px; }
+.instr-body.active { display: block; }
+
+.instr-body h2 {
+    font-family: var(--font-geist);
+    font-size: 1rem;
+    font-weight: 300;
+    letter-spacing: 0.03em;
+    color: var(--text-color);
+    margin: 0 0 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-fine);
+}
+
+.instr-body h3 {
+    font-family: var(--font-geist);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-color);
+    margin: 24px 0 10px;
+}
+
+.instr-body p {
+    font-family: var(--font-geist);
+    font-size: 0.88rem;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--text-color);
+    margin: 0 0 12px;
+}
+
+.instr-body strong { font-weight: 500; }
+
+.instr-body code {
+    font-family: monospace;
+    background: rgba(242, 239, 233, 0.1);
+    border: 1px solid var(--border-fine);
+    border-radius: 3px;
+    padding: 1px 6px;
+    font-size: 0.85em;
+}
+
+.instr-body ol { padding-left: 20px; }
+
+.instr-body li {
+    font-family: var(--font-geist);
+    font-size: 0.88rem;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+    .instr-layout {
+        position: relative;
+        top: 0;
+        flex-direction: column;
+        width: 100%;
+        height: auto;
+        min-height: calc(100vh - var(--header-h) - var(--footer-h));
+        gap: 24px;
+        padding: calc(var(--header-h) + 20px) 20px 20px;
+    }
+
+    .instr-nav {
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 4px 20px;
+        padding: 0;
+    }
+
+    .instr-panel {
+        overflow-y: visible;
+        padding-right: 0;
+    }
+}

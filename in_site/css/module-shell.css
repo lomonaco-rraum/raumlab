@@ -1,0 +1,126 @@
+/* ==========================================================================
+   MODULE-SHELL — layout genérico de 3 columnas (izquierda / visor central /
+   derecha) compartido por Proyectos (editor), Visualizador y Galería
+   (colección). Todo lo que sea medida (anchos, gaps, padding, radio/sombra
+   del visor) vive acá y en ningún otro lado — si algo no entra en una de las
+   tres páginas, se ajusta esto, no cada CSS por separado.
+   ========================================================================== */
+
+#viewer-layout,
+#editor-layout {
+    display: flex;
+    align-items: stretch;
+    gap: 56px;
+    width: 100vw;
+    height: calc(100vh - var(--header-h) - var(--footer-h));
+    position: fixed;
+    top: var(--header-h);
+    left: 0;
+    padding: 36px 48px;
+    box-sizing: border-box;
+    background: transparent;
+    color: var(--text-color);
+    z-index: 10;
+}
+
+.viewer-sidebar,
+.editor-sidebar,
+.cedula-panel {
+    width: 300px;
+    flex-shrink: 0;
+    background: transparent;
+    padding: 40px 25px;
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-geist);
+    color: var(--text-color);
+    position: relative;
+}
+
+/* Panel izquierdo: nunca scrollea (pedido explícito) — el contenido tiene
+   que entrar en el alto disponible, si no hay que achicar algo puntual.
+   Sin padding arriba: el primer renglón (NOMBRE) queda a la misma altura
+   que el borde superior del visor, no más abajo. */
+#sidebar-left {
+    overflow: hidden;
+    padding-top: 0;
+}
+
+/* Panel derecho: si su contenido no entra, sí puede scrollear internamente
+   (no hay pedido de que quede fijo del lado derecho) — con una barra fina y
+   lineal en vez de la barra ancha por defecto del sistema. */
+#sidebar-right,
+.cedula-panel {
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-fine) transparent;
+}
+
+#sidebar-right::-webkit-scrollbar,
+.cedula-panel::-webkit-scrollbar {
+    width: 3px;
+}
+#sidebar-right::-webkit-scrollbar-track,
+.cedula-panel::-webkit-scrollbar-track {
+    background: transparent;
+}
+#sidebar-right::-webkit-scrollbar-thumb,
+.cedula-panel::-webkit-scrollbar-thumb {
+    background: var(--border-fine);
+}
+#sidebar-right::-webkit-scrollbar-thumb:hover,
+.cedula-panel::-webkit-scrollbar-thumb:hover {
+    background: var(--text-color);
+}
+
+/* Caja exterior de la columna central: solo mide/posiciona. No recorta
+   contenido — así una etiqueta como "Editando proyecto: X" puede flotar
+   arriba del visor (position:absolute con top negativo) sin que se corte. */
+.viewer-main,
+#canvas-container {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    position: relative;
+}
+
+/* Superficie real del visor 3D (el rectángulo blanco): acá sí van el radio,
+   la sombra y el recorte — un nivel adentro de la caja exterior. */
+#viewer-canvas-container,
+#canvas-render-surface {
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+}
+
+@media (max-width: 768px) {
+    #viewer-layout,
+    #editor-layout {
+        position: static;
+        flex-direction: column;
+        height: auto;
+        min-height: calc(100vh - var(--header-h) - var(--footer-h));
+        gap: 24px;
+        padding: calc(var(--header-h) + 20px) 20px 20px;
+    }
+    .viewer-sidebar,
+    .editor-sidebar {
+        width: 100%;
+        height: auto;
+        padding: 0;
+        overflow-y: visible;
+    }
+    .viewer-main,
+    #canvas-container {
+        flex: none;
+        width: 100%;
+        height: 50vh;
+    }
+    .cedula-panel {
+        width: 100%;
+        height: auto;
+        padding: 0;
+    }
+}

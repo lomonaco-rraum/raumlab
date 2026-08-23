@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador — in_SITE</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100;300;400;500;700;800&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="../raumlab/raumlab-chrome.css">
+    <link rel="stylesheet" href="css/module-shell.css">
+    <link rel="stylesheet" href="css/viewer.css">
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
+</head>
+<body class="rc-body">
+
+    <div class="rc-bg-layer" aria-hidden="true"></div>
+
+    <div class="rc-header-stack">
+        <header class="rc-topbar">
+            <button class="rc-hamburger-btn" id="navToggle" type="button" aria-expanded="false" aria-controls="navPanel" aria-label="Abrir menú">
+                <span class="rc-hamburger-icon" aria-hidden="true">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </span>
+            </button>
+            <a href="../raumlab/index.html" class="rc-topbar-logo">
+                <span class="logo-raum">RAUM</span><span class="logo-lab">LAB</span>
+            </a>
+            <button class="rc-lang-pill" type="button" title="Selector de idioma — próximamente EN / FR / PT">ES</button>
+        </header>
+        <div class="rc-header-rule"></div>
+        <div class="rc-module-subheader">
+            <p class="rc-breadcrumb">/in_SITE</p>
+            <nav class="rc-subnav">
+                <a href="editor.html">Proyectos</a>
+                <a href="viewer.html" class="active">Visualizador</a>
+                <a href="coleccion.html">Galería</a>
+                <a href="instrucciones.html">Tutoriales</a>
+            </nav>
+        </div>
+    </div>
+
+    <div class="rc-nav-scrim" id="navScrim"></div>
+
+    <nav class="rc-nav-panel" id="navPanel">
+        <ul class="rc-nav-list rc-nav-modes">
+            <li class="rc-nav-item"><a class="rc-nav-link" href="editor.html">Proyectos</a></li>
+            <li class="rc-nav-item"><a class="rc-nav-link active" href="viewer.html">Visualizador</a></li>
+            <li class="rc-nav-item"><a class="rc-nav-link" href="coleccion.html">Galería</a></li>
+            <li class="rc-nav-item"><a class="rc-nav-link" href="instrucciones.html">Tutoriales</a></li>
+        </ul>
+        <ul class="rc-nav-list">
+            <li class="rc-nav-item has-sub open" id="recursosItem">
+                <a class="rc-nav-link" href="../raumlab/index.html#recursos">Recursos</a>
+                <ul class="rc-nav-sublist" id="recursosSub" style="max-height: 220px;">
+                    <li><a href="../espacio_inm/espacio-inm/espacio-inm.html">espacio_INM</a></li>
+                    <li><a href="index.html" class="active">in_SITE</a></li>
+                    <li><a href="../mono_plano/index.html">trans_FORMA</a></li>
+                </ul>
+            </li>
+            <li class="rc-nav-item"><a class="rc-nav-link" href="../raumlab/index.html#investigacion">Investigación</a></li>
+            <li class="rc-nav-item"><a class="rc-nav-link" href="../raumlab/index.html#educacion">Educación</a></li>
+            <li class="rc-nav-item"><a class="rc-nav-link" href="../raumlab/index.html#novedades">Novedades</a></li>
+            <li class="rc-nav-item"><a class="rc-nav-link" href="../raumlab/index.html#contacto">Contacto</a></li>
+        </ul>
+    </nav>
+
+    <div id="viewer-layout">
+
+        <aside class="viewer-sidebar" id="sidebar-left">
+
+            <section class="viewer-group" id="salas-lista-section">
+                <h3 class="sidebar-section-title">Cargar Archivos</h3>
+
+                <label class="viewer-btn-file">
+                    Escena (.GLB)
+                    <input type="file" id="file-user-glb" accept=".glb" style="display:none;">
+                </label>
+
+                <label class="viewer-btn-file" style="margin-top: 10px;">
+                    Fichas técnicas (.JSON)
+                    <input type="file" id="file-user-json" accept=".json" style="display:none;">
+                </label>
+
+                <button id="btn-load-scene" class="viewer-btn-main">Visualizar Escena</button>
+            </section>
+
+            <section class="viewer-group hidden" id="sala-ficha-section">
+                <button type="button" id="btn-volver-salas" class="btn-volver-salas">
+                    <img src="../raumlab/flecha_derecha_ui.png" alt="" class="back-arrow-img">
+                    Cargar otra escena
+                </button>
+                <div id="sala-placeholder" class="placeholder-text">
+                    Esta escena no tiene ficha de sala cargada.
+                </div>
+                <div id="sala-datos-reales" style="display: none;">
+                    <h3 id="sala-titulo" class="cedula-titulo"></h3>
+                    <p id="sala-metadatos" class="cedula-metadatos"></p>
+                    <div id="sala-texto-curatorial" class="cedula-descripcion"></div>
+                </div>
+            </section>
+
+        </aside>
+
+        <main class="viewer-main">
+            <div id="viewer-canvas-container"></div>
+
+            <!-- model-viewer invisible: solo existe para disparar la Realidad Aumentada
+                 nativa del dispositivo (Scene Viewer / Quick Look / WebXR), tal cual
+                 funcionaba antes. La vista de escritorio la dibuja Three.js en el div
+                 de arriba, para poder mostrar el video como textura real en 3D. -->
+            <model-viewer
+                id="ar-model-viewer"
+                ar
+                ar-modes="webxr scene-viewer quick-look"
+                alt="Visualización de Sala Expositiva 3D"
+                style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; overflow: hidden;">
+            </model-viewer>
+
+            <button id="ar-button">
+                Ver en Espacio Real
+            </button>
+        </main>
+
+        <article id="panel-cedula" class="cedula-panel">
+
+            <div class="panel-indice-wrapper">
+                <h3 class="sidebar-section-title" style="margin-bottom: 10px;">Obras en la Sala</h3>
+                <div id="lista-obras-indexadas" class="lista-obras-links">
+                    </div>
+            </div>
+
+            <div id="cedula-dinamica-content" class="cedula-content-active">
+                <div id="cedula-placeholder" class="placeholder-text">
+                    Seleccioná una obra de la lista o hacé click directo sobre la pieza en la sala.
+                </div>
+                <div id="cedula-datos-reales" style="display: none;">
+                    <h4 id="cedula-artista" class="cedula-artista"></h4>
+                    <h3 id="cedula-titulo" class="cedula-titulo"></h3>
+                    <p id="cedula-metadatos" class="cedula-metadatos"></p>
+                    <div id="cedula-descripcion" class="cedula-descripcion"></div>
+                    <div id="cedula-instalacion" class="cedula-instalacion" style="display: none;"></div>
+                </div>
+            </div>
+
+        </article>
+
+    </div>
+
+    <a href="index.html" class="rc-back-link">
+        <img src="../raumlab/flecha_derecha_ui.png" alt="" class="back-arrow-img">
+        VOLVER
+    </a>
+
+    <footer class="rc-footer">
+        <div class="rc-footer-rule"></div>
+        <p class="rc-footer-copyright">© 2026 RAUMLAB<br>Rosario, Argentina</p>
+    </footer>
+
+    <script src="../raumlab/raumlab-chrome.js"></script>
+    <script type="module" src="js/viewer.js"></script>
+</body>
+</html>

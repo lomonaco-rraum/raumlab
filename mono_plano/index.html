@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>trans_FORMA — RaumLab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100;300;400;500;700;800&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./src/css/styles.css">
+    <link rel="stylesheet" href="../raumlab/raumlab-chrome.css">
+    <link rel="stylesheet" href="./src/css/app-shell.css">
+</head>
+<body class="rc-body">
+
+    <div class="rc-bg-layer" aria-hidden="true"></div>
+
+    <div class="rc-header-stack">
+        <header class="rc-topbar">
+            <button class="rc-hamburger-btn" id="navToggle" type="button" aria-expanded="false" aria-controls="navPanel" aria-label="Abrir menú">
+                <span class="rc-hamburger-icon" aria-hidden="true">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </span>
+            </button>
+            <a href="../raumlab/index.html" class="rc-topbar-logo">
+                <span class="logo-raum">RAUM</span><span class="logo-lab">LAB</span>
+            </a>
+            <button class="rc-lang-pill" type="button" title="Selector de idioma — próximamente EN / FR / PT">ES</button>
+        </header>
+        <div class="rc-header-rule"></div>
+        <div class="rc-module-subheader">
+            <p class="rc-breadcrumb">/trans_FORMA</p>
+            <nav class="rc-subnav">
+                <button type="button" data-modo="fotoplano">Fotoplano</button>
+                <button type="button" data-modo="fotomosaico">Fotomosaico</button>
+                <button type="button" data-modo="tutoriales">Tutoriales</button>
+            </nav>
+        </div>
+    </div>
+
+    <div class="rc-nav-scrim" id="navScrim"></div>
+
+    <nav class="rc-nav-panel" id="navPanel">
+        <ul class="rc-nav-list rc-nav-modes">
+            <li class="rc-nav-item"><button class="rc-nav-link" data-modo="fotoplano">Fotoplano</button></li>
+            <li class="rc-nav-item"><button class="rc-nav-link" data-modo="fotomosaico">Fotomosaico</button></li>
+            <li class="rc-nav-item"><button class="rc-nav-link" data-modo="tutoriales">Tutoriales</button></li>
+        </ul>
+        <ul class="rc-nav-list">
+            <li class="rc-nav-item has-sub open" id="recursosItem">
+                <a class="rc-nav-link" href="../raumlab/index.html#recursos">Recursos</a>
+                <ul class="rc-nav-sublist" id="recursosSub" style="max-height: 220px;">
+                    <li><a href="../espacio_inm/espacio-inm/espacio-inm.html">espacio_INM</a></li>
+                    <li><a href="../in_site/index.html">in_SITE</a></li>
+                    <li><a href="index.html" class="active">trans_FORMA</a></li>
+                </ul>
+            </li>
+            <li class="rc-nav-item"><a class="rc-nav-link" href="../raumlab/index.html#investigacion">Investigación</a></li>
+            <li class="rc-nav-item"><a class="rc-nav-link" href="../raumlab/index.html#educacion">Educación</a></li>
+            <li class="rc-nav-item"><a class="rc-nav-link" href="../raumlab/index.html#novedades">Novedades</a></li>
+            <li class="rc-nav-item"><a class="rc-nav-link" href="../raumlab/index.html#contacto">Contacto</a></li>
+        </ul>
+    </nav>
+
+    <main id="app-main">
+        <!-- Pantalla de trabajo: app.js reemplaza este contenido por completo
+             en cada paso (entrada Fotoplano, workspace Fotomosaico, estación
+             de rectificación, resultado, medir/dibujar...). -->
+        <div id="inicio-screen" class="screen"></div>
+    </main>
+
+    <!-- Panel de diálogo persistente: reemplaza alert()/confirm(), sobrevive
+         a los reemplazos de #inicio-screen porque es un hermano, no un hijo. -->
+    <div id="panel-dialogo"></div>
+
+    <a href="../raumlab/index.html" class="rc-back-link">
+        <img src="../raumlab/flecha_derecha_ui.png" alt="" class="back-arrow-img">
+        VOLVER
+    </a>
+
+    <footer class="rc-footer">
+        <div class="rc-footer-rule"></div>
+        <p class="rc-footer-copyright">© 2026 RAUMLAB<br>Rosario, Argentina</p>
+    </footer>
+
+    <script src="../raumlab/raumlab-chrome.js"></script>
+    <!-- Script principal como módulo -->
+    <script type="module" src="./src/js/app.js"></script>
+</body>
+</html>

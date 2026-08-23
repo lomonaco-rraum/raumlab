@@ -1,0 +1,74 @@
+/* ==========================================================================
+   in_SITE - NÚCLEO GLOBAL Y VARIABLES DE IDENTIDAD
+   ========================================================================== */
+
+/* 1. Reseteo Arquitectónico Universal */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* 2. El ADN de Color de in_site (Variables Globales) */
+:root {
+    --color-oliva: #A5A58D;
+    --color-oscuro: #4A4A40;
+    --color-borde: #E5E5DB;
+    --color-fondo-sala: #FAFAFA;
+    --blanco-puro: #ffffff;
+}
+
+/* 3. Comportamiento Base del Lienzo */
+html, body {
+    width: 100%;
+    height: 100%;
+    background-color: var(--blanco-puro);
+    color: var(--color-oscuro);
+    font-family: 'Helvetica', Arial, sans-serif;
+    
+    /* Suavizado de fuentes para renderizado de alta fidelidad */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* 4. Neutralización de Enlaces e Hipervínculos */
+a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+/* 5. Sanitización de Formularios (Chau estilos nativos de Windows/Mac) */
+input, select, button, textarea {
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    background: transparent;
+    border: none;
+    outline: none;
+}
+
+/* Evitamos distorsiones en elementos gráficos nativos */
+img, svg {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* Utilidad global para ocultar/mostrar por JS */
+.hidden {
+    display: none !important;
+}
+
+/* Texto solo para lectores de pantalla (botones que quedan solo con ícono) */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}

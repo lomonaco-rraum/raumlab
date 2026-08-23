@@ -1,0 +1,33 @@
+raumlab.org/espacio_INM
+
+Hoy:
+CM --> EQ
+Posibilidad de pasar de mapa de cubos a un equirrectangular.
+Carga de 6 imagenes [Right (+X); Left (-X); Top (+Y); Bottom; Front (+Z); Back (-Z)]
+Cuando se van cargando esas imágenes aparecen las miniaturas.
+Una vez que se cargan las 6 imagenes, se apreta el botón "crear". 
+Una vez creado, el equirrectangular, se visualiza en el visor.
+Cuando se crea, se activa la posibilidad de descarga del equirrectangular eligiendo la calidad de descarga que se desea.
+
+EQ --> MP
+Posibilidad de pasar de mapa de cubos a equirrectangular.
+Se carga el equirrectangular con el +. 
+Se ve una vista previa del equirrectangular.
+Crear Cubemap [se crea]
+Se activa el botón de Descargar ZIP. 
+
+Diagnóstico de esta primera versión + propuesta de mejoras.
+Sin verificación hasta el producto final: incorporar un diagrama de cubemap al insertarse las imágenes. 
+Cada cuadrante tiene la posibilidad de rotar (restrigir giro con origen en el centro del cuadrante cada 90°)
+Incorporar la posibilidad de subir mapa de cubos [relación 4:3] Si no es esa relación, bloquear.
+Las imágenes pueden ser JPG, o PNG, con canal alfa. Revisar que funcione correctamente. 
+Una vez cargado el cubemap (ya sea por 6 cuadrantes o por el cubemap:) dar la posibilidad de incorporar un fondo: válido siempre y cuendo cuente con canal alfa. 
+Dar opciones de subir un equirrectangular que haga de fondo, o elegir uno de los que propone raumlab.org [entorno .jpg; entorno2.jpg; entorno3.jpg]
+Para móviles, posibilidad de experimetar en RV, teniendo como centro de visión el centro geométrico del cube map.
+Dar un ejemplo con la "caja vacía de oteiza".
+
+
+Módos_
+Creacion--> CM/EQ o EQ/MC
+Visualizador--> carga de un Equirrectangular para visualización en visor o en RA (para móviles).
+Instrucciones y tutoriales.

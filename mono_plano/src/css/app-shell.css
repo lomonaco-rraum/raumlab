@@ -1,0 +1,41 @@
+/* ==========================================================================
+   APP-SHELL — encaje del contenido propio de trans_FORMA (todo lo que
+   app.js va reemplazando dentro de #inicio-screen) contra el header/footer
+   fijos de raumlab-chrome.css. Equivalente al module-shell.css de in_SITE:
+   todo lo que sea medida compartida entre pantallas (Fotoplano/Fotomosaico)
+   vive acá, no repetido en cada una.
+   ========================================================================== */
+
+#app-main {
+    position: fixed;
+    top: var(--header-h);
+    left: 0;
+    right: 0;
+    bottom: var(--footer-h);
+    z-index: 2;
+    overflow-y: auto;
+}
+
+.screen {
+    width: 100%;
+    height: 100%;
+}
+
+@media (max-width: 768px) {
+    /* relative, no static: un elemento position:static ignora z-index, y
+       eso dejaba que .rc-bg-layer (fixed, pero con z-index:0) se pintara
+       ENCIMA de #app-main en vez de detrás — el contenido quedaba tapado
+       por el fondo aunque existiera en el DOM. relative conserva el mismo
+       flujo normal que static pero sigue siendo un elemento posicionado,
+       así que su z-index (definido arriba) vuelve a tener efecto. */
+    #app-main {
+        position: relative;
+        min-height: calc(100vh - var(--header-h) - var(--footer-h));
+        padding: calc(var(--header-h) + 20px) 20px 20px;
+    }
+
+    .screen {
+        height: auto;
+        min-height: 100%;
+    }
+}

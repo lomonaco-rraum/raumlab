@@ -1,0 +1,436 @@
+:root {
+    --bg-navy: #0d1b2e;
+    --surface-border: rgba(255, 255, 255, 0.09);
+    --text-color: #ffffff;
+    --font-geist: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-space: 'Space Grotesk', sans-serif;
+    --header-h: 118px;
+    --footer-h: 72px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    background-color: var(--bg-navy);
+}
+
+body {
+    color: var(--text-color);
+    font-family: var(--font-geist);
+    font-weight: 300;
+    min-height: 100vh;
+    background-color: var(--bg-navy);
+    position: relative;
+}
+
+/* CAPA DE FONDO — imagen rotada 180° (negro a la izquierda).
+   filter: grayscale — prueba temporal a blanco y negro, pedida por el
+   usuario "por un momento"; sacar esta línea para volver al color
+   original (no se tocó el archivo fondo.jpg en sí). */
+.bg-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background-color: var(--bg-navy);
+    background-image: url("fondo.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transform: rotate(180deg);
+    filter: grayscale(1);
+}
+
+/* CONTENEDOR FIJO (CINTA + BARRA SUPERIOR) */
+.header-stack {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 300;
+    transition: transform 0.3s ease;
+}
+
+.header-stack.header-hidden {
+    transform: translateY(-100%);
+}
+
+/* BARRA SUPERIOR */
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 32px 10px;
+}
+
+.hamburger-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    line-height: 1;
+}
+
+.hamburger-icon {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.hamburger-icon .bar {
+    display: block;
+    width: 20px;
+    height: 1.5px;
+    background: var(--text-color);
+}
+
+.topbar-logo {
+    font-family: var(--font-geist);
+    font-size: 1.15rem;
+    letter-spacing: 0.12em;
+    text-decoration: none;
+    color: var(--text-color);
+}
+
+.logo-raum { font-weight: 400; }
+.logo-lab { font-weight: 100; }
+
+.header-rule {
+    height: 0.5px;
+    margin: 0 32px;
+    background: var(--text-color);
+}
+
+.lang-pill {
+    font-family: var(--font-geist);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    color: var(--text-color);
+    background: transparent;
+    border: none;
+    padding: 5px 10px;
+    cursor: default;
+}
+
+/* PANEL DE NAVEGACIÓN (toggle) */
+.nav-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 320px;
+    z-index: 250;
+    background: rgba(10, 10, 10, 0.92);
+    backdrop-filter: blur(10px);
+    padding: calc(var(--header-h) + 30px) 32px 40px;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+}
+
+.nav-panel.open {
+    transform: translateX(0);
+}
+
+.nav-list {
+    list-style: none;
+    font-family: var(--font-space);
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.nav-link {
+    display: inline-block;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 0.95rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    cursor: pointer;
+    padding: 0;
+    font-family: inherit;
+}
+
+.nav-link:hover,
+.nav-link:focus-visible { font-weight: 700; }
+
+.nav-sublist {
+    list-style: none;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease;
+    padding-left: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* El espacio antes del primer ítem va en el hijo, no en el propio <ul>:
+   con box-sizing:border-box, un padding/margin puesto directo en el
+   elemento que se colapsa (max-height:0) no se recorta — el padding
+   empuja el alto mínimo del propio elemento por encima de max-height, y
+   el margin (probado antes) queda afuera de lo que overflow:hidden
+   recorta. Puesto en el <li>, en cambio, sí queda contenido dentro del
+   área que el <ul> recorta al colapsar. */
+.nav-sublist li:first-child {
+    margin-top: 12px;
+}
+
+.nav-item.has-sub.open .nav-sublist {
+    max-height: 220px;
+}
+
+.nav-sublist a,
+.nav-sublist span[aria-disabled="true"] {
+    display: inline-block;
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 300;
+    letter-spacing: 0.03em;
+}
+
+.nav-sublist a:hover,
+.nav-sublist a:focus-visible { font-weight: 700; }
+
+.nav-sublist span[aria-disabled="true"] {
+    opacity: 0.45;
+    cursor: default;
+}
+
+/* CONTACTO — dentro del panel de navegación (no en el footer: ver nota de
+   .site-footer más abajo, mismo criterio que en el resto de los módulos). */
+.nav-contacts-rule {
+    height: 0.5px;
+    margin: 32px 0 20px;
+    background: var(--text-color);
+}
+
+.nav-contacts {
+    display: flex;
+    gap: 18px;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    color: var(--text-color);
+    text-decoration: none;
+}
+.contact-item svg { transition: transform 0.15s ease; }
+.contact-item:hover svg,
+.contact-item:focus-visible svg { transform: scale(1.15); }
+
+.nav-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 240;
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.nav-scrim.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* CONTENIDO PRINCIPAL */
+.main {
+    position: relative;
+    z-index: 2;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: calc(var(--header-h) + 56px) 32px calc(var(--footer-h) + 40px);
+}
+
+/* INICIO — texto curatorial, visible hasta que se elige "Recursos". Sin
+   CSS propio en #view-home: mismo padding-top que las cards, heredado
+   directo de .main (ver nota ahí) — decisión del usuario, revirtiendo el
+   empuje hacia el footer que tenía antes (justify-content:flex-end). */
+
+/* margin:0 auto: el bloque se centra dentro de .main (que ya centra TODO
+   .main en la ventana, pero sus hijos por defecto quedan pegados a la
+   izquierda de esos 1180px si no tienen su propio auto-margin). */
+.home-curatorial {
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.home-curatorial h1 {
+    font-family: var(--font-geist);
+    font-weight: 300;
+    font-size: clamp(0.9rem, 1.6vw, 1.05rem);
+    letter-spacing: 0.04em;
+    line-height: 1.5;
+    color: var(--text-color);
+    margin-bottom: 28px;
+}
+
+.home-curatorial p {
+    font-family: var(--font-geist);
+    font-weight: 100;
+    font-size: 0.95rem;
+    line-height: 1.8;
+    color: var(--text-color);
+    margin-bottom: 20px;
+}
+
+.home-curatorial p:last-child {
+    margin-bottom: 0;
+}
+
+/* LISTA DE MÓDULOS — filas divididas por línea fina, en vez de cards con
+   fondo (el proyecto no tiene esa impronta; es más de listas simples).
+   margin:0 auto: mismo motivo que .home-curatorial, se centra dentro de
+   .main en vez de quedar pegada a la izquierda. Fila compacta a propósito
+   (padding/tamaños chicos, estado junto al título en vez de en su propia
+   línea) para que las 4 entren sin scroll vertical. */
+.modules-list {
+    display: flex;
+    flex-direction: column;
+    max-width: 760px;
+    margin: 0 auto;
+    border-top: 1px solid var(--surface-border);
+}
+
+.module-row {
+    display: flex;
+    flex-direction: column;
+    padding: 16px 4px;
+    border-bottom: 1px solid var(--surface-border);
+}
+
+.module-row-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 6px;
+}
+
+.card-status {
+    flex-shrink: 0;
+    font-family: var(--font-geist);
+    color: var(--text-color);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.module-row h2 {
+    font-size: 1.05rem;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    margin: 0;
+}
+
+.module-row .card-lede {
+    max-width: 560px;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    font-weight: 100;
+    margin-bottom: 4px;
+}
+
+.module-row .card-detail {
+    max-width: 560px;
+    font-size: 0.84rem;
+    color: var(--text-color);
+    font-weight: 100;
+    line-height: 1.4;
+}
+
+.card-cta {
+    align-self: flex-end;
+    margin-top: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    line-height: 1;
+    transition: transform 0.15s ease;
+}
+
+/* El nudge de hover vive en .card-cta (sin rotación propia), no en el
+   ícono: combinar un transform:translateX() de hover con el
+   transform:rotate(90deg) fijo del ícono es frágil — el translate quedaría
+   compuesto DENTRO del sistema de coordenadas ya rotado del ícono y se
+   movería en diagonal/vertical en vez de a la derecha en pantalla. Acá,
+   sin rotación de por medio, translateX se mueve limpio hacia la derecha. */
+.card-cta:hover,
+.card-cta:focus-visible {
+    transform: translateX(4px);
+}
+
+.card-cta[aria-disabled="true"] {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.card-cta[aria-disabled="true"]:hover {
+    transform: none;
+}
+
+/* Único uso de Space Grotesk en esta lista, a propósito: acento puntual en
+   un llamado a la acción, no cuerpo de texto (ver
+   feedback_raumlab-geist-default-font en memoria). */
+.card-cta-label {
+    font-family: var(--font-space);
+    font-weight: 400;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-color);
+}
+
+/* flecha_derecha_ui.png apunta hacia ARRIBA en su orientación sin rotar
+   (confirmado mirando cómo se usa en .rc-back-link, que la rota -90° para
+   que apunte a la izquierda/"volver" — arriba -90° = izquierda). Para que
+   apunte a la derecha acá hace falta +90°, no dejarla sin rotar. */
+.cta-arrow-img {
+    display: block;
+    width: 18px;
+    height: 18px;
+    transform: rotate(90deg);
+}
+
+/* FOOTER — mismo criterio que .rc-footer del resto de los módulos: fijo al
+   borde inferior real de la ventana, solo copyright centrado y la línea. Los
+   íconos de contacto (mail/IG) viven en el panel de navegación, no acá. */
+.site-footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 300;
+    padding: 0 0 20px;
+    text-align: center;
+}
+
+.footer-rule {
+    height: 0.5px;
+    margin: 0 32px 16px;
+    background: var(--text-color);
+}
+
+.footer-copyright {
+    margin: 0;
+    font-size: 0.7rem;
+    color: var(--text-color);
+    font-family: var(--font-geist);
+    line-height: 1.4;
+}
+
+@media (max-width: 600px) {
+    .nav-panel { width: 100%; }
+    .main { padding: calc(var(--header-h) + 24px) 20px calc(var(--footer-h) + 24px); }
+}

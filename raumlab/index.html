@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>raumlab | Dispositivo de investigación espacial</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100;300;400;500;700;800&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="bg-layer" aria-hidden="true"></div>
+
+    <div>
+
+        <div class="header-stack">
+            <!-- BARRA SUPERIOR -->
+            <header class="topbar">
+                <button class="hamburger-btn" id="navToggle" type="button" aria-expanded="false" aria-controls="navPanel" aria-label="Abrir menú">
+                    <span class="hamburger-icon" aria-hidden="true">
+                        <span class="bar"></span>
+                        <span class="bar"></span>
+                        <span class="bar"></span>
+                    </span>
+                </button>
+                <a href="#top" class="topbar-logo" id="homeLogo">
+                    <span class="logo-raum">RAUM</span><span class="logo-lab">LAB</span>
+                </a>
+                <button class="lang-pill" type="button" title="Selector de idioma — próximamente EN / FR / PT">ES</button>
+            </header>
+
+            <div class="header-rule"></div>
+        </div>
+
+        <div class="nav-scrim" id="navScrim"></div>
+
+        <!-- PANEL DE NAVEGACIÓN -->
+        <nav class="nav-panel" id="navPanel">
+            <ul class="nav-list">
+                <li class="nav-item has-sub" id="recursosItem">
+                    <button class="nav-link nav-sub-toggle" id="recursosToggle" type="button" aria-expanded="false" aria-controls="recursosSub">Recursos</button>
+                    <ul class="nav-sublist" id="recursosSub">
+                        <li><a href="../espacio_inm/espacio-inm/espacio-inm.html">espacio_INM</a></li>
+                        <li><a href="../in_site/index.html">in_SITE</a></li>
+                        <li><a href="../mono_plano/index.html">trans_FORMA</a></li>
+                        <li><span aria-disabled="true" aria-label="estereo_GRAF — todavía no disponible">estereo_GRAF</span></li>
+                    </ul>
+                </li>
+                <li class="nav-item"><a class="nav-link" href="#investigacion">Investigación</a></li>
+                <li class="nav-item"><a class="nav-link" href="#educacion">Educación</a></li>
+                <li class="nav-item"><a class="nav-link" href="#novedades">Novedades</a></li>
+                <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
+            </ul>
+
+            <div class="nav-contacts-rule"></div>
+            <div class="nav-contacts">
+                <a href="mailto:info@raumlab.org" class="contact-item" aria-label="info@raumlab.org">
+                    <svg class="icon" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                </a>
+                <a href="https://www.instagram.com/raum.lab" target="_blank" class="contact-item" aria-label="@raum.lab en Instagram">
+                    <svg class="icon" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                </a>
+            </div>
+        </nav>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="main" id="top">
+
+            <!-- INICIO -->
+            <div class="view" id="view-home">
+                <div class="home-curatorial">
+                    <h1>Laboratorio de investigación y desarrollo transdisciplinar</h1>
+                    <p>
+                        RaumLab es un laboratorio experimental en torno al espacio y su
+                        representación. No toma la representación como un dato dado, sino
+                        como un problema a revisar: cada convención gráfica —el plano, la
+                        perspectiva, la imagen esférica— encierra una forma de mirar y de
+                        habitar el espacio, y esa forma puede repensarse. Esa investigación
+                        crítica orienta el desarrollo de cada recurso: herramientas digitales
+                        para expandir los lenguajes con los que se documenta, se representa y
+                        se recorre un espacio, más allá de sus formatos convencionales.
+                        Investigar esa gráfica es también intervenirla: no alcanza con
+                        describir sus límites, hace falta construir los recursos que la
+                        expandan.
+                    </p>
+                    <p>
+                        De ahí nace un conjunto de recursos que va del relevamiento a la
+                        exhibición: instrumentos de documentación no convencional para
+                        registrar lo que existe; entornos virtuales para proyectar lo que
+                        todavía no —propuestas curatoriales, artísticas y pedagógicas que
+                        necesitan un espacio antes de tenerlo—; y modos de visualización que
+                        llevan esos resultados a la Realidad Aumentada, donde pueden
+                        recorrerse en vez de solo mirarse.
+                    </p>
+                    <p>
+                        RaumLab es un proyecto sin fines de lucro: sus herramientas están
+                        pensadas para circular libremente, como un aporte a la
+                        democratización del conocimiento, para artistas, docentes,
+                        estudiantes e instituciones que necesiten representar el espacio de
+                        otra manera.
+                    </p>
+                </div>
+            </div>
+
+            <!-- RECURSOS -->
+            <div class="view" id="view-recursos" hidden>
+                <section class="modules-list">
+
+                    <article class="module-row" id="in-site">
+                        <div class="module-row-head">
+                            <h2>in_SITE</h2>
+                            <span class="card-status">V1.0</span>
+                        </div>
+                        <p class="card-lede">Espacio para la creación de proyectos curatoriales.</p>
+                        <p class="card-detail">Módulo apto para proyectos artísticos y contextos educativos. Diseño de salas expositivas con objetos 2D y 3D. Confección de fichas técnicas asociadas a las piezas incorporadas. Visualización en la web y mediante tecnología de RA.</p>
+                        <a href="../in_site/index.html" class="card-cta" aria-label="Ir a in_SITE"><span class="card-cta-label">Comenzar</span><img src="flecha_derecha_ui.png" alt="" class="cta-arrow-img"></a>
+                    </article>
+
+                    <article class="module-row" id="espacio-inm">
+                        <div class="module-row-head">
+                            <h2>espacio_INM</h2>
+                            <span class="card-status">V1.0</span>
+                        </div>
+                        <p class="card-lede">Generación y visualización de imágenes esféricas.</p>
+                        <p class="card-detail">Generación de proyecciones equirrectangulares a partir de mapa de cubos. Especificaciones técnicas sobre el mapeo de coordenadas esféricas, conversión de formato cubemap y optimización para visualización inmersiva.</p>
+                        <a href="../espacio_inm/espacio-inm/espacio-inm.html" class="card-cta" aria-label="Ir a espacio_INM"><span class="card-cta-label">Comenzar</span><img src="flecha_derecha_ui.png" alt="" class="cta-arrow-img"></a>
+                    </article>
+
+                    <article class="module-row" id="trans-forma">
+                        <div class="module-row-head">
+                            <h2>trans_FORMA</h2>
+                            <span class="card-status">V1.0</span>
+                        </div>
+                        <p class="card-lede">Módulo para la rectificación de imágenes fotográficas.</p>
+                        <p class="card-detail">Corrección de deformación de la perspectiva mediante métodos analítico y geométrico. Módulo para la confección de fotoplanos orientados a la documentación de patrimonio cultural y piezas artísticas bidimensionales.</p>
+                        <a href="../mono_plano/index.html" class="card-cta" aria-label="Ir a trans_FORMA"><span class="card-cta-label">Comenzar</span><img src="flecha_derecha_ui.png" alt="" class="cta-arrow-img"></a>
+                    </article>
+
+                    <article class="module-row" id="estereo-graf">
+                        <div class="module-row-head">
+                            <h2>estereo_GRAF</h2>
+                            <span class="card-status">En desarrollo</span>
+                        </div>
+                        <p class="card-lede">Restitución fotogramétrica.</p>
+                        <p class="card-detail">Generación de modelos tridimensionales con textura a partir de fotografía digital.</p>
+                        <span class="card-cta" aria-disabled="true" aria-label="estereo_GRAF — todavía no disponible"><img src="flecha_derecha_ui.png" alt="" class="cta-arrow-img"></span>
+                    </article>
+
+                </section>
+            </div>
+
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="site-footer" id="contacto">
+            <div class="footer-rule"></div>
+            <p class="footer-copyright">© 2026 RAUMLAB<br>Rosario, Argentina</p>
+        </footer>
+
+    </div>
+
+    <script>
+        // Header y footer son fijos: medimos su alto real para que el
+        // contenido central nunca quede tapado detrás de ninguno.
+        function syncChromeHeights() {
+            const headerStack = document.querySelector('.header-stack');
+            const siteFooter = document.querySelector('.site-footer');
+            if (headerStack) {
+                document.documentElement.style.setProperty('--header-h', headerStack.offsetHeight + 'px');
+            }
+            if (siteFooter) {
+                document.documentElement.style.setProperty('--footer-h', siteFooter.offsetHeight + 'px');
+            }
+        }
+        syncChromeHeights();
+        window.addEventListener('resize', syncChromeHeights);
+        window.addEventListener('load', syncChromeHeights);
+
+        const viewHome = document.getElementById('view-home');
+        const viewRecursos = document.getElementById('view-recursos');
+
+        function showRecursos() {
+            viewHome.hidden = true;
+            viewRecursos.hidden = false;
+        }
+        function showHome() {
+            viewRecursos.hidden = true;
+            viewHome.hidden = false;
+        }
+
+        // Entrar directo a Recursos: el botón "Recursos" de los 3 módulos
+        // ahora es un link real a acá con #recursos (antes no navegaba a
+        // ningún lado, solo desplegaba una lista local). Sin esto, aterrizar
+        // con ese hash mostraba igual el texto curatorial por defecto.
+        if (location.hash === '#recursos') {
+            showRecursos();
+        }
+
+        const navToggle = document.getElementById('navToggle');
+        const navPanel = document.getElementById('navPanel');
+        const navScrim = document.getElementById('navScrim');
+        const recursosToggle = document.getElementById('recursosToggle');
+        const recursosItem = document.getElementById('recursosItem');
+
+        function closeNav() {
+            navPanel.classList.remove('open');
+            navScrim.classList.remove('open');
+            navToggle.setAttribute('aria-expanded', 'false');
+        }
+
+        navToggle.addEventListener('click', () => {
+            const isOpen = navPanel.classList.toggle('open');
+            navScrim.classList.toggle('open', isOpen);
+            navToggle.setAttribute('aria-expanded', String(isOpen));
+        });
+
+        navScrim.addEventListener('click', closeNav);
+
+        recursosToggle.addEventListener('click', () => {
+            const isOpen = recursosItem.classList.toggle('open');
+            recursosToggle.setAttribute('aria-expanded', String(isOpen));
+            showRecursos();
+        });
+
+        navPanel.querySelectorAll('.nav-item > .nav-link[href]').forEach(link => {
+            link.addEventListener('click', closeNav);
+        });
+
+        document.getElementById('homeLogo').addEventListener('click', showHome);
+
+        // Ocultar la barra superior al hacer scroll hacia abajo (no se está
+        // usando); reaparece al subir, cerca del tope, o con el menú abierto.
+        const headerStack = document.querySelector('.header-stack');
+        let lastScrollY = window.scrollY;
+        window.addEventListener('scroll', () => {
+            const currentY = window.scrollY;
+            if (navPanel.classList.contains('open') || currentY <= 40) {
+                headerStack.classList.remove('header-hidden');
+            } else if (currentY > lastScrollY) {
+                headerStack.classList.add('header-hidden');
+            } else if (currentY < lastScrollY) {
+                headerStack.classList.remove('header-hidden');
+            }
+            lastScrollY = currentY;
+        }, { passive: true });
+    </script>
+
+</body>
+</html>

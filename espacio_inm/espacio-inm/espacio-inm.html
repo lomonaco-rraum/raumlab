@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>espacio_INM — RaumLab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100;300;400;500;700;800&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../raumlab/raumlab-chrome.css">
+  <link rel="stylesheet" href="app-shell.css">
+  <link rel="stylesheet" href="espacio-inm.css">
+</head>
+<body class="rc-body">
+
+<div class="rc-bg-layer" aria-hidden="true"></div>
+
+<div class="rc-header-stack">
+    <header class="rc-topbar">
+        <button class="rc-hamburger-btn" id="navToggle" type="button" aria-expanded="false" aria-controls="navPanel" aria-label="Abrir menú">
+            <span class="rc-hamburger-icon" aria-hidden="true">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </span>
+        </button>
+        <a href="../../raumlab/index.html" class="rc-topbar-logo">
+            <span class="logo-raum">RAUM</span><span class="logo-lab">LAB</span>
+        </a>
+        <button class="rc-lang-pill" type="button" title="Selector de idioma — próximamente EN / FR / PT">ES</button>
+    </header>
+    <div class="rc-header-rule"></div>
+    <div class="rc-module-subheader">
+        <p class="rc-breadcrumb">/espacio_INM</p>
+        <nav class="rc-subnav">
+            <button type="button" class="mode-btn" data-mode="mode-crear">Crear</button>
+            <button type="button" class="mode-btn" data-mode="mode-ver">Visualizar</button>
+            <button type="button" class="mode-btn" data-mode="mode-coleccion">Galería</button>
+            <button type="button" class="mode-btn" data-mode="mode-ayuda">Tutoriales</button>
+        </nav>
+    </div>
+</div>
+
+<div class="rc-nav-scrim" id="navScrim"></div>
+
+<nav class="rc-nav-panel" id="navPanel">
+    <ul class="rc-nav-list rc-nav-modes">
+        <li class="rc-nav-item"><button class="rc-nav-link mode-btn" data-mode="mode-crear">Crear</button></li>
+        <li class="rc-nav-item"><button class="rc-nav-link mode-btn" data-mode="mode-ver">Visualizar</button></li>
+        <li class="rc-nav-item"><button class="rc-nav-link mode-btn" data-mode="mode-coleccion">Galería</button></li>
+        <li class="rc-nav-item"><button class="rc-nav-link mode-btn" data-mode="mode-ayuda">Tutoriales</button></li>
+    </ul>
+    <ul class="rc-nav-list">
+        <li class="rc-nav-item has-sub open" id="recursosItem">
+            <a class="rc-nav-link" href="../../raumlab/index.html#recursos">Recursos</a>
+            <ul class="rc-nav-sublist" id="recursosSub" style="max-height: 220px;">
+                <li><a href="espacio-inm.html" class="active">espacio_INM</a></li>
+                <li><a href="../../in_site/index.html">in_SITE</a></li>
+                <li><a href="../../mono_plano/index.html">trans_FORMA</a></li>
+            </ul>
+        </li>
+        <li class="rc-nav-item"><a class="rc-nav-link" href="../../raumlab/index.html#investigacion">Investigación</a></li>
+        <li class="rc-nav-item"><a class="rc-nav-link" href="../../raumlab/index.html#educacion">Educación</a></li>
+        <li class="rc-nav-item"><a class="rc-nav-link" href="../../raumlab/index.html#novedades">Novedades</a></li>
+        <li class="rc-nav-item"><a class="rc-nav-link" href="../../raumlab/index.html#contacto">Contacto</a></li>
+    </ul>
+</nav>
+
+<main id="app-main">
+<div class="screen">
+
+  <!-- ===================== Introducción ===================== -->
+  <section id="mode-intro" class="mode-content mode-intro-content active">
+    <p class="rc-intro-lede">Generación y visualización de imágenes esféricas.</p>
+    <p class="rc-intro-detail">Generación de proyecciones equirrectangulares a partir de mapa de cubos. Especificaciones técnicas sobre el mapeo de coordenadas esféricas, conversión de formato cubemap y optimización para visualización inmersiva.</p>
+  </section>
+
+  <!-- ===================== Modo: Crear ===================== -->
+  <section id="mode-crear" class="mode-content">
+
+    <!-- 🔹 Pestaña activa dentro de Crear (CM→EQ / EQ→CM) -->
+    <section id="cm2eq" class="tool-main tab-content active">
+
+      <!-- Columna izquierda: nombre, operación, modo, acciones -->
+      <div class="rail-izquierdo">
+
+        <div class="project-name-row">
+          <label for="project-name">Proyecto</label>
+          <input type="text" id="project-name" placeholder="panorama">
+        </div>
+
+        <div class="settings-group">
+          <h3 class="settings-heading">Operación</h3>
+          <div class="picker" id="picker-operacion">
+            <button type="button" class="picker-boton" aria-haspopup="listbox" aria-expanded="false">
+              <span class="picker-boton-label">Mapa de cubos → Equirrectangular</span>
+              <span class="picker-chevron" aria-hidden="true">▾</span>
+            </button>
+            <ul class="picker-lista" role="listbox" hidden>
+              <li role="option"><button type="button" class="picker-opcion tab-btn active" data-target="cm2eq">Mapa de cubos → Equirrectangular</button></li>
+              <li role="option"><button type="button" class="picker-opcion tab-btn" data-target="eq2cm">Equirrectangular → Mapa de cubos</button></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3 class="settings-heading">Modo</h3>
+          <div class="picker" id="picker-modo">
+            <button type="button" class="picker-boton" aria-haspopup="listbox" aria-expanded="false">
+              <span class="picker-boton-label">6 caras (1:1)</span>
+              <span class="picker-chevron" aria-hidden="true">▾</span>
+            </button>
+            <ul class="picker-lista" role="listbox" hidden>
+              <li role="option"><button type="button" class="picker-opcion cm-mode-option active" data-value="faces-source">6 caras (1:1)</button></li>
+              <li role="option"><button type="button" class="picker-opcion cm-mode-option" data-value="sheet-source">Mapa de cubos (4:3)</button></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3 class="settings-heading">Resolución</h3>
+          <div class="picker" id="picker-resolucion">
+            <button type="button" class="picker-boton" aria-haspopup="listbox" aria-expanded="false">
+              <span class="picker-boton-label">Seleccionar</span>
+              <span class="picker-chevron" aria-hidden="true">▾</span>
+            </button>
+            <ul class="picker-lista" role="listbox" hidden>
+              <li role="option"><button type="button" class="picker-opcion quality-option active" data-value=""><span class="picker-opcion-nombre">Seleccionar</span></button></li>
+              <li role="option"><button type="button" class="picker-opcion quality-option" data-value="1024x512"><span class="picker-opcion-nombre">Baja</span> <span class="picker-opcion-detalle">1024×512 px</span></button></li>
+              <li role="option"><button type="button" class="picker-opcion quality-option" data-value="2048x1024"><span class="picker-opcion-nombre">Media</span> <span class="picker-opcion-detalle">2048×1024 px</span></button></li>
+              <li role="option"><button type="button" class="picker-opcion quality-option" data-value="4096x2048"><span class="picker-opcion-nombre">Alta</span> <span class="picker-opcion-detalle">4096×2048 px</span></button></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="build" class="btn-text">Crear</button>
+          <button id="btn-vista-previa" class="btn-text" disabled>Vista previa</button>
+          <button id="download" class="btn-primary" disabled>Descargar</button>
+          <div class="status" id="status"></div>
+        </div>
+
+        <div class="reset-row">
+          <button type="button" id="reset-project" class="btn-text">Cerrar proyecto</button>
+        </div>
+
+      </div>
+
+      <!-- Columna central: construcción del cubemap (siempre visible; "Vista
+           previa" abre el visor en un modal superpuesto, ver más abajo). -->
+      <div class="center-column">
+
+        <div id="cm-construccion">
+
+          <!-- Fuente: 6 caras -->
+          <div id="faces-source" class="source-panel active">
+
+            <div class="cube-diagram">
+
+              <div class="cube-diagram-cell face-top">
+                <button type="button" class="file-btn" data-target="py">+</button>
+                <span>Arriba (+Y)</span>
+                <input type="file" id="py" accept="image/*" style="display:none;">
+              </div>
+
+              <div class="cube-diagram-cell face-left">
+                <button type="button" class="file-btn" data-target="nx">+</button>
+                <span>Izquierda (−X)</span>
+                <input type="file" id="nx" accept="image/*" style="display:none;">
+              </div>
+
+              <div class="cube-diagram-cell face-front">
+                <button type="button" class="file-btn" data-target="pz">+</button>
+                <span>Adelante (+Z)</span>
+                <input type="file" id="pz" accept="image/*" style="display:none;">
+              </div>
+
+              <div class="cube-diagram-cell face-right">
+                <button type="button" class="file-btn" data-target="px">+</button>
+                <span>Derecha (+X)</span>
+                <input type="file" id="px" accept="image/*" style="display:none;">
+              </div>
+
+              <div class="cube-diagram-cell face-back">
+                <button type="button" class="file-btn" data-target="nz">+</button>
+                <span>Atrás (−Z)</span>
+                <input type="file" id="nz" accept="image/*" style="display:none;">
+              </div>
+
+              <div class="cube-diagram-cell face-bottom">
+                <button type="button" class="file-btn" data-target="ny">+</button>
+                <span>Abajo (−Y)</span>
+                <input type="file" id="ny" accept="image/*" style="display:none;">
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Fuente: mapa de cubos (imagen única, cruz 4:3) -->
+          <div id="sheet-source" class="source-panel">
+
+            <div class="cube-diagram">
+
+              <div class="cube-diagram-cell face-top">
+                <img id="sheet-preview-py" alt="Arriba">
+              </div>
+
+              <div class="cube-diagram-cell face-left">
+                <img id="sheet-preview-nx" alt="Izquierda">
+              </div>
+
+              <div class="cube-diagram-cell face-front">
+                <button type="button" class="file-btn" data-target="sheet">+</button>
+                <span>Cubemap (cruz, 4:3)</span>
+                <input type="file" id="sheet" accept="image/*" style="display:none;">
+                <img id="sheet-preview-pz" alt="Adelante">
+              </div>
+
+              <div class="cube-diagram-cell face-right">
+                <img id="sheet-preview-px" alt="Derecha">
+              </div>
+
+              <div class="cube-diagram-cell face-back">
+                <img id="sheet-preview-nz" alt="Atrás">
+              </div>
+
+              <div class="cube-diagram-cell face-bottom">
+                <img id="sheet-preview-ny" alt="Abajo">
+              </div>
+
+            </div>
+
+            <!-- Posición absoluta a propósito: no debe sumar alto al panel,
+                 sino "6 caras" y "Mapa de cubos" quedan centrados en
+                 alturas distintas y el diagrama salta al cambiar de modo. -->
+            <div class="status status-sheet-overlay" id="status-sheet"></div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Columna derecha: edición -->
+      <div class="rail-derecho">
+
+        <!-- 🔹 Editor de la cara seleccionada -->
+        <div class="face-editor" id="face-editor">
+          <h3 class="settings-heading">Edición</h3>
+          <p class="face-editor-empty" id="face-editor-empty">Hacé clic en una cara del diagrama para editarla.</p>
+          <div class="face-editor-content" id="face-editor-content" style="display:none;">
+            <span class="face-editor-label">Cara: <span id="face-editor-label"></span></span>
+            <img id="face-editor-preview" alt="">
+            <div class="face-editor-actions">
+              <div class="face-editor-row">
+                <button type="button" id="face-editor-rotate-ccw" title="Rotar -90°">↺</button>
+                <button type="button" id="face-editor-rotate-cw" title="Rotar +90°">↻</button>
+                <button type="button" id="face-editor-flip-v" title="Simetría vertical">↕</button>
+                <button type="button" id="face-editor-flip-h" title="Simetría horizontal">↔</button>
+              </div>
+              <button type="button" id="face-editor-replace" class="btn-text btn-full">Reemplazar imagen</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 🔹 Orientación inicial -->
+        <div class="orient-picker" id="orient-picker-crear">
+          <span class="settings-heading">Orientación inicial</span>
+          <div class="orient-buttons">
+            <button type="button" class="orient-btn active" data-dir="front">Adelante</button>
+            <button type="button" class="orient-btn" data-dir="right">Derecha</button>
+            <button type="button" class="orient-btn" data-dir="back">Atrás</button>
+            <button type="button" class="orient-btn" data-dir="left">Izquierda</button>
+          </div>
+        </div>
+
+        <!-- 🔹 Canal alfa -->
+        <label class="alpha-toggle-row">
+          <input type="checkbox" id="include-alpha" checked>
+          Incluir transparencia (canal alfa)
+        </label>
+
+        <!-- 🔹 Fondo (equirectangular detrás de las zonas transparentes) -->
+        <div class="bg-picker" id="bg-picker-crear">
+          <span class="settings-heading">Fondo</span>
+          <div class="bg-picker-row">
+            <button type="button" class="bg-preset active" data-bg="none" title="Ninguno">∅</button>
+            <button type="button" class="bg-preset" data-bg="entorno1" title="Entorno 1">
+              <img src="fondos/entorno.jpg" alt="Entorno 1">
+            </button>
+            <button type="button" class="bg-preset" data-bg="entorno2" title="Entorno 2">
+              <img src="fondos/entorno2.jpg" alt="Entorno 2">
+            </button>
+            <button type="button" class="bg-preset" data-bg="entorno3" title="Entorno 3">
+              <img src="fondos/entorno3.jpg" alt="Entorno 3">
+            </button>
+            <button type="button" class="file-btn bg-upload-btn" data-target="bg-upload-crear">+</button>
+            <input type="file" id="bg-upload-crear" class="bg-upload-input" accept="image/*" style="display:none;">
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- 🔹 Bloque Equirectangular → Cubemap -->
+    <section id="eq2cm" class="tool-main tab-content">
+
+      <div class="rail-izquierdo">
+        <div class="cube-face">
+          <button type="button" class="file-btn" data-target="eqr">+</button>
+          <span>Equirrectangular</span>
+          <input type="file" id="eqr" accept="image/*" style="display:none;">
+        </div>
+
+        <div class="actions">
+          <button id="build-eqr" class="btn-text">Crear Cubemap</button>
+          <button id="download-eqr" class="btn-primary" disabled>Descargar ZIP</button>
+          <div class="status" id="status-eqr"></div>
+        </div>
+      </div>
+
+      <div class="center-column">
+        <div class="viewer-panel">
+          <div id="viewer-eqr"></div>
+        </div>
+      </div>
+
+      <!-- Columna derecha: edición (sin opciones todavía para esta dirección) -->
+      <div class="rail-derecho"></div>
+
+    </section>
+
+  </section>
+
+  <!-- ===================== Modo: Visualizador ===================== -->
+  <section id="mode-ver" class="mode-content tool-main">
+
+    <!-- Columna izquierda: carga -->
+    <div class="rail-izquierdo">
+      <div class="cube-face">
+        <button type="button" class="file-btn" data-target="viewer-input">+</button>
+        <span>Equirrectangular</span>
+        <input type="file" id="viewer-input" accept="image/*" style="display:none;">
+      </div>
+      <div class="status" id="status-viewer"></div>
+    </div>
+
+    <!-- Columna central -->
+    <div class="center-column">
+      <div class="viewer-panel">
+        <div id="viewer-solo"></div>
+      </div>
+    </div>
+
+    <!-- Columna derecha: edición -->
+    <div class="rail-derecho">
+
+      <!-- 🔹 Orientación inicial -->
+      <div class="orient-picker" id="orient-picker-ver">
+        <span class="settings-heading">Orientación inicial</span>
+        <div class="orient-buttons">
+          <button type="button" class="orient-btn active" data-dir="front">Adelante</button>
+          <button type="button" class="orient-btn" data-dir="right">Derecha</button>
+          <button type="button" class="orient-btn" data-dir="back">Atrás</button>
+          <button type="button" class="orient-btn" data-dir="left">Izquierda</button>
+        </div>
+      </div>
+
+      <!-- 🔹 Fondo (equirectangular detrás de las zonas transparentes) -->
+      <div class="bg-picker" id="bg-picker-ver">
+        <span class="settings-heading">Fondo</span>
+        <div class="bg-picker-row">
+          <button type="button" class="bg-preset active" data-bg="none" title="Ninguno">∅</button>
+          <button type="button" class="bg-preset" data-bg="entorno1" title="Entorno 1">
+            <img src="fondos/entorno.jpg" alt="Entorno 1">
+          </button>
+          <button type="button" class="bg-preset" data-bg="entorno2" title="Entorno 2">
+            <img src="fondos/entorno2.jpg" alt="Entorno 2">
+          </button>
+          <button type="button" class="bg-preset" data-bg="entorno3" title="Entorno 3">
+            <img src="fondos/entorno3.jpg" alt="Entorno 3">
+          </button>
+          <button type="button" class="file-btn bg-upload-btn" data-target="bg-upload-ver">+</button>
+          <input type="file" id="bg-upload-ver" class="bg-upload-input" accept="image/*" style="display:none;">
+        </div>
+      </div>
+
+      <!-- 🔹 RA (experimental, solo funciona en celular) -->
+      <div class="ar-toggle-row">
+        <button type="button" id="ar-enter" class="btn-text btn-full">Ver en RA</button>
+        <button type="button" id="ar-exit" class="btn-text btn-full" style="display:none;">Salir de RA</button>
+        <div class="status" id="status-ar"></div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ===================== Modo: Galería (Colección RaumLab) ===================== -->
+  <section id="mode-coleccion" class="mode-content tool-main">
+
+    <!-- Columna izquierda: elegir ejemplo -->
+    <div class="rail-izquierdo">
+      <h3 class="settings-heading">RaumLab</h3>
+      <div class="collection-grid" id="collection-grid"></div>
+    </div>
+
+    <!-- Columna central -->
+    <div class="center-column">
+      <div class="viewer-panel">
+        <div id="viewer-coleccion"></div>
+      </div>
+    </div>
+
+    <!-- Columna derecha: RA (sin fondo, son ejemplos ya cerrados) -->
+    <div class="rail-derecho">
+      <div class="ar-toggle-row">
+        <button type="button" id="ar-enter-coleccion" class="btn-text btn-full">Ver en RA</button>
+        <button type="button" id="ar-exit-coleccion" class="btn-text btn-full" style="display:none;">Salir de RA</button>
+        <div class="status" id="status-ar-coleccion"></div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ===================== Modo: Tutoriales ===================== -->
+  <section id="mode-ayuda" class="mode-content mode-ayuda-content">
+    <div class="instr-layout">
+
+      <!-- Lista de modos — sin ítem activo por defecto: el panel arranca
+           mostrando "instr-general", wireSwitcher() se encarga del resto
+           (misma función genérica que ya usan .mode-btn/.tab-btn). -->
+      <aside class="instr-nav">
+        <button type="button" class="instr-nav-item" data-instr="instr-crear">Crear</button>
+        <button type="button" class="instr-nav-item" data-instr="instr-visualizar">Visualizar</button>
+        <button type="button" class="instr-nav-item" data-instr="instr-coleccion">Galería</button>
+      </aside>
+
+      <div class="instr-panel">
+
+        <div class="instr-body active" id="instr-general">
+          <h2>¿Qué es espacio_INM?</h2>
+          <p>
+            espacio_INM genera y visualiza panoramas esféricos (imágenes de
+            360°) a partir de un mapa de cubos, y también hace el camino
+            inverso: convierte un panorama ya armado en sus 6 caras. Corre
+            enteramente en el navegador — ninguna imagen se sube a ningún
+            servidor.
+          </p>
+          <p>Elegí un modo de la lista para ver sus instrucciones.</p>
+        </div>
+
+        <div class="instr-body" id="instr-crear">
+          <h2>Crear</h2>
+          <p>
+            Dos operaciones. <strong>Mapa de cubos → Equirrectangular</strong>:
+            armás el panorama a partir de 6 caras sueltas o de una única
+            imagen en cruz (4:3). <strong>Equirrectangular → Mapa de
+            cubos</strong>: el camino inverso — subís un panorama ya armado y
+            lo descargás como sus 6 caras por separado.
+          </p>
+
+          <h3>Mapa de cubos → Equirrectangular, paso a paso</h3>
+          <ol>
+            <li>Elegí el modo de carga: <strong>6 caras</strong> (una imagen cuadrada por cara) o <strong>Mapa de cubos</strong> (una sola imagen en cruz, relación 4:3).</li>
+            <li>Cargá las imágenes correspondientes — a medida que se cargan aparecen sus miniaturas en el diagrama.</li>
+            <li>Si una cara quedó mal orientada, hacé clic en ella para abrir el editor de la derecha: rotar ±90°, espejar vertical/horizontal, o reemplazar la imagen.</li>
+            <li>Elegí la orientación inicial del panorama y, si las caras tienen transparencia, activá "Incluir transparencia" y elegí un fondo (uno de los presets o una imagen propia).</li>
+            <li>Apretá <strong>Crear</strong> — el panorama se arma y podés revisarlo con <strong>Vista previa</strong> antes de descargar.</li>
+            <li>Elegí la resolución de descarga (Baja/Media/Alta) y descargá el equirrectangular final.</li>
+          </ol>
+
+          <h3>El camino inverso, paso a paso</h3>
+          <ol>
+            <li>Elegí "Equirrectangular → Mapa de cubos".</li>
+            <li>Cargá un panorama equirrectangular (relación de aspecto 2:1 — el doble de ancho que de alto).</li>
+            <li>Apretá <strong>Crear Cubemap</strong> y descargá el ZIP con las 6 caras por separado.</li>
+          </ol>
+
+          <h3>Sobre los formatos</h3>
+          <p>
+            Cada cara del cubo tiene que ser cuadrada (1:1), el mapa de cubos
+            en cruz tiene relación 4:3, y el equirrectangular 2:1. Una imagen
+            fuera de esa proporción no se acepta.
+          </p>
+        </div>
+
+        <div class="instr-body" id="instr-visualizar">
+          <h2>Visualizar</h2>
+          <p>
+            Subís un panorama equirrectangular propio para recorrerlo en el
+            visor esférico, con la posibilidad de verlo en Realidad Aumentada
+            desde el celular.
+          </p>
+
+          <h3>Sobre la Realidad Aumentada</h3>
+          <p>
+            El botón "Ver en RA" activa la cámara del celular para ubicar el
+            panorama en el espacio real — es una función experimental que
+            solo funciona desde un navegador de celular, no desde la
+            computadora.
+          </p>
+        </div>
+
+        <div class="instr-body" id="instr-coleccion">
+          <h2>Galería</h2>
+          <p>
+            La misma experiencia de visualización, pero con panoramas ya
+            armados por el estudio — no hace falta subir nada.
+          </p>
+
+          <h3>Sobre la Realidad Aumentada</h3>
+          <p>
+            El botón "Ver en RA" activa la cámara del celular para ubicar el
+            panorama en el espacio real — es una función experimental que
+            solo funciona desde un navegador de celular, no desde la
+            computadora.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+</div>
+</main>
+
+<!-- Vista previa: modal superpuesto (mismo patrón que in_SITE), no reemplaza
+     la pantalla de construcción del cubemap. -->
+<div id="modal-vista-previa" class="rc-modal" hidden>
+  <div class="rc-modal-panel">
+    <button type="button" id="cerrar-vista-previa" class="rc-modal-close" aria-label="Cerrar vista previa">✕</button>
+    <div class="viewer-panel">
+      <div id="viewer"></div>
+    </div>
+  </div>
+</div>
+
+<a href="../../raumlab/index.html" class="rc-back-link">
+    <img src="../../raumlab/flecha_derecha_ui.png" alt="" class="back-arrow-img">
+    VOLVER
+</a>
+
+<footer class="rc-footer">
+    <div class="rc-footer-rule"></div>
+    <p class="rc-footer-copyright">© 2026 RAUMLAB<br>Rosario, Argentina</p>
+</footer>
+
+<script src="../../raumlab/raumlab-chrome.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.105.2/build/three.min.js"></script>
+
+<!-- 🔹 Panolens (build sin fijar versión referenciaba `process`, global de Node inexistente en el navegador) -->
+<script>window.process = window.process || { env: {} };</script>
+<script src="https://cdn.jsdelivr.net/npm/panolens@0.12.1/build/panolens.min.js"></script>
+
+<!-- 🔹 Librería JSZip -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<script src="espacio-inm.js"></script>
+</body>
+</html>

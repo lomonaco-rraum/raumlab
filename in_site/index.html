@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>in_SITE — RaumLab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100;300;400;500;700;800&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="../raumlab/raumlab-chrome.css">
+    <link rel="stylesheet" href="css/portada.css">
+</head>
+<body class="rc-body">
+
+    <div class="rc-bg-layer" aria-hidden="true"></div>
+
+    <div class="rc-header-stack">
+        <header class="rc-topbar">
+            <button class="rc-hamburger-btn" id="navToggle" type="button" aria-expanded="false" aria-controls="navPanel" aria-label="Abrir menú">
+                <span class="rc-hamburger-icon" aria-hidden="true">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </span>
+            </button>
+            <a href="../raumlab/index.html" class="rc-topbar-logo">
+                <span class="logo-raum">RAUM</span><span class="logo-lab">LAB</span>
+            </a>
+            <button class="rc-lang-pill" type="button" title="Selector de idioma — próximamente EN / FR / PT">ES</button>
+        </header>
+        <div class="rc-header-rule"></div>
+        <div class="rc-module-subheader">
+            <p class="rc-breadcrumb">/in_SITE</p>
+            <nav class="rc-subnav">
+                <a href="editor.html">Proyectos</a>
+                <a href="viewer.html">Visualizador</a>
+                <a href="coleccion.html">Galería</a>
+                <a href="instrucciones.html">Tutoriales</a>
+            </nav>
+        </div>
+    </div>
+
+    <div class="rc-nav-scrim" id="navScrim"></div>
+
+    <nav class="rc-nav-panel" id="navPanel">
+        <ul class="rc-nav-list rc-nav-modes">
+            <li class="rc-nav-item"><a class="rc-nav-link" href="editor.html">Proyectos</a></li>
+            <li class="rc-nav-item"><a class="rc-nav-link" href="viewer.html">Visualizador</a></li>
+            <li class="rc-nav-item"><a class="rc-nav-link" href="coleccion.html">Galería</a></li>
+            <li class="rc-nav-item"><a class="rc-nav-link" href="instrucciones.html">Tutoriales</a></li>
+        </ul>
+        <ul class="rc-nav-list">
+            <li class="rc-nav-item has-sub open" id="recursosItem">
+                <a class="rc-nav-link" href="../raumlab/index.html#recursos">Recursos</a>
+                <ul class="rc-nav-sublist" id="recursosSub" style="max-height: 220px;">
+                    <li><a href="../espacio_inm/espacio-inm/espacio-inm.html">espacio_INM</a></li>
+                    <li><a href="index.html" class="active">in_SITE</a></li>
+                    <li><a href="../mono_plano/index.html">trans_FORMA</a></li>
+                </ul>
+            </li>
+            <li class="rc-nav-item"><a class="rc-nav-link" href="../raumlab/index.html#investigacion">Investigación</a></li>
+            <li class="rc-nav-item"><a class="rc-nav-link" href="../raumlab/index.html#educacion">Educación</a></li>
+            <li class="rc-nav-item"><a class="rc-nav-link" href="../raumlab/index.html#novedades">Novedades</a></li>
+            <li class="rc-nav-item"><a class="rc-nav-link" href="../raumlab/index.html#contacto">Contacto</a></li>
+        </ul>
+    </nav>
+
+    <main class="rc-intro-screen">
+        <p class="rc-intro-lede">Espacio para la creación de proyectos curatoriales.</p>
+        <p class="rc-intro-detail">Módulo apto para proyectos artísticos y contextos educativos. Diseño de salas expositivas con objetos 2D y 3D. Confección de fichas técnicas asociadas a las piezas incorporadas. Visualización en la web y mediante tecnología de RA.</p>
+
+        <a href="../raumlab/index.html" class="rc-back-link">
+            <img src="../raumlab/flecha_derecha_ui.png" alt="" class="back-arrow-img">
+            VOLVER
+        </a>
+    </main>
+
+    <footer class="rc-footer">
+        <div class="rc-footer-rule"></div>
+        <p class="rc-footer-copyright">© 2026 RAUMLAB<br>Rosario, Argentina</p>
+    </footer>
+
+    <script src="../raumlab/raumlab-chrome.js"></script>
+</body>
+</html>
