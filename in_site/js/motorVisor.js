@@ -84,15 +84,7 @@ export function crearMotorVisor(refs) {
         camera.position.set(4, 3, 6);
 
         renderer = new THREE.WebGLRenderer({ antialias: true });
-        // En celular NO se toca el pixelRatio (queda en 1, el default de
-        // Three.js) — devicePixelRatio completo multiplica la memoria de
-        // GPU que pide el render target, y hay indicios de que eso rompió
-        // la carga de texturas con canal alfa en algunos dispositivos. La
-        // nitidez en pantallas retina queda sin resolver en móvil por
-        // ahora; en escritorio se mantiene el valor completo, sin cambios.
-        if (!(window.rcIsMobile && window.rcIsMobile())) {
-            renderer.setPixelRatio(window.devicePixelRatio);
-        }
+        renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
         renderer.shadowMap.enabled = true;
         canvasContainer.appendChild(renderer.domElement);
@@ -122,15 +114,7 @@ export function crearMotorVisor(refs) {
     function onResize() {
         camera.aspect = canvasContainer.clientWidth / canvasContainer.clientHeight;
         camera.updateProjectionMatrix();
-        // En celular NO se toca el pixelRatio (queda en 1, el default de
-        // Three.js) — devicePixelRatio completo multiplica la memoria de
-        // GPU que pide el render target, y hay indicios de que eso rompió
-        // la carga de texturas con canal alfa en algunos dispositivos. La
-        // nitidez en pantallas retina queda sin resolver en móvil por
-        // ahora; en escritorio se mantiene el valor completo, sin cambios.
-        if (!(window.rcIsMobile && window.rcIsMobile())) {
-            renderer.setPixelRatio(window.devicePixelRatio);
-        }
+        renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
     }
 

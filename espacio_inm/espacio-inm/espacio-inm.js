@@ -784,18 +784,6 @@ async function refreshViewerPanorama() {
   try {
     const url = await compositeWithBackground(viewerEqSource, backgroundURLViewer, null);
 
-    // DIAGNÓSTICO TEMPORAL: Panolens no expone con certeza un evento de
-    // error de carga de textura utilizable acá — se precarga la imagen
-    // aparte con un <img> normal primero, así se sabe con certeza si el
-    // archivo que se le pasa a Panolens carga bien y con qué tamaño real,
-    // en vez de depender de que Panolens avise si falla.
-    if (window.rcShowDebug) {
-      const testImg = new Image();
-      testImg.onload = () => rcShowDebug('Panorama Visualizador: imagen OK ' + testImg.naturalWidth + 'x' + testImg.naturalHeight);
-      testImg.onerror = (e) => rcShowDebug('Panorama Visualizador: ERROR al decodificar la imagen — ' + e);
-      testImg.src = url;
-    }
-
     if (panoramaSolo) viewerSolo.remove(panoramaSolo);
     panoramaSolo = new PANOLENS.ImagePanorama(url);
 
@@ -809,7 +797,6 @@ async function refreshViewerPanorama() {
     setStatus('status-viewer', 'Panorama cargado ✓');
   } catch (e) {
     console.error(e);
-    if (window.rcShowDebug) rcShowDebug('Panorama Visualizador: EXCEPCIÓN — ' + (e && e.message ? e.message : e));
     setStatus('status-viewer', 'Error al aplicar el fondo');
   }
 }

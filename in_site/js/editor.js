@@ -131,15 +131,7 @@ function initEditor() {
     camera.position.set(0, 5, 8);
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
-    // En celular NO se toca el pixelRatio (queda en 1, el default de
-    // Three.js) — devicePixelRatio completo multiplica la memoria de GPU
-    // que pide el render target, y hay indicios de que eso rompió la
-    // carga de texturas con canal alfa en algunos dispositivos. La
-    // nitidez en pantallas retina queda sin resolver en móvil por ahora;
-    // en escritorio se mantiene el valor completo, sin cambios.
-    if (!(window.rcIsMobile && window.rcIsMobile())) {
-        renderer.setPixelRatio(window.devicePixelRatio);
-    }
+    renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
     renderer.shadowMap.enabled = true;
     canvasContainer.appendChild(renderer.domElement);
@@ -352,13 +344,11 @@ function capImageDataURLParaMobile(dataURL) {
 async function crearCuadroDesdeDataURL(dataURL, fileName, opciones = {}) {
     const { transform = null, fichaTecnica = null, seleccionar = true } = opciones;
     dataURL = await capImageDataURLParaMobile(dataURL);
-    if (window.rcShowDebug) rcShowDebug('Textura pieza: cargando (' + Math.round(dataURL.length / 1024) + ' KB base64)');
     const textureLoader = new THREE.TextureLoader();
 
     textureLoader.load(dataURL, (texture) => {
         const imgWidth = texture.image.width;
         const imgHeight = texture.image.height;
-        if (window.rcShowDebug) rcShowDebug('Textura pieza: OK ' + imgWidth + 'x' + imgHeight);
         const aspectRatio = imgWidth / imgHeight;
 
         const meshWidth = 1 * aspectRatio;
@@ -389,8 +379,6 @@ async function crearCuadroDesdeDataURL(dataURL, fileName, opciones = {}) {
         objectsInScene.push(paintMesh);
         refrescarListaPiezas();
         if (seleccionar) selectObject(paintMesh);
-    }, undefined, (err) => {
-        if (window.rcShowDebug) rcShowDebug('Textura pieza: ERROR al cargar — ' + (err && err.message ? err.message : err));
     });
 }
 
@@ -1247,15 +1235,7 @@ function animate() {
 function onWindowResize() {
     camera.aspect = canvasContainer.clientWidth / canvasContainer.clientHeight;
     camera.updateProjectionMatrix();
-    // En celular NO se toca el pixelRatio (queda en 1, el default de
-    // Three.js) — devicePixelRatio completo multiplica la memoria de GPU
-    // que pide el render target, y hay indicios de que eso rompió la
-    // carga de texturas con canal alfa en algunos dispositivos. La
-    // nitidez en pantallas retina queda sin resolver en móvil por ahora;
-    // en escritorio se mantiene el valor completo, sin cambios.
-    if (!(window.rcIsMobile && window.rcIsMobile())) {
-        renderer.setPixelRatio(window.devicePixelRatio);
-    }
+    renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
 }
 
