@@ -42,6 +42,51 @@ if (window.rcIsMobile && window.rcIsMobile()) {
     }
 }
 
+// ============================================================
+// DIAGNÓSTICO TEMPORAL — panel de errores visible en pantalla.
+// Varios bugs reportados (canal alfa "en blanco", texturas que no
+// cargan) no tiran ningún error visible en la interfaz — fallan en
+// silencio del lado de Three.js/Panolens. Esto muestra en la propia
+// pantalla del celular cualquier error de JS o de carga de imagen que
+// hoy se pierde, para diagnosticar con el error real en vez de con
+// hipótesis. Sacar una vez resueltos los bugs de canal alfa/texturas.
+// ============================================================
+if (window.rcIsMobile && window.rcIsMobile()) {
+    var rcDebugPanel = null;
+    var rcDebugLines = [];
+
+    function rcShowDebug(msg) {
+        rcDebugLines.push(msg);
+        if (!rcDebugPanel) {
+            rcDebugPanel = document.createElement('div');
+            rcDebugPanel.style.cssText = 'position:fixed;left:8px;right:8px;bottom:8px;z-index:99999;' +
+                'max-height:40vh;overflow-y:auto;background:rgba(200,0,0,0.95);color:#fff;' +
+                'font:11px/1.4 monospace;padding:8px;border-radius:6px;white-space:pre-wrap;' +
+                'word-break:break-word;box-shadow:0 4px 20px rgba(0,0,0,0.5);';
+            var closeBtn = document.createElement('button');
+            closeBtn.textContent = 'X cerrar diagnóstico';
+            closeBtn.style.cssText = 'display:block;margin-bottom:6px;background:#fff;color:#c00;' +
+                'border:none;padding:4px 8px;border-radius:4px;font-weight:bold;';
+            closeBtn.onclick = function () { rcDebugPanel.remove(); rcDebugPanel = null; };
+            rcDebugPanel.appendChild(closeBtn);
+            document.body.appendChild(rcDebugPanel);
+        }
+        var line = document.createElement('div');
+        line.style.cssText = 'border-top:1px solid rgba(255,255,255,0.3);padding-top:4px;margin-top:4px;';
+        line.textContent = '[' + rcDebugLines.length + '] ' + msg;
+        rcDebugPanel.appendChild(line);
+    }
+    window.rcShowDebug = rcShowDebug;
+
+    window.addEventListener('error', function (e) {
+        rcShowDebug('JS error: ' + (e.message || e) + (e.filename ? ' @ ' + e.filename.split('/').pop() + ':' + e.lineno : ''));
+    });
+    window.addEventListener('unhandledrejection', function (e) {
+        var reason = e.reason;
+        rcShowDebug('Promise rechazada: ' + (reason && reason.message ? reason.message : reason));
+    });
+}
+
 (function () {
     var navToggle = document.getElementById('navToggle');
     var navPanel = document.getElementById('navPanel');

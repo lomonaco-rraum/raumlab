@@ -352,11 +352,13 @@ function capImageDataURLParaMobile(dataURL) {
 async function crearCuadroDesdeDataURL(dataURL, fileName, opciones = {}) {
     const { transform = null, fichaTecnica = null, seleccionar = true } = opciones;
     dataURL = await capImageDataURLParaMobile(dataURL);
+    if (window.rcShowDebug) rcShowDebug('Textura pieza: cargando (' + Math.round(dataURL.length / 1024) + ' KB base64)');
     const textureLoader = new THREE.TextureLoader();
 
     textureLoader.load(dataURL, (texture) => {
         const imgWidth = texture.image.width;
         const imgHeight = texture.image.height;
+        if (window.rcShowDebug) rcShowDebug('Textura pieza: OK ' + imgWidth + 'x' + imgHeight);
         const aspectRatio = imgWidth / imgHeight;
 
         const meshWidth = 1 * aspectRatio;
@@ -387,6 +389,8 @@ async function crearCuadroDesdeDataURL(dataURL, fileName, opciones = {}) {
         objectsInScene.push(paintMesh);
         refrescarListaPiezas();
         if (seleccionar) selectObject(paintMesh);
+    }, undefined, (err) => {
+        if (window.rcShowDebug) rcShowDebug('Textura pieza: ERROR al cargar — ' + (err && err.message ? err.message : err));
     });
 }
 
