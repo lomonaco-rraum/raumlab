@@ -7,6 +7,14 @@
 // espacio_INM) — también debe cerrar el panel en celular. El cambio de
 // modo en sí NO vive acá — lo resuelve el JS propio de cada módulo, que sí
 // necesita disparar lógica propia.
+
+// Helper compartido: mismo breakpoint que @media (max-width: 768px) en
+// raumlab-chrome.css, para gatear en JS cualquier comportamiento que deba
+// existir solo en celular sin tocar la versión de escritorio.
+window.rcIsMobile = function () {
+    return window.matchMedia('(max-width: 768px)').matches;
+};
+
 (function () {
     var navToggle = document.getElementById('navToggle');
     var navPanel = document.getElementById('navPanel');

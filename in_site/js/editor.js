@@ -91,6 +91,19 @@ const inputDimZ = document.getElementById('dim-z');
 const dimZRow = document.getElementById('dim-z-row');
 const checkLockProportion = document.getElementById('check-lock-proportion');
 
+// Solo en celular: type="number" con step decimal se comporta como
+// stepper nativo al tocar en vez de dejar escribir el valor. Se pasa a
+// texto con teclado numérico (inputmode="decimal") — aplicarDimension()/
+// el listener de posición ya parsean con parseFloat(.value), funciona
+// igual con cualquiera de los dos tipos. No toca el input de escritorio.
+if (window.rcIsMobile && window.rcIsMobile()) {
+    [inputDimX, inputDimY, inputDimZ, inputPosX, inputPosY, inputPosZ].forEach((el) => {
+        if (!el) return;
+        el.setAttribute('type', 'text');
+        el.setAttribute('inputmode', 'decimal');
+    });
+}
+
 // Campos del formulario de Ficha Técnica
 const inputMetaTitle = document.getElementById('meta-title');
 const inputMetaArtist = document.getElementById('meta-artist');
@@ -118,6 +131,7 @@ function initEditor() {
     camera.position.set(0, 5, 8);
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
     renderer.shadowMap.enabled = true;
     canvasContainer.appendChild(renderer.domElement);
@@ -1179,6 +1193,7 @@ function animate() {
 function onWindowResize() {
     camera.aspect = canvasContainer.clientWidth / canvasContainer.clientHeight;
     camera.updateProjectionMatrix();
+    renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
 }
 

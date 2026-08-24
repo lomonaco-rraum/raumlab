@@ -563,4 +563,15 @@
     input, textarea, select {
         font-size: 16px !important; /* iOS hace zoom si el font es < 16px */
     }
+    /* .modal-box usa --bg-navy (tinte azul) — en celular se pide negro/
+       escala de grises. .modal-box-preview (vista previa RA) hereda el
+       cambio porque comparte la misma clase .modal-box en el elemento. */
+    .modal-box {
+        background: #0a0a0a;
+    }
+    /* Con el span del check oculto (display:none), space-between deja el
+       único hijo visible pegado a la izquierda en vez de centrado. */
+    .btn-ficha-sala {
+        justify-content: center;
+    }
 }

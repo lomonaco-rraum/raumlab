@@ -839,7 +839,10 @@ html, body.rc-body {
     gap: 32px;
     height: auto;
     margin: 0;
-    padding: calc(var(--header-h) + 20px) 20px 20px;
+    /* Sin header-h acá: #app-main (app-shell.css) ya reserva ese alto
+       arriba, así que sumarlo de nuevo duplicaba el espacio vacío bajo el
+       header en las 4 pantallas (Crear/Visualizar/Galería/Tutoriales). */
+    padding: 16px 20px 20px;
   }
 
   .rail-izquierdo,
@@ -868,7 +871,7 @@ html, body.rc-body {
     flex-direction: column;
     height: auto;
     gap: 24px;
-    padding: calc(var(--header-h) + 20px) 20px 20px;
+    padding: 16px 20px 20px;
   }
 
   .instr-nav {

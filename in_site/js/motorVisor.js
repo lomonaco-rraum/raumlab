@@ -84,6 +84,7 @@ export function crearMotorVisor(refs) {
         camera.position.set(4, 3, 6);
 
         renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
         renderer.shadowMap.enabled = true;
         canvasContainer.appendChild(renderer.domElement);
@@ -113,6 +114,7 @@ export function crearMotorVisor(refs) {
     function onResize() {
         camera.aspect = canvasContainer.clientWidth / canvasContainer.clientHeight;
         camera.updateProjectionMatrix();
+        renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
     }
 
@@ -319,6 +321,12 @@ export function crearMotorVisor(refs) {
     }
 
     if (btnAR) {
+        // Solo en celular: "Ver en Espacio Real" pasa a "Ver en RA" para
+        // ser consistente con el resto del producto, sin tocar el texto
+        // de escritorio.
+        if (window.rcIsMobile && window.rcIsMobile()) {
+            btnAR.textContent = 'Ver en RA';
+        }
         btnAR.addEventListener('click', () => {
             if (!arModelViewer) return;
             if (arModelViewer.canActivateAR === false) {

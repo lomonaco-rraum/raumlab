@@ -460,10 +460,76 @@ body.rc-body {
 
 @media (max-width: 768px) {
     :root {
-        --header-h: 65px;
+        --header-h: 110px;
+        --footer-h: 46px;
+        --mobile-bottom-reserve: calc(var(--footer-h) + 50px);
     }
 
+    /* Header/footer eran transparentes por diseño (para dejar ver el fondo
+       detrás en desktop, donde el contenido nunca llega hasta ahí). En
+       celular el contenido SÍ scrollea por debajo de ambos, así que sin un
+       fondo opaco el texto que pasa por atrás se superpone y se hace
+       ilegible. Mismo color que .rc-bg-layer/--bg-navy para no introducir
+       un tono nuevo. */
+    .rc-header-stack {
+        background-color: var(--bg-navy);
+    }
+
+    .rc-footer {
+        background-color: var(--bg-navy);
+        padding: 0 0 10px;
+    }
+
+    .rc-footer-rule {
+        margin: 0 32px 8px;
+    }
+
+    .rc-footer-copyright {
+        font-size: 0.6rem;
+    }
+
+    /* Fondo con leve overscan: en celular la barra de direcciones del
+       navegador aparece/desaparece y cambia la altura del viewport en
+       vivo. Un fixed con inset:0 puede quedar momentáneamente más chico
+       que el viewport visual durante esa transición y dejar ver el
+       --bg-navy de base en vez de fondo.jpg. Sobrepasar el viewport un
+       poco de cada lado evita ese borde expuesto. */
+    .rc-bg-layer {
+        top: -3vh;
+        bottom: -3vh;
+        left: -2vw;
+        right: -2vw;
+    }
+
+    /* En celular no entra el grid de 3 columnas de escritorio (breadcrumb +
+       subnav + espaciador) — pasa a ser una fila de pestañas horizontal,
+       en el mismo lugar (bajo el header fijo) en vez de existir solo
+       adentro del panel hamburguesa. El breadcrumb se oculta porque
+       compite por el mismo ancho angosto y la identidad del módulo ya es
+       implícita en pantalla. El panel hamburguesa (.rc-nav-modes) se deja
+       como está — es redundante pero no molesta. */
     .rc-module-subheader {
+        display: block;
+        padding: 0;
+    }
+
+    .rc-module-subheader .rc-breadcrumb {
+        display: none;
+    }
+
+    .rc-module-subheader .rc-subnav {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        gap: 20px;
+        margin: 0;
+        padding: 10px 20px 12px;
+        border-bottom: 1px solid var(--surface-border);
+    }
+
+    .rc-module-subheader .rc-subnav::-webkit-scrollbar {
         display: none;
     }
 
@@ -476,8 +542,8 @@ body.rc-body {
         border-bottom: 1px solid var(--surface-border);
     }
 
-    .rc-main { padding: calc(var(--header-h) + 24px) 20px calc(var(--footer-h) + 24px); }
-    .rc-intro-screen { padding: calc(var(--header-h) + 20px) 20px calc(var(--footer-h) + 24px) 35px; }
+    .rc-main { padding: calc(var(--header-h) + 24px) 20px var(--mobile-bottom-reserve); }
+    .rc-intro-screen { padding: calc(var(--header-h) + 20px) 20px var(--mobile-bottom-reserve) 35px; }
     .rc-nav-panel { width: 100%; }
     .rc-back-link { left: 20px; }
 }

@@ -831,6 +831,14 @@ function wireARToggle(enterBtnId, exitBtnId, statusId, getViewer) {
       v.add(cameraPanorama);
       v.enableControl(PANOLENS.CONTROLS.DEVICEORIENTATION);
 
+      // Pantalla completa del teléfono (no solo del visor) — solo en
+      // celular, para no cambiar nada del comportamiento de escritorio.
+      if (window.rcIsMobile && window.rcIsMobile()) {
+        const el = document.documentElement;
+        if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      }
+
       document.getElementById(enterBtnId).style.display = 'none';
       document.getElementById(exitBtnId).style.display = 'block';
       setStatus(statusId, 'RA activa ✓');
@@ -848,6 +856,9 @@ function wireARToggle(enterBtnId, exitBtnId, statusId, getViewer) {
       cameraPanorama = null;
     }
     v.enableControl(PANOLENS.CONTROLS.ORBIT);
+
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    else if (document.webkitFullscreenElement && document.webkitExitFullscreen) document.webkitExitFullscreen();
 
     document.getElementById(enterBtnId).style.display = 'block';
     document.getElementById(exitBtnId).style.display = 'none';
