@@ -860,6 +860,36 @@ html, body.rc-body {
     width: min(420px, 100%);
   }
 
+  /* "Ver en RA" — respaldo por CSS de la pantalla completa: la Fullscreen
+     API del navegador (document.documentElement.requestFullscreen) no
+     anda de forma confiable en varios navegadores móviles, así que en vez
+     de depender solo de ella, el propio visor pasa a cubrir toda la
+     pantalla por su cuenta. La clase la agrega/saca espacio-inm.js al
+     entrar/salir de RA. */
+  #viewer-solo.rc-ar-fullscreen,
+  #viewer-coleccion.rc-ar-fullscreen {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    aspect-ratio: auto;
+    border: none;
+    border-radius: 0;
+    z-index: 500;
+  }
+
+  /* El botón "Salir de RA" vive fuera del visor (en el panel de controles,
+     no adentro) — con el visor cubriendo toda la pantalla quedaría tapado
+     y sin forma de tocarlo. Flota por encima mientras dura la sesión de RA. */
+  #ar-exit.rc-ar-exit-floating,
+  #ar-exit-coleccion.rc-ar-exit-floating {
+    position: fixed;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    z-index: 600;
+  }
+
   .cube-diagram-cell span {
     font-size: 0.58rem;
     left: 4px;
