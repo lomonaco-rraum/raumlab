@@ -560,6 +560,12 @@
         align-items: flex-start;
         gap: 4px;
     }
+    /* "Dar aire" entre el visor y la miniatura de la pieza — el gap del
+       flex de #editor-layout (24px) ya separa ambos bloques, pero se pedía
+       explícitamente más despegue visual acá. */
+    #pieces-list-section {
+        margin-top: 20px;
+    }
     input, textarea, select {
         font-size: 16px !important; /* iOS hace zoom si el font es < 16px */
     }
