@@ -131,13 +131,15 @@ function initEditor() {
     camera.position.set(0, 5, 8);
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
-    // En celular, devicePixelRatio completo (2-3x en la mayoría de los
-    // iPhone) multiplica bastante la memoria de GPU que pide el render
-    // target, encima de la que ya usa cualquier textura grande en escena
-    // — puede ser lo que empuja a un dispositivo justo de memoria a fallar
-    // al cargar una textura. Tope conservador solo en móvil; en escritorio
-    // se mantiene el valor completo.
-    renderer.setPixelRatio(window.rcIsMobile && window.rcIsMobile() ? Math.min(window.devicePixelRatio, 2) : window.devicePixelRatio);
+    // En celular NO se toca el pixelRatio (queda en 1, el default de
+    // Three.js) — devicePixelRatio completo multiplica la memoria de GPU
+    // que pide el render target, y hay indicios de que eso rompió la
+    // carga de texturas con canal alfa en algunos dispositivos. La
+    // nitidez en pantallas retina queda sin resolver en móvil por ahora;
+    // en escritorio se mantiene el valor completo, sin cambios.
+    if (!(window.rcIsMobile && window.rcIsMobile())) {
+        renderer.setPixelRatio(window.devicePixelRatio);
+    }
     renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
     renderer.shadowMap.enabled = true;
     canvasContainer.appendChild(renderer.domElement);
@@ -1241,13 +1243,15 @@ function animate() {
 function onWindowResize() {
     camera.aspect = canvasContainer.clientWidth / canvasContainer.clientHeight;
     camera.updateProjectionMatrix();
-    // En celular, devicePixelRatio completo (2-3x en la mayoría de los
-    // iPhone) multiplica bastante la memoria de GPU que pide el render
-    // target, encima de la que ya usa cualquier textura grande en escena
-    // — puede ser lo que empuja a un dispositivo justo de memoria a fallar
-    // al cargar una textura. Tope conservador solo en móvil; en escritorio
-    // se mantiene el valor completo.
-    renderer.setPixelRatio(window.rcIsMobile && window.rcIsMobile() ? Math.min(window.devicePixelRatio, 2) : window.devicePixelRatio);
+    // En celular NO se toca el pixelRatio (queda en 1, el default de
+    // Three.js) — devicePixelRatio completo multiplica la memoria de GPU
+    // que pide el render target, y hay indicios de que eso rompió la
+    // carga de texturas con canal alfa en algunos dispositivos. La
+    // nitidez en pantallas retina queda sin resolver en móvil por ahora;
+    // en escritorio se mantiene el valor completo, sin cambios.
+    if (!(window.rcIsMobile && window.rcIsMobile())) {
+        renderer.setPixelRatio(window.devicePixelRatio);
+    }
     renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
 }
 
