@@ -816,6 +816,19 @@ function wireARToggle(enterBtnId, exitBtnId, statusId, getViewer) {
 
   document.getElementById(enterBtnId).addEventListener('click', async () => {
     try {
+      // Pantalla completa del teléfono (no solo del visor) — solo en
+      // celular, para no cambiar nada del comportamiento de escritorio.
+      // Tiene que ser lo PRIMERO del handler, antes de cualquier await:
+      // el permiso de la Fullscreen API exige "gesto de usuario" vigente, y
+      // un await (el del permiso de orientación, más abajo) lo consume —
+      // pedirla después de esperar ese permiso la deja silenciosamente
+      // rechazada en varios navegadores móviles.
+      if (window.rcIsMobile && window.rcIsMobile()) {
+        const el = document.documentElement;
+        if (el.requestFullscreen) el.requestFullscreen().catch((e) => console.error('Fullscreen RA:', e));
+        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      }
+
       // iOS 13+ exige pedir el permiso de orientación a mano, desde el gesto
       // del usuario (este clic) — Panolens no lo hace por su cuenta.
       if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
@@ -830,14 +843,6 @@ function wireARToggle(enterBtnId, exitBtnId, statusId, getViewer) {
       cameraPanorama = new PANOLENS.CameraPanorama({ video: { facingMode: 'environment' }, audio: false });
       v.add(cameraPanorama);
       v.enableControl(PANOLENS.CONTROLS.DEVICEORIENTATION);
-
-      // Pantalla completa del teléfono (no solo del visor) — solo en
-      // celular, para no cambiar nada del comportamiento de escritorio.
-      if (window.rcIsMobile && window.rcIsMobile()) {
-        const el = document.documentElement;
-        if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
-        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-      }
 
       document.getElementById(enterBtnId).style.display = 'none';
       document.getElementById(exitBtnId).style.display = 'block';

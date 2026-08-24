@@ -503,11 +503,10 @@ body.rc-body {
 
     /* En celular no entra el grid de 3 columnas de escritorio (breadcrumb +
        subnav + espaciador) — pasa a ser una fila de pestañas horizontal,
-       en el mismo lugar (bajo el header fijo) en vez de existir solo
-       adentro del panel hamburguesa. El breadcrumb se oculta porque
+       centrada, en el mismo lugar (bajo el header fijo) en vez de existir
+       solo adentro del panel hamburguesa. El breadcrumb se oculta porque
        compite por el mismo ancho angosto y la identidad del módulo ya es
-       implícita en pantalla. El panel hamburguesa (.rc-nav-modes) se deja
-       como está — es redundante pero no molesta. */
+       implícita en pantalla. */
     .rc-module-subheader {
         display: block;
         padding: 0;
@@ -520,6 +519,7 @@ body.rc-body {
     .rc-module-subheader .rc-subnav {
         display: flex;
         flex-wrap: nowrap;
+        justify-content: center;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
@@ -533,13 +533,13 @@ body.rc-body {
         display: none;
     }
 
+    /* La lista de modos duplicada dentro del panel hamburguesa ya no hace
+       falta: los mismos modos ahora viven en la fila de pestañas de arriba
+       (.rc-module-subheader), fija y siempre visible. Dejarla también acá
+       era redundante y confuso — el panel hamburguesa en celular queda
+       solo para Recursos/Investigación/Educación/etc. */
     .rc-nav-modes {
-        display: flex;
-        flex-direction: column;
-        gap: 22px;
-        margin-bottom: 22px;
-        padding-bottom: 22px;
-        border-bottom: 1px solid var(--surface-border);
+        display: none;
     }
 
     .rc-main { padding: calc(var(--header-h) + 24px) 20px var(--mobile-bottom-reserve); }

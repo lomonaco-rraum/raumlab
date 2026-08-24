@@ -778,12 +778,16 @@ function actualizarInputsPosicionYRotacion() {
 
 // Recalcula los 3 campos de dimensión real (m) a partir de la escala actual
 // del objeto y su tamaño base (guardado en userData.baseSize al crearlo).
-function actualizarInputsDimension() {
+// skipEje: eje que NO hay que reescribir (el que el usuario está tipeando
+// en este momento) — solo se usa en móvil, ver aplicarDimension() más
+// abajo. Sin skipEje (desktop, comportamiento sin cambios) reescribe los 3
+// campos siempre, igual que antes.
+function actualizarInputsDimension(skipEje) {
     if (!selectedObject) return;
     const base = selectedObject.userData.baseSize || { x: 1, y: 1, z: 1 };
-    inputDimX.value = (selectedObject.scale.x * base.x).toFixed(2);
-    inputDimY.value = (selectedObject.scale.y * base.y).toFixed(2);
-    inputDimZ.value = (selectedObject.scale.z * base.z).toFixed(2);
+    if (skipEje !== 'x') inputDimX.value = (selectedObject.scale.x * base.x).toFixed(2);
+    if (skipEje !== 'y') inputDimY.value = (selectedObject.scale.y * base.y).toFixed(2);
+    if (skipEje !== 'z') inputDimZ.value = (selectedObject.scale.z * base.z).toFixed(2);
 }
 
 function updateInspectorValues() {
@@ -832,7 +836,12 @@ function setupInspectorInputs() {
             selectedObject.scale[eje] = escalaNueva;
         }
 
-        actualizarInputsDimension();
+        // En móvil no se reescribe el campo que se está tipeando (eje) —
+        // eso era lo que cortaba la escritura de decimales a mitad de
+        // tecla ("1.5" se convertía en "1.00" apenas se tipeaba el "1").
+        // Los otros dos ejes sí se actualizan (necesario con proporción
+        // bloqueada). Desktop sigue igual: reescribe los 3 siempre.
+        actualizarInputsDimension(window.rcIsMobile && window.rcIsMobile() ? eje : undefined);
     };
 
     inputDimX.addEventListener('input', () => aplicarDimension('x'));

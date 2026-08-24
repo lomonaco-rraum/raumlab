@@ -15,6 +15,33 @@ window.rcIsMobile = function () {
     return window.matchMedia('(max-width: 768px)').matches;
 };
 
+// --header-h/--footer-h en el media query de celular son una ESTIMACIÓN de
+// respaldo (la primera pintura los necesita antes de que exista el DOM para
+// medir nada) — según cambie la fuente cargada, el wrap de las pestañas, o
+// el modelo de teléfono, esa estimación queda corta o larga y el padding
+// del contenido no calza con el alto real. Corregirla acá una vez que el
+// header/footer ya están pintados (y de nuevo si cambian de tamaño) evita
+// tener que ajustar el número a mano por cada dispositivo.
+function syncChromeHeights() {
+    var headerStack = document.querySelector('.rc-header-stack');
+    var footer = document.querySelector('.rc-footer');
+    if (headerStack) {
+        document.documentElement.style.setProperty('--header-h', headerStack.offsetHeight + 'px');
+    }
+    if (footer) {
+        document.documentElement.style.setProperty('--footer-h', footer.offsetHeight + 'px');
+    }
+}
+
+if (window.rcIsMobile && window.rcIsMobile()) {
+    syncChromeHeights();
+    window.addEventListener('resize', syncChromeHeights);
+    window.addEventListener('orientationchange', syncChromeHeights);
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(syncChromeHeights);
+    }
+}
+
 (function () {
     var navToggle = document.getElementById('navToggle');
     var navPanel = document.getElementById('navPanel');
@@ -45,7 +72,10 @@ window.rcIsMobile = function () {
         });
     }
 
-    navPanel.querySelectorAll('a[href], button[data-modo]').forEach(function (link) {
+    // data-modo (trans_FORMA) y data-mode (espacio_INM): mismo rol, dos
+    // nombres de atributo distintos entre módulos — hay que cerrar el panel
+    // al elegir cualquiera de los dos.
+    navPanel.querySelectorAll('a[href], button[data-modo], button[data-mode]').forEach(function (link) {
         link.addEventListener('click', closeNav);
     });
 })();
