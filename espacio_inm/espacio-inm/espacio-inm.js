@@ -404,9 +404,23 @@ function compositeWithBackground(foregroundDataURL, bgURL, flipMode) {
       const fg = new Image();
       fg.onload = () => {
         try {
+          // Mismo límite de textura de celular que qualitySize() (ver más
+          // abajo) — acá hace falta aparte porque esta función también la
+          // usa Visualizador al subir/componer una imagen que puede venir
+          // de cualquier tamaño (por ejemplo, exportada antes desde una PC),
+          // no solo desde el render interno de Crear.
+          let cw = fg.width, ch = fg.height;
+          if (window.rcIsMobile && window.rcIsMobile()) {
+            const MAX_MOBILE = 2048;
+            if (cw > MAX_MOBILE || ch > MAX_MOBILE) {
+              const factor = MAX_MOBILE / Math.max(cw, ch);
+              cw = Math.round(cw * factor);
+              ch = Math.round(ch * factor);
+            }
+          }
           const c = document.createElement('canvas');
-          c.width = fg.width;
-          c.height = fg.height;
+          c.width = cw;
+          c.height = ch;
           const ctx = c.getContext('2d');
 
           ctx.save();
@@ -811,53 +825,16 @@ document.getElementById('viewer-input').addEventListener('change', async e => {
 /* ================= RA (experimental — requiere celular real para probar) ================= */
 // Escopado por botones/visor, así Visualizador y Colección tienen cada uno
 // su propia cámara (nunca las dos prendidas a la vez).
-function wireARToggle(enterBtnId, exitBtnId, statusId, getViewer, containerId) {
+function wireARToggle(enterBtnId, exitBtnId, statusId, getViewer) {
   let cameraPanorama = null;
-
-  // Pantalla completa del teléfono (no solo del visor) — solo en celular,
-  // para no cambiar nada del comportamiento de escritorio. La Fullscreen
-  // API nativa (requestFullscreen) no anda de forma confiable en varios
-  // navegadores móviles — se sigue intentando por las dudas, pero la
-  // garantía real es la clase CSS: el propio contenedor del visor pasa a
-  // cubrir toda la pantalla por su cuenta. El botón "Salir de RA" vive
-  // fuera del visor (en el panel, no adentro), así que necesita su propia
-  // clase para flotar por encima una vez que el visor tapa todo.
-  function enterFullscreenUI() {
-    if (!(window.rcIsMobile && window.rcIsMobile())) return;
-    const viewerContainer = document.getElementById(containerId);
-    if (viewerContainer) viewerContainer.classList.add('rc-ar-fullscreen');
-    document.getElementById(exitBtnId).classList.add('rc-ar-exit-floating');
-    // Panolens redimensiona su canvas escuchando 'resize' en window —
-    // cambiar el tamaño del contenedor por CSS no dispara eso solo, hay
-    // que avisarle a mano o el canvas queda con el tamaño chico de antes,
-    // dentro del contenedor ahora grande.
-    window.dispatchEvent(new Event('resize'));
-
-    const el = document.documentElement;
-    if (el.requestFullscreen) el.requestFullscreen().catch((e) => console.error('Fullscreen RA:', e));
-    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-  }
-
-  function exitFullscreenUI() {
-    const viewerContainer = document.getElementById(containerId);
-    if (viewerContainer) viewerContainer.classList.remove('rc-ar-fullscreen');
-    document.getElementById(exitBtnId).classList.remove('rc-ar-exit-floating');
-    window.dispatchEvent(new Event('resize'));
-
-    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
-    else if (document.webkitFullscreenElement && document.webkitExitFullscreen) document.webkitExitFullscreen();
-  }
 
   document.getElementById(enterBtnId).addEventListener('click', async () => {
     try {
-      enterFullscreenUI();
-
       // iOS 13+ exige pedir el permiso de orientación a mano, desde el gesto
       // del usuario (este clic) — Panolens no lo hace por su cuenta.
       if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
         const permission = await DeviceOrientationEvent.requestPermission();
         if (permission !== 'granted') {
-          exitFullscreenUI();
           setStatus(statusId, 'Permiso de orientación denegado');
           return;
         }
@@ -873,7 +850,6 @@ function wireARToggle(enterBtnId, exitBtnId, statusId, getViewer, containerId) {
       setStatus(statusId, 'RA activa ✓');
     } catch (e) {
       console.error(e);
-      exitFullscreenUI();
       setStatus(statusId, 'No se pudo activar RA (¿permiso de cámara denegado?)');
     }
   });
@@ -887,16 +863,14 @@ function wireARToggle(enterBtnId, exitBtnId, statusId, getViewer, containerId) {
     }
     v.enableControl(PANOLENS.CONTROLS.ORBIT);
 
-    exitFullscreenUI();
-
     document.getElementById(enterBtnId).style.display = 'block';
     document.getElementById(exitBtnId).style.display = 'none';
     setStatus(statusId, '');
   });
 }
 
-wireARToggle('ar-enter', 'ar-exit', 'status-ar', () => viewerSolo, 'viewer-solo');
-wireARToggle('ar-enter-coleccion', 'ar-exit-coleccion', 'status-ar-coleccion', () => viewerColeccion, 'viewer-coleccion');
+wireARToggle('ar-enter', 'ar-exit', 'status-ar', () => viewerSolo);
+wireARToggle('ar-enter-coleccion', 'ar-exit-coleccion', 'status-ar-coleccion', () => viewerColeccion);
 
 /* ================= Colección RaumLab ================= */
 // Sumar un ejemplo nuevo a la colección es agregar un objeto acá — no hace
