@@ -860,6 +860,45 @@ html, body.rc-body {
     width: min(420px, 100%);
   }
 
+  /* "⛶ Pantalla completa" de RA — acción propia, separada de "Ver en RA",
+     con su propio click limpio (la Fullscreen API nativa necesita un
+     gesto de usuario fresco; encadenarla después de otro permiso ya
+     pedido la deja rechazada en varios navegadores móviles). El
+     ResizeObserver de arriba ya sabe dejar de forzar 16:9 mientras esta
+     clase está puesta. */
+  #viewer-solo.rc-ar-fullscreen,
+  #viewer-coleccion.rc-ar-fullscreen {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100dvh;
+    border: none;
+    border-radius: 0;
+    z-index: 500;
+  }
+
+  /* "Salir de RA" y "Pantalla completa" viven fuera del visor (en el
+     panel de controles) — con el visor cubriendo toda la pantalla
+     quedarían tapados. Flotan por encima mientras dura la pantalla
+     completa. */
+  #ar-exit.rc-ar-exit-floating,
+  #ar-exit-coleccion.rc-ar-exit-floating,
+  #ar-fullscreen.rc-ar-exit-floating,
+  #ar-fullscreen-coleccion.rc-ar-exit-floating {
+    position: fixed;
+    left: 20px;
+    right: 20px;
+    z-index: 600;
+  }
+  #ar-exit.rc-ar-exit-floating,
+  #ar-exit-coleccion.rc-ar-exit-floating {
+    bottom: 76px;
+  }
+  #ar-fullscreen.rc-ar-exit-floating,
+  #ar-fullscreen-coleccion.rc-ar-exit-floating {
+    bottom: 20px;
+  }
+
   .cube-diagram-cell span {
     font-size: 0.58rem;
     left: 4px;

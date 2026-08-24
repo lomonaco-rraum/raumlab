@@ -349,10 +349,17 @@ IDS_CONTENEDOR_VISOR.forEach(id => {
     if (frame !== null) return;
     frame = requestAnimationFrame(() => {
       frame = null;
-      const w = cont.clientWidth;
-      if (w <= 0) return;
-      const alto = Math.round(w * 9 / 16);
-      if (cont.clientHeight !== alto) cont.style.height = alto + 'px';
+      // Pantalla completa de RA (.rc-ar-fullscreen, solo celular): mientras
+      // esta clase está puesta el contenedor cubre la pantalla a propósito
+      // con su propio alto (no 16:9) — no hay que forzarle nada acá, pero
+      // sí seguir llamando a onWindowResize() para que Panolens renderice
+      // al tamaño real en vez de quedarse con el de antes.
+      if (!cont.classList.contains('rc-ar-fullscreen')) {
+        const w = cont.clientWidth;
+        if (w <= 0) return;
+        const alto = Math.round(w * 9 / 16);
+        if (cont.clientHeight !== alto) cont.style.height = alto + 'px';
+      }
       VIEWER_POR_ID[id].onWindowResize();
     });
   }).observe(cont);
@@ -825,16 +832,48 @@ document.getElementById('viewer-input').addEventListener('change', async e => {
 /* ================= RA (experimental — requiere celular real para probar) ================= */
 // Escopado por botones/visor, así Visualizador y Colección tienen cada uno
 // su propia cámara (nunca las dos prendidas a la vez).
-// Sin pantalla completa dinámica a propósito: dos intentos distintos (CSS
-// + requestFullscreen, y CSS + viewer.onWindowResize()) rompieron el
-// render de la cámara de RA en el dispositivo real de prueba (patrón en
-// blanco y negro en vez de la cámara) — el panorama sin RA renderiza bien
-// en el mismo dispositivo, así que el problema es específico de tocar el
-// tamaño del contenedor mientras CameraPanorama está activo. Queda
-// pendiente para retomar con más información; por ahora RA activa en el
-// visor de tamaño normal, que es el estado confirmado funcional.
-function wireARToggle(enterBtnId, exitBtnId, statusId, getViewer) {
+// El botón de pantalla completa es una acción SEPARADA de "Ver en RA", a
+// propósito: la Fullscreen API nativa necesita su propio gesto de usuario
+// "fresco" — pedirla encadenada después de otro permiso ya solicitado
+// (el de orientación) la deja rechazada en varios navegadores móviles.
+// Al tener su propio botón/click, tiene la mejor chance posible de andar
+// nativamente; y si el navegador igual no la soporta, la clase CSS
+// (.rc-ar-fullscreen) cubre la pantalla igual por su cuenta — para lo
+// cual el ResizeObserver de más arriba ya sabe no forzarle el 16:9
+// mientras esa clase está puesta.
+function wireARToggle(enterBtnId, exitBtnId, statusId, getViewer, containerId, fullscreenBtnId) {
   let cameraPanorama = null;
+  let enPantallaCompleta = false;
+
+  function toggleFullscreen() {
+    const viewerContainer = document.getElementById(containerId);
+    const fsBtn = document.getElementById(fullscreenBtnId);
+    enPantallaCompleta = !enPantallaCompleta;
+
+    if (enPantallaCompleta) {
+      if (viewerContainer) viewerContainer.classList.add('rc-ar-fullscreen');
+      document.getElementById(exitBtnId).classList.add('rc-ar-exit-floating');
+      fsBtn.classList.add('rc-ar-exit-floating');
+      fsBtn.textContent = '✕ Salir de pantalla completa';
+      const el = document.documentElement;
+      if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    } else {
+      if (viewerContainer) viewerContainer.classList.remove('rc-ar-fullscreen');
+      document.getElementById(exitBtnId).classList.remove('rc-ar-exit-floating');
+      fsBtn.classList.remove('rc-ar-exit-floating');
+      fsBtn.textContent = '⛶ Pantalla completa';
+      if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+      else if (document.webkitFullscreenElement && document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+    getViewer().onWindowResize();
+  }
+
+  function salirDePantallaCompletaSiHaceFalta() {
+    if (enPantallaCompleta) toggleFullscreen();
+  }
+
+  document.getElementById(fullscreenBtnId).addEventListener('click', toggleFullscreen);
 
   document.getElementById(enterBtnId).addEventListener('click', async () => {
     try {
@@ -855,6 +894,7 @@ function wireARToggle(enterBtnId, exitBtnId, statusId, getViewer) {
 
       document.getElementById(enterBtnId).style.display = 'none';
       document.getElementById(exitBtnId).style.display = 'block';
+      document.getElementById(fullscreenBtnId).style.display = 'block';
       setStatus(statusId, 'RA activa ✓');
     } catch (e) {
       console.error(e);
@@ -870,15 +910,17 @@ function wireARToggle(enterBtnId, exitBtnId, statusId, getViewer) {
       cameraPanorama = null;
     }
     v.enableControl(PANOLENS.CONTROLS.ORBIT);
+    salirDePantallaCompletaSiHaceFalta();
 
     document.getElementById(enterBtnId).style.display = 'block';
     document.getElementById(exitBtnId).style.display = 'none';
+    document.getElementById(fullscreenBtnId).style.display = 'none';
     setStatus(statusId, '');
   });
 }
 
-wireARToggle('ar-enter', 'ar-exit', 'status-ar', () => viewerSolo);
-wireARToggle('ar-enter-coleccion', 'ar-exit-coleccion', 'status-ar-coleccion', () => viewerColeccion);
+wireARToggle('ar-enter', 'ar-exit', 'status-ar', () => viewerSolo, 'viewer-solo', 'ar-fullscreen');
+wireARToggle('ar-enter-coleccion', 'ar-exit-coleccion', 'status-ar-coleccion', () => viewerColeccion, 'viewer-coleccion', 'ar-fullscreen-coleccion');
 
 /* ================= Colección RaumLab ================= */
 // Sumar un ejemplo nuevo a la colección es agregar un objeto acá — no hace
