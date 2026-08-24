@@ -845,6 +845,22 @@ function wireARToggle(enterBtnId, exitBtnId, statusId, getViewer, containerId, f
   let cameraPanorama = null;
   let enPantallaCompleta = false;
 
+  // Ancho/alto en píxeles exactos por JS, no vh/dvh ni aspect-ratio: en
+  // Safari, al entrar a pantalla completa nativa la barra de direcciones
+  // se oculta y el viewport cambia de tamaño DESPUÉS del click — hay que
+  // recalcular con el tamaño real disponible en ese momento, no con el
+  // que había al tocar el botón. Misma función en ambos casos (el resize
+  // "a mano" del click, y cualquier resize/orientationchange real
+  // mientras dura la sesión) para que quede una sola fuente de verdad.
+  function ajustarTamanioFullscreen() {
+    if (!enPantallaCompleta) return;
+    const viewerContainer = document.getElementById(containerId);
+    if (!viewerContainer) return;
+    viewerContainer.style.width = window.innerWidth + 'px';
+    viewerContainer.style.height = window.innerHeight + 'px';
+    getViewer().onWindowResize();
+  }
+
   function toggleFullscreen() {
     const viewerContainer = document.getElementById(containerId);
     const fsBtn = document.getElementById(fullscreenBtnId);
@@ -855,18 +871,30 @@ function wireARToggle(enterBtnId, exitBtnId, statusId, getViewer, containerId, f
       document.getElementById(exitBtnId).classList.add('rc-ar-exit-floating');
       fsBtn.classList.add('rc-ar-exit-floating');
       fsBtn.textContent = '✕ Salir de pantalla completa';
+      ajustarTamanioFullscreen();
+      window.addEventListener('resize', ajustarTamanioFullscreen);
+      window.addEventListener('orientationchange', ajustarTamanioFullscreen);
+      document.addEventListener('fullscreenchange', ajustarTamanioFullscreen);
+
       const el = document.documentElement;
       if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
       else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
     } else {
-      if (viewerContainer) viewerContainer.classList.remove('rc-ar-fullscreen');
+      window.removeEventListener('resize', ajustarTamanioFullscreen);
+      window.removeEventListener('orientationchange', ajustarTamanioFullscreen);
+      document.removeEventListener('fullscreenchange', ajustarTamanioFullscreen);
+      if (viewerContainer) {
+        viewerContainer.classList.remove('rc-ar-fullscreen');
+        viewerContainer.style.width = '';
+        viewerContainer.style.height = '';
+      }
       document.getElementById(exitBtnId).classList.remove('rc-ar-exit-floating');
       fsBtn.classList.remove('rc-ar-exit-floating');
       fsBtn.textContent = '⛶ Pantalla completa';
       if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
       else if (document.webkitFullscreenElement && document.webkitExitFullscreen) document.webkitExitFullscreen();
+      getViewer().onWindowResize();
     }
-    getViewer().onWindowResize();
   }
 
   function salirDePantallaCompletaSiHaceFalta() {

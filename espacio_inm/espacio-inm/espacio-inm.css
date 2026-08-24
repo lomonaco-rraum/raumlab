@@ -865,13 +865,18 @@ html, body.rc-body {
      gesto de usuario fresco; encadenarla después de otro permiso ya
      pedido la deja rechazada en varios navegadores móviles). El
      ResizeObserver de arriba ya sabe dejar de forzar 16:9 mientras esta
-     clase está puesta. */
+     clase está puesta. Ancho/alto NO van acá: los pone espacio-inm.js en
+     píxeles exactos (window.innerWidth/innerHeight), no vh/dvh — evita
+     depender de una unidad CSS que puede no comportarse igual en todos
+     los Safari. aspect-ratio explícitamente anulado para que el 16:9 de
+     la regla base no compita con esos píxeles. top/left en vez del
+     shorthand inset, por compatibilidad. */
   #viewer-solo.rc-ar-fullscreen,
   #viewer-coleccion.rc-ar-fullscreen {
     position: fixed;
-    inset: 0;
-    width: 100vw;
-    height: 100dvh;
+    top: 0;
+    left: 0;
+    aspect-ratio: auto;
     border: none;
     border-radius: 0;
     z-index: 500;
