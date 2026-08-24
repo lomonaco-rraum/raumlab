@@ -860,16 +860,38 @@ html, body.rc-body {
     width: min(420px, 100%);
   }
 
-  /* Visor más grande en móvil (tamaño fijo, no dinámico): un intento
-     anterior de agrandar el visor SOLO al entrar en RA (cambiándole el
-     tamaño en caliente por JS) hacía que Panolens perdiera la relación de
-     aspecto correcta (imagen forzada/distorsionada) y complicaba innecesa-
-     riamente la salida de RA. Esto evita todo eso: el visor mide lo mismo
-     siempre, dentro y fuera de RA, así Panolens nunca tiene que
-     recalcularse en caliente. */
-  #viewer, #viewer-eqr, #viewer-solo, #viewer-coleccion {
+  /* "Ver en RA" — el visor pasa a cubrir toda la pantalla SOLO mientras
+     dura la sesión de RA (no de forma fija todo el tiempo — eso empujaba
+     el resto de los controles, como el propio botón de RA, muy abajo).
+     100dvh (dynamic viewport height) en vez de 100vh: en Safari/iOS el
+     alto "visual" cambia en vivo cuando aparece/desaparece la barra de
+     direcciones, y 100vh puede no coincidir con eso — dvh sí. La clase la
+     agrega/saca espacio-inm.js al entrar/salir de RA, junto con
+     viewer.onWindowResize() (método propio de Panolens — no escucha el
+     resize de window por su cuenta, hay que avisarle a mano o sigue
+     renderizando al tamaño chico de antes, con la imagen estirada). */
+  #viewer-solo.rc-ar-fullscreen,
+  #viewer-coleccion.rc-ar-fullscreen {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100dvh;
     aspect-ratio: auto;
-    height: 65vh;
+    border: none;
+    border-radius: 0;
+    z-index: 500;
+  }
+
+  /* El botón "Salir de RA" vive fuera del visor (en el panel de controles,
+     no adentro) — con el visor cubriendo toda la pantalla quedaría tapado
+     y sin forma de tocarlo. Flota por encima mientras dura la sesión. */
+  #ar-exit.rc-ar-exit-floating,
+  #ar-exit-coleccion.rc-ar-exit-floating {
+    position: fixed;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    z-index: 600;
   }
 
   .cube-diagram-cell span {

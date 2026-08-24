@@ -825,16 +825,47 @@ document.getElementById('viewer-input').addEventListener('change', async e => {
 /* ================= RA (experimental — requiere celular real para probar) ================= */
 // Escopado por botones/visor, así Visualizador y Colección tienen cada uno
 // su propia cámara (nunca las dos prendidas a la vez).
-function wireARToggle(enterBtnId, exitBtnId, statusId, getViewer) {
+function wireARToggle(enterBtnId, exitBtnId, statusId, getViewer, containerId) {
   let cameraPanorama = null;
+
+  // Pantalla completa del teléfono, solo mientras dura la sesión de RA —
+  // solo en celular, para no cambiar nada del comportamiento de escritorio.
+  // Panolens NO escucha el resize de window por su cuenta (confirmado en
+  // su código fuente) — hay que llamar a su propio v.onWindowResize()
+  // después de cambiar el tamaño del contenedor por CSS, o sigue
+  // renderizando al tamaño chico de antes con la imagen estirada.
+  function enterFullscreenUI() {
+    if (!(window.rcIsMobile && window.rcIsMobile())) return;
+    const viewerContainer = document.getElementById(containerId);
+    if (viewerContainer) viewerContainer.classList.add('rc-ar-fullscreen');
+    document.getElementById(exitBtnId).classList.add('rc-ar-exit-floating');
+    getViewer().onWindowResize();
+
+    const el = document.documentElement;
+    if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+  }
+
+  function exitFullscreenUI() {
+    const viewerContainer = document.getElementById(containerId);
+    if (viewerContainer) viewerContainer.classList.remove('rc-ar-fullscreen');
+    document.getElementById(exitBtnId).classList.remove('rc-ar-exit-floating');
+    getViewer().onWindowResize();
+
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    else if (document.webkitFullscreenElement && document.webkitExitFullscreen) document.webkitExitFullscreen();
+  }
 
   document.getElementById(enterBtnId).addEventListener('click', async () => {
     try {
+      enterFullscreenUI();
+
       // iOS 13+ exige pedir el permiso de orientación a mano, desde el gesto
       // del usuario (este clic) — Panolens no lo hace por su cuenta.
       if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
         const permission = await DeviceOrientationEvent.requestPermission();
         if (permission !== 'granted') {
+          exitFullscreenUI();
           setStatus(statusId, 'Permiso de orientación denegado');
           return;
         }
@@ -850,6 +881,7 @@ function wireARToggle(enterBtnId, exitBtnId, statusId, getViewer) {
       setStatus(statusId, 'RA activa ✓');
     } catch (e) {
       console.error(e);
+      exitFullscreenUI();
       setStatus(statusId, 'No se pudo activar RA (¿permiso de cámara denegado?)');
     }
   });
@@ -863,14 +895,16 @@ function wireARToggle(enterBtnId, exitBtnId, statusId, getViewer) {
     }
     v.enableControl(PANOLENS.CONTROLS.ORBIT);
 
+    exitFullscreenUI();
+
     document.getElementById(enterBtnId).style.display = 'block';
     document.getElementById(exitBtnId).style.display = 'none';
     setStatus(statusId, '');
   });
 }
 
-wireARToggle('ar-enter', 'ar-exit', 'status-ar', () => viewerSolo);
-wireARToggle('ar-enter-coleccion', 'ar-exit-coleccion', 'status-ar-coleccion', () => viewerColeccion);
+wireARToggle('ar-enter', 'ar-exit', 'status-ar', () => viewerSolo, 'viewer-solo');
+wireARToggle('ar-enter-coleccion', 'ar-exit-coleccion', 'status-ar-coleccion', () => viewerColeccion, 'viewer-coleccion');
 
 /* ================= Colección RaumLab ================= */
 // Sumar un ejemplo nuevo a la colección es agregar un objeto acá — no hace
