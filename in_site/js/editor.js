@@ -131,7 +131,13 @@ function initEditor() {
     camera.position.set(0, 5, 8);
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setPixelRatio(window.devicePixelRatio);
+    // En celular, devicePixelRatio completo (2-3x en la mayoría de los
+    // iPhone) multiplica bastante la memoria de GPU que pide el render
+    // target, encima de la que ya usa cualquier textura grande en escena
+    // — puede ser lo que empuja a un dispositivo justo de memoria a fallar
+    // al cargar una textura. Tope conservador solo en móvil; en escritorio
+    // se mantiene el valor completo.
+    renderer.setPixelRatio(window.rcIsMobile && window.rcIsMobile() ? Math.min(window.devicePixelRatio, 2) : window.devicePixelRatio);
     renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
     renderer.shadowMap.enabled = true;
     canvasContainer.appendChild(renderer.domElement);
@@ -309,8 +315,41 @@ function handlePaintUpload(event) {
     reader.readAsDataURL(file);
 }
 
-function crearCuadroDesdeDataURL(dataURL, fileName, opciones = {}) {
+// Tope de tamaño de imagen en celular: una textura muy grande puede
+// agotar la memoria de GPU disponible en un iPhone y fallar en silencio
+// (Three.js no tira error visible — el material se queda con su color
+// blanco por defecto, como si no tuviera mapa). Mismo criterio que el
+// tope de espacio_INM (compositeWithBackground), acá aplicado a las
+// imágenes que se agregan como pieza.
+function capImageDataURLParaMobile(dataURL) {
+    return new Promise((resolve) => {
+        if (!(window.rcIsMobile && window.rcIsMobile())) {
+            resolve(dataURL);
+            return;
+        }
+        const img = new Image();
+        img.onload = () => {
+            const MAX_MOBILE = 2048;
+            if (img.width <= MAX_MOBILE && img.height <= MAX_MOBILE) {
+                resolve(dataURL);
+                return;
+            }
+            const factor = MAX_MOBILE / Math.max(img.width, img.height);
+            const c = document.createElement('canvas');
+            c.width = Math.round(img.width * factor);
+            c.height = Math.round(img.height * factor);
+            const ctx = c.getContext('2d');
+            ctx.drawImage(img, 0, 0, c.width, c.height);
+            resolve(c.toDataURL('image/png'));
+        };
+        img.onerror = () => resolve(dataURL);
+        img.src = dataURL;
+    });
+}
+
+async function crearCuadroDesdeDataURL(dataURL, fileName, opciones = {}) {
     const { transform = null, fichaTecnica = null, seleccionar = true } = opciones;
+    dataURL = await capImageDataURLParaMobile(dataURL);
     const textureLoader = new THREE.TextureLoader();
 
     textureLoader.load(dataURL, (texture) => {
@@ -1202,7 +1241,13 @@ function animate() {
 function onWindowResize() {
     camera.aspect = canvasContainer.clientWidth / canvasContainer.clientHeight;
     camera.updateProjectionMatrix();
-    renderer.setPixelRatio(window.devicePixelRatio);
+    // En celular, devicePixelRatio completo (2-3x en la mayoría de los
+    // iPhone) multiplica bastante la memoria de GPU que pide el render
+    // target, encima de la que ya usa cualquier textura grande en escena
+    // — puede ser lo que empuja a un dispositivo justo de memoria a fallar
+    // al cargar una textura. Tope conservador solo en móvil; en escritorio
+    // se mantiene el valor completo.
+    renderer.setPixelRatio(window.rcIsMobile && window.rcIsMobile() ? Math.min(window.devicePixelRatio, 2) : window.devicePixelRatio);
     renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
 }
 
