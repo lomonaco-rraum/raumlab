@@ -169,7 +169,7 @@ document.querySelectorAll('.file-btn').forEach(btn => {
   input && input.addEventListener('change', e => {
     const file = e.target.files && e.target.files[0];
     if (!file) {
-      btn.innerHTML = '<span class="plus">+</span>';
+      btn.innerHTML = '+';
       return;
     }
     const reader = new FileReader();
@@ -553,7 +553,11 @@ function flattenToWhite(dataURL) {
 let includeAlpha = true;
 document.getElementById('include-alpha').addEventListener('change', e => {
   includeAlpha = e.target.checked;
-  document.getElementById('bg-picker-crear').style.display = includeAlpha ? 'flex' : 'none';
+  // 'block', no 'flex': este contenedor tiene la etiqueta "Fondo" Y la fila
+  // de miniaturas como hijos — 'flex' los acomoda en fila (uno al lado del
+  // otro) en vez de apilados. El que sí es flex es .bg-picker-row (la fila
+  // en sí), que no se toca acá.
+  document.getElementById('bg-picker-crear').style.display = includeAlpha ? 'block' : 'none';
 });
 
 /* ================= Orientación inicial ================= */
@@ -687,8 +691,12 @@ document.getElementById('reset-project').addEventListener('click', () => {
   CUBE_FACE_IDS.forEach(id => {
     faceStore[id] = null;
 
+    // "+" como texto plano, igual que el HTML original — envolverlo en un
+    // <span> lo hacía caer en la regla .cube-diagram-cell span (pensada
+    // para la etiqueta del nombre: chica, gris, pegada abajo del
+    // cuadrante), así que se veía chico en vez de la cruz grande centrada.
     const btn = document.querySelector('.file-btn[data-target="' + id + '"]');
-    if (btn) btn.innerHTML = '<span class="plus">+</span>';
+    if (btn) btn.innerHTML = '+';
 
     const input = document.getElementById(id);
     if (input) input.value = '';
@@ -723,7 +731,7 @@ document.getElementById('reset-project').addEventListener('click', () => {
   if (noneBtn) noneBtn.classList.add('active');
   includeAlpha = true;
   document.getElementById('include-alpha').checked = true;
-  document.getElementById('bg-picker-crear').style.display = 'flex';
+  document.getElementById('bg-picker-crear').style.display = 'block';
 
   // Modo de carga (vuelve a "6 caras")
   document.querySelectorAll('.cm-mode-option').forEach(b => b.classList.remove('active'));

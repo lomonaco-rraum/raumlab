@@ -468,10 +468,15 @@ html, body.rc-body {
   gap: 8px;
 }
 
+/* nowrap: son 5 botones de tamaño fijo (40px + 8px de separación = 232px
+   en total), entran de sobra en cualquier celular. Con flex-wrap:wrap, al
+   ocultar/mostrar el bloque completo (tildar/destildar "Incluir
+   transparencia") el ancho disponible se recalculaba distinto según el
+   momento, y el botón "+" a veces saltaba a una fila aparte. */
 .bg-picker-row {
   display: flex;
   gap: 8px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .orient-btn {
