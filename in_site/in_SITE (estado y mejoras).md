@@ -1,6 +1,26 @@
 # in_SITE — Estado del proyecto y hoja de ruta
 
-_Actualizado: 23/08/2026_
+_Actualizado: 27/08/2026_
+
+## Ficha técnica: dimensiones automáticas + instalación opcional (2026-08-27)
+
+Reporte: no había campo de dimensiones al completar la ficha de una pieza,
+y el JSON exportado (`buildAttributesData()` en `js/editor.js`) siempre
+mostraba "Dimensiones variables" en el visor — `motorVisor.js` caía a ese
+fallback porque `ficha_tecnica.dimensiones` nunca se llenaba.
+
+- **Dimensiones**: no se agregó un campo para tipear — se calculan solas
+  a partir del tamaño real de la pieza en la sala (`formatDimensiones()`,
+  mismo cálculo que ya usaba `actualizarInputsDimension()`:
+  `escala × baseSize`, de metros a cm). Así nunca se desincroniza de cómo
+  se ve la pieza. Para "cuadro" (plano, sin Z real) muestra solo ancho ×
+  alto; para "escultura", ancho × alto × profundidad.
+- **Instalación**: nuevo checkbox "Incluir en la ficha exportada" junto al
+  campo de texto (`meta-instalacion-incluir`) — no siempre corresponde
+  incluirlo. Se guarda en `userData.incluirInstalacion` (default `true`,
+  compatible con proyectos guardados antes de este cambio) y se respeta
+  tanto en la exportación pública (`buildAttributesData()`) como en
+  Guardar/Cargar Proyecto.
 
 ## Botón "Ver en Espacio Real" aligerado (2026-08-23)
 

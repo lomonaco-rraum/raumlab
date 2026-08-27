@@ -4,6 +4,15 @@ Módulo de RaumLab para conversión de panoramas: cubemap ↔ equirectangular, 1
 
 _Última actualización: 2026-08-27_
 
+## Fix: orientación inicial en 3+1 en vez de 2x2 (2026-08-27)
+
+`.orient-buttons` (los 4 botones Adelante/Derecha/Atrás/Izquierda, en
+Crear y Visualizar) compartía una regla `flex-wrap` con `.bg-picker-row` —
+con textos de ancho distinto, el wrap por contenido partía en 3 arriba y 1
+abajo. Se separó de `.bg-picker-row` y pasó a `display:grid;
+grid-template-columns: repeat(2,1fr)` — 2x2 fijo sin importar el ancho del
+texto.
+
 ## Pendiente: costura imprecisa en el empalme de "Atrás" (2026-08-27)
 
 Reporte: en el equirectangular generado, la columna x=0 (borde izquierdo) y

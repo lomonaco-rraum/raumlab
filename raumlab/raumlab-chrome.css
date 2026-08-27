@@ -89,11 +89,20 @@ body.rc-body {
 }
 
 .rc-topbar-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     font-family: var(--font-geist);
     font-size: 1.15rem;
     letter-spacing: 0.12em;
     text-decoration: none;
     color: var(--text-color);
+}
+
+.rc-topbar-logo-icon {
+    height: 42px;
+    width: auto;
+    display: block;
 }
 
 .rc-topbar-logo .logo-raum { font-weight: 400; }
@@ -102,7 +111,11 @@ body.rc-body {
 .rc-header-rule {
     height: 0.5px;
     margin: 0 32px;
-    background: var(--text-color);
+    /* Semiopaca en vez de blanco sólido: en celular, un 0.5px 100% opaco
+       puede redondear a un píxel entero según la densidad de pantalla y
+       leerse mucho más grueso que en escritorio — bajar la opacidad
+       mantiene la línea fina sin depender de esa rendericación. */
+    background: rgba(255, 255, 255, 0.35);
 }
 
 .rc-lang-pill {
@@ -429,7 +442,7 @@ body.rc-body {
 .rc-footer-rule {
     height: 0.5px;
     margin: 0 32px 16px;
-    background: var(--text-color);
+    background: rgba(255, 255, 255, 0.35);
 }
 
 .rc-footer-copyright {

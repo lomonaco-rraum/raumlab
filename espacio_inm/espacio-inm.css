@@ -459,7 +459,15 @@ html, body.rc-body {
 .face-editor-row button:hover { border-color: var(--text-color); }
 
 /* ================= Orientación inicial / Fondo ================= */
-.orient-buttons,
+/* Grilla fija 2x2 (no flex-wrap): con 4 botones de ancho de texto distinto
+   ("Adelante" vs "Derecha"/"Atrás"/"Izquierda"), el wrap por ancho de
+   contenido partía en 3 arriba + 1 abajo según el espacio disponible. */
+.orient-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
 .bg-picker-row {
   display: flex;
   gap: 8px;
@@ -475,6 +483,7 @@ html, body.rc-body {
   border: 1px solid var(--border-fine);
   border-radius: 4px;
   padding: 6px 12px;
+  text-align: center;
   cursor: pointer;
 }
 

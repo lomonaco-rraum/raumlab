@@ -80,11 +80,20 @@ body {
 }
 
 .topbar-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     font-family: var(--font-geist);
     font-size: 1.15rem;
     letter-spacing: 0.12em;
     text-decoration: none;
     color: var(--text-color);
+}
+
+.topbar-logo-icon {
+    height: 42px;
+    width: auto;
+    display: block;
 }
 
 .logo-raum { font-weight: 400; }
@@ -93,7 +102,7 @@ body {
 .header-rule {
     height: 0.5px;
     margin: 0 32px;
-    background: var(--text-color);
+    background: rgba(255, 255, 255, 0.35);
 }
 
 .lang-pill {
@@ -444,7 +453,7 @@ body {
 .footer-rule {
     height: 0.5px;
     margin: 0 32px 16px;
-    background: var(--text-color);
+    background: rgba(255, 255, 255, 0.35);
 }
 
 .footer-copyright {

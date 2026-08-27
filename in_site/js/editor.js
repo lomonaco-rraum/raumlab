@@ -111,6 +111,7 @@ const inputMetaYear = document.getElementById('meta-year');
 const inputMetaMedium = document.getElementById('meta-medium');
 const inputMetaDescription = document.getElementById('meta-description'); // <-- Captura del área de texto
 const inputMetaInstalacion = document.getElementById('meta-instalacion');
+const checkMetaInstalacionIncluir = document.getElementById('meta-instalacion-incluir');
 
 // Pestañas Disposición / Atributos (panel derecho)
 const tabBtnDisposicion = document.getElementById('tab-btn-disposicion');
@@ -525,6 +526,7 @@ function aplicarTransformYFicha(obj, transform, fichaTecnica, alturaPorDefecto =
         obj.userData.tecnica = fichaTecnica.tecnica || "";
         obj.userData.descripcion = fichaTecnica.descripcion || "";
         obj.userData.instalacion = fichaTecnica.instalacion || "";
+        obj.userData.incluirInstalacion = fichaTecnica.incluirInstalacion !== false;
     }
 }
 
@@ -694,6 +696,7 @@ function selectObject(obj) {
     inputMetaMedium.value = obj.userData.tecnica || "";
     inputMetaDescription.value = obj.userData.descripcion || "";
     inputMetaInstalacion.value = obj.userData.instalacion || "";
+    checkMetaInstalacionIncluir.checked = obj.userData.incluirInstalacion !== false;
 
     refrescarListaPiezas();
     refrescarSelectorAlineacion();
@@ -893,6 +896,7 @@ function setupInspectorInputs() {
     inputMetaMedium.addEventListener('input', () => { if(selectedObject) selectedObject.userData.tecnica = inputMetaMedium.value; });
     inputMetaDescription.addEventListener('input', () => { if(selectedObject) selectedObject.userData.descripcion = inputMetaDescription.value; });
     inputMetaInstalacion.addEventListener('input', () => { if(selectedObject) selectedObject.userData.instalacion = inputMetaInstalacion.value; });
+    checkMetaInstalacionIncluir.addEventListener('change', () => { if(selectedObject) selectedObject.userData.incluirInstalacion = checkMetaInstalacionIncluir.checked; });
 }
 
 // === 5. SISTEMAS DE GUARDADO Y VISTA PREVIA ===
@@ -1000,7 +1004,8 @@ function saveProjectFile() {
                     anio: obj.userData.anio || "",
                     tecnica: obj.userData.tecnica || "",
                     descripcion: obj.userData.descripcion || "",
-                    instalacion: obj.userData.instalacion || ""
+                    instalacion: obj.userData.instalacion || "",
+                    incluirInstalacion: obj.userData.incluirInstalacion !== false
                 }
             };
 
@@ -1128,6 +1133,22 @@ function cerrarModalExportacion() {
     exportModalOverlay.classList.add('hidden');
 }
 
+// Dimensiones reales de una pieza (m → cm), a partir de su escala actual y
+// el tamaño base guardado al crearla (mismo cálculo que actualizarInputsDimension()).
+// No hay campo de dimensiones para tipear a mano: se toma directo de cómo
+// quedó la pieza en la sala, así nunca se desincroniza de lo que se ve.
+// Los cuadros son planos (sin Z real) — se muestran solo ancho x alto.
+function formatDimensiones(obj) {
+    const base = obj.userData.baseSize || { x: 1, y: 1, z: 1 };
+    const anchoCm = Math.round(obj.scale.x * base.x * 100);
+    const altoCm = Math.round(obj.scale.y * base.y * 100);
+    if (obj.userData.type === 'cuadro') {
+        return `${anchoCm} × ${altoCm} cm`;
+    }
+    const profCm = Math.round(obj.scale.z * base.z * 100);
+    return `${anchoCm} × ${altoCm} × ${profCm} cm`;
+}
+
 function sanitizarNombreArchivo(nombre) {
     const limpio = nombre
         .normalize('NFD').replace(/[̀-ͯ]/g, '') // quitar acentos
@@ -1165,8 +1186,9 @@ function buildAttributesData(nombreSala) {
                     artista: obj.userData.artista || "Anónimo",
                     anio: obj.userData.anio || "-",
                     tecnica: obj.userData.tecnica || "-",
+                    dimensiones: formatDimensiones(obj),
                     descripcion: obj.userData.descripcion || "",
-                    instalacion: obj.userData.instalacion || ""
+                    instalacion: obj.userData.incluirInstalacion === false ? "" : (obj.userData.instalacion || "")
                 }
             };
 
