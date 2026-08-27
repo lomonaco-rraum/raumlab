@@ -1,8 +1,99 @@
 # espacio.INM — Estado del proyecto
 
-Módulo de RaumLab para conversión de panoramas: cubemap ↔ equirectangular, 100% del lado del cliente (sin backend, sin almacenamiento de contenido ajeno). Único punto de entrada: `espacio-inm/espacio-inm.html`.
+Módulo de RaumLab para conversión de panoramas: cubemap ↔ equirectangular, 100% del lado del cliente (sin backend, sin almacenamiento de contenido ajeno). Único punto de entrada: `espacio_inm/index.html`.
 
-_Última actualización: 2026-08-24_
+_Última actualización: 2026-08-27_
+
+## Pendiente: costura imprecisa en el empalme de "Atrás" (2026-08-27)
+
+Reporte: en el equirectangular generado, la columna x=0 (borde izquierdo) y
+la última columna (borde derecho) — que deberían ser el mismo punto exacto
+del panorama, ya que ahí es donde envuelve la esfera y coincide con el
+centro de la cara "Atrás" — no coinciden con precisión de píxel. Medido en
+`panorama (5).png` (8145×4072): la transición cielo→negro cae en y≈1753
+en x=0 y en y≈1745 en x=8144 — 8px de diferencia real, confirmado leyendo
+los valores RGB del archivo directamente (no es percepción ni artefacto de
+zoom de Photoshop).
+
+**Causa identificada**: cada columna samplea el *centro* de su píxel, no
+el borde exacto — así que ni la primera ni la última columna caen
+exactamente en `lon=-π`/`lon=+π` (que sí darían una dirección 3D
+idéntica), sino medio píxel adentro de cada extremo. Ese desvío angular es
+minúsculo, pero es justo en el punto de máxima distorsión de toda la
+proyección (el borde de una cara del cubo), donde un corrimiento chico se
+amplifica a varios píxeles de salto vertical si el contenido tiene un
+borde marcado (acá, el límite de una franja negra) casi horizontal en ese
+punto.
+
+**Estado**: sin arreglar, a pedido explícito — queda pendiente. Es un
+límite de precisión del método (no algo roto por los cambios de esta
+sesión), imperceptible a distancia normal de visualización, solo visible
+haciendo zoom a nivel de píxel en el punto exacto del empalme. Si se
+retoma, la vía más directa es mezclar/promediar un par de columnas a cada
+lado de la costura al exportar, en vez de intentar eliminar el desvío
+angular de raíz.
+
+## Fix: panorama pixelado en "Crear" (2026-08-27)
+
+Reporte: el panorama generado en "Crear" salía con aliasing fuerte (bordes
+dentados, sobre todo cerca de los polos), y "Alta" calidad lo disimulaba a
+costa de mucha lentitud. Se descartó exhaustivamente que fuera una
+regresión: se comparó byte a byte three.js/panolens/jszip vendorizados
+contra el CDN (idénticos), se probó la misma versión sirviendo desde CDN
+(mismo resultado), y se diffeó todo `espacio-inm.js`/`espacio-inm.css`
+contra el commit inicial (la ronda de mobile fixes no toca el pipeline de
+Crear en absoluto, todo gateado por `rcIsMobile()`).
+
+**Causa real**: `CubeTextureLoader` recibía las 6 caras del cubemap tal
+cual las subía el usuario, sin redimensionar. WebGL solo genera mipmaps
+para texturas cuyos ejes son potencia de 2 (1:1 es una relación de
+aspecto, no lo mismo) — una cara de, por ejemplo, 2952×2952 (caso real
+reportado) no calza, y sin mipmaps la reproyección a equirectangular sale
+con aliasing, sobre todo donde la proyección comprime más (los polos).
+
+**Fix**: `resizeToPowerOfTwo()` (nueva, junto a `loadImage()`) redimensiona
+cada cara a la potencia de 2 más cercana antes de guardarla en
+`faceStore`, aplicado en los dos puntos de ingreso ("6 caras" y el recorte
+del mapa de cubos 4:3 en `sliceCubemapSheet()`) — cubre ambos modos con un
+solo cambio. Rotar/espejar una cara ya guardada no necesita re-redimensionar
+(conserva las dimensiones ya potencia de 2).
+
+**Además**: nuevo preset "Muy alta" (8192×4096) en el picker de
+Resolución, oculto automáticamente vía `renderer.capabilities.maxTextureSize`
+si la GPU no lo soporta (mismo patrón defensivo que el tope de celular en
+`qualitySize()`, evita el fallo silencioso de textura en blanco).
+
+Pendiente de decisión, no implementado: restringir "Crear" a escritorio
+(interfaz muy densa para celular) — se mantiene disponible en los dos por
+ahora, a pedido explícito.
+
+## Fix: descarga recortada al pedir una resolución distinta de "Alta" (2026-08-27)
+
+Reporte (surgió al probar el nuevo preset "Muy alta"): el PNG descargado
+salía recortado, mostrando solo un sector de la imagen — y con un tamaño
+de archivo levemente menor al pedido (8145×4072 en vez de 8192×4096).
+
+**Causa**: `renderTarget` (la textura intermedia donde se renderiza el
+cubemap reproyectado antes de exportarlo) se crea **una sola vez**, fija
+en 4096×2048, y nunca se redimensiona. El botón "Descargar" hacía
+`renderer.setSize(sizeDownload.w, sizeDownload.h, false)` — que mueve el
+viewport de render — pero `renderTarget` seguía fijo en 4096×2048. Con
+"Alta" (que es justo 4096×2048) esto nunca se notó, por pura coincidencia;
+con cualquier otro tamaño (Baja, Media, o la nueva Muy alta) el viewport
+no coincide con el tamaño real de la textura de destino y el resultado
+sale recortado. Es un bug preexistente, no algo de esta sesión — solo
+nadie había descargado antes con un preset distinto de Alta.
+
+**Fix**: `renderTarget.setSize(sizeDownload.w, sizeDownload.h)` antes de
+renderizar, para que la textura de destino siempre coincida con la
+resolución pedida.
+
+**Pendiente de confirmar**: por qué el archivo dio 8145×4072 en vez de
+8192×4096 exactos — no se descarta que sea un límite real de la GPU del
+usuario distinto de `maxTextureSize` (que ya se chequea para ocultar "Muy
+alta"), como `MAX_VIEWPORT_DIMS`/`MAX_RENDERBUFFER_SIZE`. Falta retestear
+después del fix del recorte para ver si el tamaño de archivo ya sale
+exacto.
 
 ## Ronda de mobile fixes (2026-08-24)
 
@@ -61,14 +152,16 @@ el usuario en este punto.)
 espacio_inm/
 ├── espacio_INM (mejoras).txt      ← lista original de mejoras pedidas
 ├── ESTADO.md                      ← este archivo
-└── espacio-inm/
-    ├── espacio-inm.html
-    ├── espacio-inm.css
-    ├── espacio-inm.js
-    ├── fondos/                    ← presets de fondo (entorno.jpg, entorno2.jpg, entorno3.jpg)
-    └── coleccion/
-        └── oteiza/                ← primer ejemplo de la Colección RaumLab
+├── index.html                     ← único punto de entrada (URL limpia: raumlab.org/espacio_inm/)
+├── espacio-inm.css
+├── espacio-inm.js
+├── fondos/                        ← presets de fondo (entorno.jpg, entorno2.jpg, entorno3.jpg)
+└── coleccion/
+    └── oteiza/                    ← primer ejemplo de la Colección RaumLab
 ```
+
+(Hasta el 2026-08-27 vivía anidado en `espacio-inm/espacio-inm.html` — se
+aplanó a `espacio_inm/index.html` para tener una URL pública prolija.)
 
 ## Modos (fila superior)
 
@@ -90,7 +183,7 @@ Galería de proyectos propios de RaumLab (arranca con la "caja vacía de Oteiza"
 
 ### Instrucciones (pestaña "Tutoriales")
 Contenido real (2026-08-23, rediseñado el mismo día tras feedback del
-usuario). Vive dentro de `mode-ayuda` en `espacio-inm.html` (no es una página
+usuario). Vive dentro de `mode-ayuda` en `index.html` (no es una página
 aparte, a diferencia de in_SITE). Layout: lista de modos a la izquierda
 (`.instr-nav`, tarjetas con borde — Crear/Visualizar/Galería) + panel de contenido
 al centro (`.instr-panel`) que muestra las instrucciones del modo elegido;

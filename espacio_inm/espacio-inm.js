@@ -128,6 +128,29 @@ function loadImage(url) {
   });
 }
 
+// WebGL solo genera mipmaps para texturas cuyos dos ejes son potencia de 2
+// (256, 512, 1024, 2048...) — 1:1 (cuadrada) es una relación de aspecto, no
+// lo mismo que potencia de 2. Sin mipmaps, una cara del cubemap se ve con
+// aliasing fuerte al reproyectarla a equirectangular (sobre todo cerca de
+// los polos del panorama, donde la proyección comprime más). Por eso cada
+// cara se redimensiona acá a la potencia de 2 más cercana antes de
+// guardarla, venga de "6 caras" o recortada del mapa de cubos 4:3.
+function nearestPowerOfTwo(n) {
+  const lower = Math.pow(2, Math.floor(Math.log2(n)));
+  const upper = lower * 2;
+  return (n - lower) < (upper - n) ? lower : upper;
+}
+
+function resizeToPowerOfTwo(source, width, height) {
+  const targetW = nearestPowerOfTwo(width);
+  const targetH = nearestPowerOfTwo(height);
+  const c = document.createElement('canvas');
+  c.width = targetW;
+  c.height = targetH;
+  c.getContext('2d').drawImage(source, 0, 0, width, height, 0, 0, targetW, targetH);
+  return c.toDataURL('image/png');
+}
+
 /* ================= Botones de archivo ================= */
 document.querySelectorAll('.file-btn').forEach(btn => {
   const targetId = btn.dataset.target;
@@ -158,8 +181,9 @@ document.querySelectorAll('.file-btn').forEach(btn => {
           setStatus('status', `${FACE_LABELS[targetId] || targetId.toUpperCase()}: relación inválida (${ratio.toFixed(2)}:1) — debe ser 1:1`);
           return;
         }
-        faceStore[targetId] = ev.target.result;
-        updateFaceThumbnail(targetId, ev.target.result);
+        const resized = resizeToPowerOfTwo(img, img.width, img.height);
+        faceStore[targetId] = resized;
+        updateFaceThumbnail(targetId, resized);
         selectFace(targetId);
       } else {
         btn.innerHTML = `<img src="${ev.target.result}" alt="miniatura">`;
@@ -198,7 +222,7 @@ function sliceCubemapSheet(img) {
     c.height = cellH;
     c.getContext('2d').drawImage(img, col * cellW, row * cellH, cellW, cellH, 0, 0, cellW, cellH);
 
-    const dataURL = c.toDataURL('image/png');
+    const dataURL = resizeToPowerOfTwo(c, c.width, c.height);
     faceStore[face] = dataURL;
     updateFaceThumbnail(face, dataURL);
   });
@@ -238,6 +262,15 @@ const renderer = new THREE.WebGLRenderer({
   alpha: true
 });
 renderer.setClearColor(0x000000, 0);
+
+// "Muy alta" (8192px de lado) supera el máximo de textura de algunas GPUs
+// más viejas/integradas — si se deja igual, el render sale en blanco sin
+// ningún error visible (mismo problema que ya se resolvió para el tope de
+// celular en qualitySize()). Se oculta la opción en vez de dejarla fallar.
+const muyAltaOpcion = document.getElementById('quality-muy-alta');
+if (muyAltaOpcion && renderer.capabilities.maxTextureSize < 8192) {
+  muyAltaOpcion.style.display = 'none';
+}
 
 const scene = new THREE.Scene();
 const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
@@ -585,6 +618,11 @@ document.getElementById('build').onclick = async () => {
 /* ================= Download CM → EQ ================= */
 document.getElementById('download').onclick = async () => {
   const sizeDownload = qualitySize();
+  // renderTarget se crea una sola vez a 4096x2048 (ver más arriba) — sin
+  // este resize, pedir cualquier resolución distinta (Baja, Media, o la
+  // nueva Muy alta) deja el viewport más grande/chico que la textura real
+  // de destino, y el resultado sale recortado a un sector de la imagen.
+  renderTarget.setSize(sizeDownload.w, sizeDownload.h);
   renderer.setRenderTarget(renderTarget);
   renderer.setSize(sizeDownload.w, sizeDownload.h, false);
   renderer.render(scene, camera);

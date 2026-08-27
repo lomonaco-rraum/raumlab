@@ -4,10 +4,40 @@
   <meta charset="UTF-8" />
   <title>espacio_INM — RaumLab</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Generación y visualización de imágenes esféricas: proyecciones equirrectangulares a partir de mapas cubemap, con mapeo de coordenadas esféricas para visualización inmersiva.">
+  <link rel="canonical" href="https://raumlab.org/espacio_inm/">
+  <link rel="icon" type="image/png" href="../raumlab/favicon.png">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="RaumLab">
+  <meta property="og:locale" content="es_AR">
+  <meta property="og:url" content="https://raumlab.org/espacio_inm/">
+  <meta property="og:title" content="espacio_INM — RaumLab">
+  <meta property="og:description" content="Generación y visualización de imágenes esféricas: proyecciones equirrectangulares a partir de mapas cubemap, con mapeo de coordenadas esféricas para visualización inmersiva.">
+  <meta property="og:image" content="https://raumlab.org/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="espacio_INM — RaumLab">
+  <meta name="twitter:description" content="Generación y visualización de imágenes esféricas: proyecciones equirrectangulares a partir de mapas cubemap, con mapeo de coordenadas esféricas para visualización inmersiva.">
+  <meta name="twitter:image" content="https://raumlab.org/og-image.jpg">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "RaumLab", "item": "https://raumlab.org/" },
+      { "@type": "ListItem", "position": 2, "name": "espacio_INM", "item": "https://raumlab.org/espacio_inm/" }
+    ]
+  }
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100;300;400;500;700;800&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../raumlab/raumlab-chrome.css">
+  <link rel="stylesheet" href="../raumlab/raumlab-chrome.css">
   <link rel="stylesheet" href="app-shell.css">
   <link rel="stylesheet" href="espacio-inm.css">
 </head>
@@ -24,7 +54,7 @@
                 <span class="bar"></span>
             </span>
         </button>
-        <a href="../../raumlab/index.html" class="rc-topbar-logo">
+        <a href="../raumlab/index.html" class="rc-topbar-logo">
             <span class="logo-raum">RAUM</span><span class="logo-lab">LAB</span>
         </a>
         <button class="rc-lang-pill" type="button" title="Selector de idioma — próximamente EN / FR / PT">ES</button>
@@ -52,17 +82,17 @@
     </ul>
     <ul class="rc-nav-list">
         <li class="rc-nav-item has-sub open" id="recursosItem">
-            <a class="rc-nav-link" href="../../raumlab/index.html#recursos">Recursos</a>
+            <a class="rc-nav-link" href="../raumlab/index.html#recursos">Recursos</a>
             <ul class="rc-nav-sublist" id="recursosSub" style="max-height: 220px;">
-                <li><a href="espacio-inm.html" class="active">espacio_INM</a></li>
-                <li><a href="../../in_site/index.html">in_SITE</a></li>
-                <li><a href="../../mono_plano/index.html">trans_FORMA</a></li>
+                <li><a href="index.html" class="active">espacio_INM</a></li>
+                <li><a href="../in_site/index.html">in_SITE</a></li>
+                <li><a href="../mono_plano/index.html">trans_FORMA</a></li>
             </ul>
         </li>
-        <li class="rc-nav-item"><a class="rc-nav-link" href="../../raumlab/index.html#investigacion">Investigación</a></li>
-        <li class="rc-nav-item"><a class="rc-nav-link" href="../../raumlab/index.html#educacion">Educación</a></li>
-        <li class="rc-nav-item"><a class="rc-nav-link" href="../../raumlab/index.html#novedades">Novedades</a></li>
-        <li class="rc-nav-item"><a class="rc-nav-link" href="../../raumlab/index.html#contacto">Contacto</a></li>
+        <li class="rc-nav-item"><a class="rc-nav-link" href="../raumlab/index.html#investigacion">Investigación</a></li>
+        <li class="rc-nav-item"><a class="rc-nav-link" href="../raumlab/index.html#educacion">Educación</a></li>
+        <li class="rc-nav-item"><a class="rc-nav-link" href="../raumlab/index.html#novedades">Novedades</a></li>
+        <li class="rc-nav-item"><a class="rc-nav-link" href="../raumlab/index.html#contacto">Contacto</a></li>
     </ul>
 </nav>
 
@@ -129,6 +159,7 @@
               <li role="option"><button type="button" class="picker-opcion quality-option" data-value="1024x512"><span class="picker-opcion-nombre">Baja</span> <span class="picker-opcion-detalle">1024×512 px</span></button></li>
               <li role="option"><button type="button" class="picker-opcion quality-option" data-value="2048x1024"><span class="picker-opcion-nombre">Media</span> <span class="picker-opcion-detalle">2048×1024 px</span></button></li>
               <li role="option"><button type="button" class="picker-opcion quality-option" data-value="4096x2048"><span class="picker-opcion-nombre">Alta</span> <span class="picker-opcion-detalle">4096×2048 px</span></button></li>
+              <li role="option" id="quality-muy-alta"><button type="button" class="picker-opcion quality-option" data-value="8192x4096"><span class="picker-opcion-nombre">Muy alta</span> <span class="picker-opcion-detalle">8192×4096 px</span></button></li>
             </ul>
           </div>
         </div>
@@ -541,8 +572,8 @@
   </div>
 </div>
 
-<a href="../../raumlab/index.html" class="rc-back-link">
-    <img src="../../raumlab/flecha_derecha_ui.png" alt="" class="back-arrow-img">
+<a href="../raumlab/index.html" class="rc-back-link">
+    <img src="../raumlab/flecha_derecha_ui.png" alt="" class="back-arrow-img">
     VOLVER
 </a>
 
@@ -551,16 +582,20 @@
     <p class="rc-footer-copyright">© 2026 RAUMLAB<br>Rosario, Argentina</p>
 </footer>
 
-<script src="../../raumlab/raumlab-chrome.js"></script>
+<script src="../raumlab/raumlab-chrome.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.105.2/build/three.min.js"></script>
+<!-- 🔹 Three.js, Panolens y JSZip: copias locales en vendor/ (antes por CDN) —
+     evita depender de que cdn.jsdelivr.net/cdnjs.cloudflare.com estén arriba
+     y de que sirvan el archivo exacto sin alterar. Versiones pinneadas:
+     three@0.105.2, panolens@0.12.1, jszip@3.10.1. -->
+<script src="vendor/three.min.js"></script>
 
 <!-- 🔹 Panolens (build sin fijar versión referenciaba `process`, global de Node inexistente en el navegador) -->
 <script>window.process = window.process || { env: {} };</script>
-<script src="https://cdn.jsdelivr.net/npm/panolens@0.12.1/build/panolens.min.js"></script>
+<script src="vendor/panolens.min.js"></script>
 
 <!-- 🔹 Librería JSZip -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="vendor/jszip.min.js"></script>
 
 <script src="espacio-inm.js"></script>
 </body>

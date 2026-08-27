@@ -304,14 +304,41 @@ Live Server. Antes de apuntar el dominio:
   entre módulos, `../raumlab/...`, etc.) — hoy funcionan porque todo vive bajo
   una carpeta común; si el hosting reorganiza la jerarquía de carpetas, hay
   que ajustarlas.
-- **Dependencias por CDN sin pin de integridad**: Three.js, Panolens y JSZip
-  se cargan desde `cdn.jsdelivr.net`/`cdnjs.cloudflare.com` sin SRI (Subresource
-  Integrity) ni plan de respaldo si el CDN cae — vale la pena agregar SRI antes
-  de publicar, ya que es contenido de terceros corriendo en el sitio final.
-- **Meta tags / SEO / favicon / Open Graph**: no se revisaron en esta ronda.
-- **Confirmar que `info@raumlab.org` y `@raum.lab` (Instagram) ya están
-  activos** — están hardcodeados en el footer y el panel de navegación de la
-  landing.
+- **Dependencias vendorizadas (2026-08-27)**: Three.js, Panolens y JSZip
+  cargaban desde `cdn.jsdelivr.net`/`cdnjs.cloudflare.com` sin SRI (Subresource
+  Integrity) ni plan de respaldo si el CDN caía. Se bajaron las mismas
+  versiones pinneadas (`three@0.105.2`, `panolens@0.12.1`, `jszip@3.10.1`) a
+  `espacio_inm/vendor/` y los 3 `<script src>` en `espacio_inm/index.html`
+  ahora apuntan ahí — el sitio ya no depende de que esos CDN estén arriba.
+  Verificado con servidor estático local: `index.html` y los 3 archivos de
+  `vendor/` responden 200. Si en el futuro se actualiza alguna de las 3
+  librerías, hay que volver a descargar el archivo a mano (no hay `npm`/build
+  step en el proyecto que lo automatice).
+- **Meta tags / SEO / Open Graph**: agregados `description`, `canonical`,
+  Open Graph y Twitter Card en las 4 páginas de entrada (raumlab, in_SITE,
+  espacio_INM, trans_FORMA), más `BreadcrumbList` (JSON-LD) en los 3 módulos
+  para declarar ante los buscadores que cuelgan de RaumLab (no se agregó en
+  la home porque es la raíz, sin padre del que colgar). Las URLs canónicas
+  ya asumen la estructura aplanada decidida (raumlab.org/ como raíz,
+  `/in_site/`, `/mono_plano/`, `/espacio_inm/`) — si la estructura final
+  cambia, hay que ajustarlas.
+  - **espacio_INM emprolijado (2026-08-27)**: vivía anidado en
+    `espacio_inm/espacio-inm/espacio-inm.html`; se aplanó a
+    `espacio_inm/index.html` (se movieron `app-shell.css`, `espacio-inm.css`,
+    `espacio-inm.js`, `fondos/` y `coleccion/` un nivel arriba, y se
+    actualizaron las rutas relativas internas y los 7 links del sitio que
+    apuntaban al path viejo). URL pública ahora limpia: `raumlab.org/espacio_inm/`.
+  - **favicon**: no hay ícono definido todavía (mismo bloqueo que el
+    og:image, ver abajo).
+  - **og:image / twitter:image**: no se agregaron porque todavía no hay
+    una imagen de marca elegida. Cuando exista un ícono/símbolo de RaumLab,
+    conviene un solo asset (1200×630px) reutilizado en las 4 páginas vía
+    `og:image`/`twitter:image` (con `twitter:card` pasando de `summary` a
+    `summary_large_image`), en vez de una imagen distinta por módulo.
+- **`info@raumlab.org` todavía NO está activo** (confirmado 2026-08-27) —
+  sigue hardcodeado en el footer y el panel de navegación de la landing;
+  no debería anunciarse/publicarse ese contacto hasta que exista la casilla.
+  **`@raum.lab` (Instagram) sí está activo.**
 
 ## Potencialidades (ideas a futuro, sin comprometer nada)
 
