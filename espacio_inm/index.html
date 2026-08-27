@@ -420,11 +420,12 @@
         </div>
       </div>
 
-      <!-- 🔹 RA (experimental, solo funciona en celular) -->
+      <!-- 🔹 RA (experimental, solo funciona en celular) — entra directo a
+           pantalla completa, un solo botón (cruz) para salir de las dos
+           cosas juntas. -->
       <div class="ar-toggle-row">
         <button type="button" id="ar-enter" class="btn-text btn-full">Ver en RA</button>
-        <button type="button" id="ar-exit" class="btn-text btn-full" style="display:none;">Salir de RA</button>
-        <button type="button" id="ar-fullscreen" class="btn-text btn-full" style="display:none;">⛶ Pantalla completa</button>
+        <button type="button" id="ar-exit" class="btn-text btn-full" style="display:none;" aria-label="Salir de RA">✕</button>
         <div class="status" id="status-ar"></div>
       </div>
 
@@ -452,8 +453,7 @@
     <div class="rail-derecho">
       <div class="ar-toggle-row">
         <button type="button" id="ar-enter-coleccion" class="btn-text btn-full">Ver en RA</button>
-        <button type="button" id="ar-exit-coleccion" class="btn-text btn-full" style="display:none;">Salir de RA</button>
-        <button type="button" id="ar-fullscreen-coleccion" class="btn-text btn-full" style="display:none;">⛶ Pantalla completa</button>
+        <button type="button" id="ar-exit-coleccion" class="btn-text btn-full" style="display:none;" aria-label="Salir de RA">✕</button>
         <div class="status" id="status-ar-coleccion"></div>
       </div>
     </div>
@@ -581,7 +581,7 @@
 
 <footer class="rc-footer">
     <div class="rc-footer-rule"></div>
-    <p class="rc-footer-copyright">© 2026 RAUMLAB<br>Rosario, Argentina</p>
+    <p class="rc-footer-copyright">© 2026 raumlab<br>Rosario, Argentina</p>
 </footer>
 
 <script src="../raumlab/raumlab-chrome.js"></script>

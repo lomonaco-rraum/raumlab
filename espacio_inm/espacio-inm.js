@@ -906,67 +906,25 @@ document.getElementById('viewer-input').addEventListener('change', async e => {
 // (.rc-ar-fullscreen) cubre la pantalla igual por su cuenta — para lo
 // cual el ResizeObserver de más arriba ya sabe no forzarle el 16:9
 // mientras esa clase está puesta.
-function wireARToggle(enterBtnId, exitBtnId, statusId, getViewer, containerId, fullscreenBtnId) {
+// RA entra directo a pantalla completa (antes eran dos acciones separadas
+// — "Ver en RA" y un botón aparte de "Pantalla completa" — con hasta dos
+// botones flotantes a la vez; se fusionaron en una sola).
+function wireARToggle(enterBtnId, exitBtnId, statusId, getViewer, containerId) {
   let cameraPanorama = null;
-  let enPantallaCompleta = false;
 
   // Ancho/alto en píxeles exactos por JS, no vh/dvh ni aspect-ratio: en
   // Safari, al entrar a pantalla completa nativa la barra de direcciones
   // se oculta y el viewport cambia de tamaño DESPUÉS del click — hay que
   // recalcular con el tamaño real disponible en ese momento, no con el
-  // que había al tocar el botón. Misma función en ambos casos (el resize
-  // "a mano" del click, y cualquier resize/orientationchange real
-  // mientras dura la sesión) para que quede una sola fuente de verdad.
+  // que había al tocar el botón. Misma función para el ajuste inicial y
+  // para cualquier resize/orientationchange real mientras dura la sesión.
   function ajustarTamanioFullscreen() {
-    if (!enPantallaCompleta) return;
     const viewerContainer = document.getElementById(containerId);
     if (!viewerContainer) return;
     viewerContainer.style.width = window.innerWidth + 'px';
     viewerContainer.style.height = window.innerHeight + 'px';
     getViewer().onWindowResize();
   }
-
-  function toggleFullscreen() {
-    const viewerContainer = document.getElementById(containerId);
-    const fsBtn = document.getElementById(fullscreenBtnId);
-    enPantallaCompleta = !enPantallaCompleta;
-
-    if (enPantallaCompleta) {
-      if (viewerContainer) viewerContainer.classList.add('rc-ar-fullscreen');
-      document.getElementById(exitBtnId).classList.add('rc-ar-exit-floating');
-      fsBtn.classList.add('rc-ar-exit-floating');
-      fsBtn.textContent = '✕ Salir de pantalla completa';
-      ajustarTamanioFullscreen();
-      window.addEventListener('resize', ajustarTamanioFullscreen);
-      window.addEventListener('orientationchange', ajustarTamanioFullscreen);
-      document.addEventListener('fullscreenchange', ajustarTamanioFullscreen);
-
-      const el = document.documentElement;
-      if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
-      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-    } else {
-      window.removeEventListener('resize', ajustarTamanioFullscreen);
-      window.removeEventListener('orientationchange', ajustarTamanioFullscreen);
-      document.removeEventListener('fullscreenchange', ajustarTamanioFullscreen);
-      if (viewerContainer) {
-        viewerContainer.classList.remove('rc-ar-fullscreen');
-        viewerContainer.style.width = '';
-        viewerContainer.style.height = '';
-      }
-      document.getElementById(exitBtnId).classList.remove('rc-ar-exit-floating');
-      fsBtn.classList.remove('rc-ar-exit-floating');
-      fsBtn.textContent = '⛶ Pantalla completa';
-      if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
-      else if (document.webkitFullscreenElement && document.webkitExitFullscreen) document.webkitExitFullscreen();
-      getViewer().onWindowResize();
-    }
-  }
-
-  function salirDePantallaCompletaSiHaceFalta() {
-    if (enPantallaCompleta) toggleFullscreen();
-  }
-
-  document.getElementById(fullscreenBtnId).addEventListener('click', toggleFullscreen);
 
   document.getElementById(enterBtnId).addEventListener('click', async () => {
     try {
@@ -985,9 +943,21 @@ function wireARToggle(enterBtnId, exitBtnId, statusId, getViewer, containerId, f
       v.add(cameraPanorama);
       v.enableControl(PANOLENS.CONTROLS.DEVICEORIENTATION);
 
+      const viewerContainer = document.getElementById(containerId);
+      if (viewerContainer) viewerContainer.classList.add('rc-ar-fullscreen');
+      document.getElementById(exitBtnId).classList.add('rc-ar-exit-floating');
+      document.body.classList.add('rc-ar-activo');
+      ajustarTamanioFullscreen();
+      window.addEventListener('resize', ajustarTamanioFullscreen);
+      window.addEventListener('orientationchange', ajustarTamanioFullscreen);
+      document.addEventListener('fullscreenchange', ajustarTamanioFullscreen);
+
+      const el = document.documentElement;
+      if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+
       document.getElementById(enterBtnId).style.display = 'none';
       document.getElementById(exitBtnId).style.display = 'block';
-      document.getElementById(fullscreenBtnId).style.display = 'block';
       setStatus(statusId, 'RA activa ✓');
     } catch (e) {
       console.error(e);
@@ -1003,17 +973,30 @@ function wireARToggle(enterBtnId, exitBtnId, statusId, getViewer, containerId, f
       cameraPanorama = null;
     }
     v.enableControl(PANOLENS.CONTROLS.ORBIT);
-    salirDePantallaCompletaSiHaceFalta();
+
+    window.removeEventListener('resize', ajustarTamanioFullscreen);
+    window.removeEventListener('orientationchange', ajustarTamanioFullscreen);
+    document.removeEventListener('fullscreenchange', ajustarTamanioFullscreen);
+    const viewerContainer = document.getElementById(containerId);
+    if (viewerContainer) {
+      viewerContainer.classList.remove('rc-ar-fullscreen');
+      viewerContainer.style.width = '';
+      viewerContainer.style.height = '';
+    }
+    document.getElementById(exitBtnId).classList.remove('rc-ar-exit-floating');
+    document.body.classList.remove('rc-ar-activo');
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    else if (document.webkitFullscreenElement && document.webkitExitFullscreen) document.webkitExitFullscreen();
+    v.onWindowResize();
 
     document.getElementById(enterBtnId).style.display = 'block';
     document.getElementById(exitBtnId).style.display = 'none';
-    document.getElementById(fullscreenBtnId).style.display = 'none';
     setStatus(statusId, '');
   });
 }
 
-wireARToggle('ar-enter', 'ar-exit', 'status-ar', () => viewerSolo, 'viewer-solo', 'ar-fullscreen');
-wireARToggle('ar-enter-coleccion', 'ar-exit-coleccion', 'status-ar-coleccion', () => viewerColeccion, 'viewer-coleccion', 'ar-fullscreen-coleccion');
+wireARToggle('ar-enter', 'ar-exit', 'status-ar', () => viewerSolo, 'viewer-solo');
+wireARToggle('ar-enter-coleccion', 'ar-exit-coleccion', 'status-ar-coleccion', () => viewerColeccion, 'viewer-coleccion');
 
 /* ================= Colección RaumLab ================= */
 // Sumar un ejemplo nuevo a la colección es agregar un objeto acá — no hace

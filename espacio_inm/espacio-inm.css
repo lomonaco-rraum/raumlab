@@ -872,17 +872,14 @@ html, body.rc-body {
     width: min(420px, 100%);
   }
 
-  /* "⛶ Pantalla completa" de RA — acción propia, separada de "Ver en RA",
-     con su propio click limpio (la Fullscreen API nativa necesita un
-     gesto de usuario fresco; encadenarla después de otro permiso ya
-     pedido la deja rechazada en varios navegadores móviles). El
-     ResizeObserver de arriba ya sabe dejar de forzar 16:9 mientras esta
-     clase está puesta. Ancho/alto NO van acá: los pone espacio-inm.js en
-     píxeles exactos (window.innerWidth/innerHeight), no vh/dvh — evita
-     depender de una unidad CSS que puede no comportarse igual en todos
-     los Safari. aspect-ratio explícitamente anulado para que el 16:9 de
-     la regla base no compita con esos píxeles. top/left en vez del
-     shorthand inset, por compatibilidad. */
+  /* RA entra directo a pantalla completa (antes era una acción aparte,
+     "Pantalla completa", con su propio botón — se fusionaron en una).
+     Ancho/alto NO van acá: los pone espacio-inm.js en píxeles exactos
+     (window.innerWidth/innerHeight), no vh/dvh — evita depender de una
+     unidad CSS que puede no comportarse igual en todos los Safari.
+     aspect-ratio explícitamente anulado para que el 16:9 de la regla base
+     no compita con esos píxeles. top/left en vez del shorthand inset,
+     por compatibilidad. */
   #viewer-solo.rc-ar-fullscreen,
   #viewer-coleccion.rc-ar-fullscreen {
     position: fixed;
@@ -894,32 +891,41 @@ html, body.rc-body {
     z-index: 500;
   }
 
-  /* "Salir de RA" y "Pantalla completa" viven fuera del visor (en el
-     panel de controles) — con el visor cubriendo toda la pantalla
-     quedarían tapados. Flotan por encima mientras dura la pantalla
-     completa. Fondo oscuro opaco a propósito (no "background:none" como
-     en su estado normal): flotando sobre la cámara en vivo o un panorama
-     de cualquier color, un botón con fondo transparente puede quedar
-     invisible sin estar tapado por ningún otro elemento — mismo motivo
-     por el que el botón de RA de in_SITE se veía blanco sobre blanco. */
+  /* Header y footer ocultos del todo mientras dura RA — antes quedaban
+     tapados detrás del visor (menor z-index) pero seguían ocupando lugar
+     visualmente en el borde. */
+  body.rc-ar-activo .rc-header-stack,
+  body.rc-ar-activo .rc-footer {
+    display: none;
+  }
+
+  /* "Salir de RA": cruz chica en la esquina superior derecha (antes dos
+     botones de texto apilados — "Salir de RA" + "Pantalla completa" — se
+     fusionaron en uno solo). Vive fuera del visor (en el panel de
+     controles), así que al entrar a pantalla completa flota por encima.
+     Fondo opaco a propósito (no "background:none" como en su estado
+     normal): flotando sobre la cámara en vivo o un panorama de cualquier
+     color, un botón con fondo transparente puede quedar invisible sin
+     estar tapado por nada — mismo motivo por el que el botón de RA de
+     in_SITE se veía blanco sobre blanco. */
   #ar-exit.rc-ar-exit-floating,
-  #ar-exit-coleccion.rc-ar-exit-floating,
-  #ar-fullscreen.rc-ar-exit-floating,
-  #ar-fullscreen-coleccion.rc-ar-exit-floating {
+  #ar-exit-coleccion.rc-ar-exit-floating {
     position: fixed;
-    left: 20px;
-    right: 20px;
+    top: 16px;
+    right: 16px;
+    left: auto;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    line-height: 1;
     z-index: 600;
     background: rgba(20, 20, 20, 0.9);
     border-color: var(--text-color);
-  }
-  #ar-exit.rc-ar-exit-floating,
-  #ar-exit-coleccion.rc-ar-exit-floating {
-    bottom: 76px;
-  }
-  #ar-fullscreen.rc-ar-exit-floating,
-  #ar-fullscreen-coleccion.rc-ar-exit-floating {
-    bottom: 20px;
   }
 
   .cube-diagram-cell span {
