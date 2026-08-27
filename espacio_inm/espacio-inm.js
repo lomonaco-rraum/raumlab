@@ -349,6 +349,33 @@ viewerColeccion.renderer.setClearColor(0xffffff, 1);
 
 let panoramaColeccion = null;
 
+// Cada Viewer de Panolens arranca su propio loop de render
+// (requestAnimationFrame) apenas se crea, y sigue corriendo aunque su panel
+// esté oculto — a diferencia de in_SITE (que navega entre páginas separadas,
+// una sola escena 3D viva a la vez), acá los 4 visores conviven siempre en
+// la misma página. Sin pausarlos, son hasta 4 loops de render 3D compitiendo
+// por CPU/GPU en segundo plano todo el tiempo — incluso en Tutoriales, donde
+// no hace falta ninguno —, y eso es lo que hacía sentir el scroll pesado en
+// celular. `requestAnimationId` (el handle del RAF) lo guarda el propio
+// Viewer, confirmado leyendo panolens@0.12.1 sin minificar: animate(){
+// this.requestAnimationId = requestAnimationFrame(this.animate.bind(this));
+// this.onChange(); }
+function pausarVisor(v) {
+  if (v && v.requestAnimationId) {
+    cancelAnimationFrame(v.requestAnimationId);
+    v.requestAnimationId = null;
+  }
+}
+function reanudarVisor(v) {
+  if (v && !v.requestAnimationId) {
+    v.animate();
+  }
+}
+
+// Arrancan pausados: la pantalla por defecto al cargar es la introducción
+// (mode-intro), que no necesita ninguno de los 4.
+[viewer, viewerEqr, viewerSolo, viewerColeccion].forEach(pausarVisor);
+
 // FIX real, verificado contra el código fuente de panolens@0.12.1 (no el
 // minificado — se bajó y se leyó): el botón de pantalla completa de Panolens
 // vive en un objeto `Widget` separado del `Viewer` (Viewer.js línea ~7732:
@@ -1021,7 +1048,7 @@ COLLECTION_EXAMPLES.forEach(example => {
 // navegación de celular son dos elementos [data-mode] distintos apuntando
 // al mismo modo — deben quedar "active" los dos a la vez, no solo el que
 // se clickeó.
-function wireSwitcher(buttonSelector, dataAttr, panelSelector) {
+function wireSwitcher(buttonSelector, dataAttr, panelSelector, onSwitch) {
   document.querySelectorAll(buttonSelector).forEach(btn => {
     btn.addEventListener('click', () => {
       const targetId = btn.dataset[dataAttr];
@@ -1034,12 +1061,35 @@ function wireSwitcher(buttonSelector, dataAttr, panelSelector) {
       // Los visores Panolens se crean con el panel oculto (tamaño 0x0);
       // al mostrarlo hay que forzar que recalculen su tamaño.
       window.dispatchEvent(new Event('resize'));
+
+      if (onSwitch) onSwitch(targetId);
     });
   });
 }
 
-wireSwitcher('.mode-btn', 'mode', '.mode-content');
-wireSwitcher('.tab-btn', 'target', '.tab-content');
+wireSwitcher('.mode-btn', 'mode', '.mode-content', targetId => {
+  // Visualizar/Galería: solo corren si son el modo elegido.
+  targetId === 'mode-ver' ? reanudarVisor(viewerSolo) : pausarVisor(viewerSolo);
+  targetId === 'mode-coleccion' ? reanudarVisor(viewerColeccion) : pausarVisor(viewerColeccion);
+
+  if (targetId !== 'mode-crear') {
+    // Vista previa (modal) y EQ→CM: ninguno hace falta fuera de Crear.
+    pausarVisor(viewer);
+    pausarVisor(viewerEqr);
+  } else {
+    // Al volver a Crear, reanudar viewerEqr solo si el tab activo es
+    // eq2cm (la vista previa del modal se maneja aparte, en
+    // abrirVistaPrevia()/cerrarVistaPrevia(), no depende del modo).
+    const tabActivo = document.querySelector('.tab-btn.active');
+    if (tabActivo && tabActivo.dataset.target === 'eq2cm') reanudarVisor(viewerEqr);
+    else pausarVisor(viewerEqr);
+  }
+});
+
+wireSwitcher('.tab-btn', 'target', '.tab-content', targetId => {
+  targetId === 'eq2cm' ? reanudarVisor(viewerEqr) : pausarVisor(viewerEqr);
+});
+
 wireSwitcher('.instr-nav-item', 'instr', '.instr-body');
 
 // Selector "Modo" (6 caras / Mapa de cubos) — lista de botones en vez de
@@ -1129,6 +1179,7 @@ const modalVistaPrevia = document.getElementById('modal-vista-previa');
 
 function abrirVistaPrevia() {
   modalVistaPrevia.hidden = false;
+  reanudarVisor(viewer);
   // El visor Panolens se crea con el modal oculto (tamaño 0x0); al mostrarlo
   // hay que forzar que recalcule su tamaño.
   window.dispatchEvent(new Event('resize'));
@@ -1136,6 +1187,7 @@ function abrirVistaPrevia() {
 
 function cerrarVistaPrevia() {
   modalVistaPrevia.hidden = true;
+  pausarVisor(viewer);
 }
 
 document.getElementById('btn-vista-previa').addEventListener('click', abrirVistaPrevia);

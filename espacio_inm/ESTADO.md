@@ -4,6 +4,39 @@ Módulo de RaumLab para conversión de panoramas: cubemap ↔ equirectangular, 1
 
 _Última actualización: 2026-08-27_
 
+## Fix: scroll pesado en celular — 4 visores renderizando en segundo plano (2026-08-27)
+
+Reporte: en celular, scrollear se sentía "anclado"/forzoso (había que hacer
+fuerza repetida para bajar) — a diferencia de in_SITE, que scrollea sin
+problemas.
+
+**Causa**: los 4 visores de Panolens (`viewer`, `viewerEqr`, `viewerSolo`,
+`viewerColeccion`) arrancan su propio loop de render (`requestAnimationFrame`)
+apenas se crean, y `wireSwitcher()` (el que cambia entre Crear/Visualizar/
+Galería/Tutoriales) solo ocultaba el panel con una clase CSS — nunca pausaba
+el render de atrás. Con los 4 viviendo siempre en la misma página (a
+diferencia de in_SITE, que navega entre páginas separadas y nunca tiene más
+de una escena 3D viva a la vez), eso son hasta 4 loops de render 3D
+compitiendo por CPU/GPU en segundo plano todo el tiempo — incluso en
+Tutoriales, donde no hace falta ninguno. Confirmado leyendo panolens@0.12.1
+sin minificar: `animate()` guarda el handle del RAF en
+`this.requestAnimationId`.
+
+**Fix**: `pausarVisor()`/`reanudarVisor()` (cancelan/reinician ese RAF) en
+espacio-inm.js, llamados desde:
+- `wireSwitcher('.mode-btn', ...)`: pausa/reanuda `viewerSolo`/
+  `viewerColeccion` según el modo elegido; al salir de Crear pausa
+  `viewer`/`viewerEqr`.
+- `wireSwitcher('.tab-btn', ...)` (cm2eq/eq2cm dentro de Crear): pausa/
+  reanuda `viewerEqr`.
+- `abrirVistaPrevia()`/`cerrarVistaPrevia()`: pausa/reanuda `viewer`
+  (el modal, independiente del modo).
+- Los 4 arrancan pausados al cargar la página (el modo por defecto es la
+  introducción, que no necesita ninguno).
+
+**Sin confirmar en dispositivo real todavía** — no hay forma de probar
+WebGL/rendimiento en este entorno; falta que se pruebe en celular.
+
 ## Fix: orientación inicial en 3+1 en vez de 2x2 (2026-08-27)
 
 `.orient-buttons` (los 4 botones Adelante/Derecha/Atrás/Izquierda, en

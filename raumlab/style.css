@@ -56,7 +56,7 @@ body {
 .topbar {
     position: relative;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     padding: 14px 32px 10px;
     /* El ícono (56px, centrado con position:absolute) necesita más alto
        del que le da el contenido de la fila (hamburguesa/texto/idioma,
@@ -97,13 +97,15 @@ body {
 .logo-raum { font-weight: 400; }
 .logo-lab { font-weight: 100; }
 
-/* Ícono centrado en la barra, independiente de hamburguesa/texto/idioma —
-   por eso position:absolute en vez de vivir en el flujo flex. */
+/* Ícono centrado horizontalmente en la barra (independiente de
+   hamburguesa/texto/idioma, por eso position:absolute), alineado por abajo
+   con esos tres — mismo bottom que el padding-bottom de .topbar, para que
+   su borde inferior coincida con el de ellos en vez de quedar centrado. */
 .topbar-logo-icon {
     position: absolute;
     left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    bottom: 10px;
+    transform: translateX(-50%);
     height: 56px;
     width: auto;
     display: block;
