@@ -1180,7 +1180,11 @@ input[type="number"] {
 
 @media (max-width: 768px) {
     .mode-intro-content {
-        padding: 24px 20px 24px 35px;
+        /* padding-bottom era 24px fijo — no reservaba lugar para VOLVER
+           (position:fixed, anclado a --footer-h), así que el texto podía
+           superponerse. var(--mobile-bottom-reserve) es el mismo criterio
+           que ya usa in_SITE en .rc-intro-screen para esto mismo. */
+        padding: 24px 20px var(--mobile-bottom-reserve) 35px;
     }
     .workspace-layout {
         display: none;

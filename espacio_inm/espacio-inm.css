@@ -957,6 +957,10 @@ html, body.rc-body {
   }
 
   .mode-intro-content {
-    padding: calc(var(--header-h) + 20px) 20px 20px 35px;
+    /* padding-bottom era 20px fijo — no reservaba lugar para VOLVER
+       (position:fixed, anclado a --footer-h), así que el texto podía
+       superponerse. var(--mobile-bottom-reserve) es el mismo criterio
+       que ya usa in_SITE en .rc-intro-screen para esto mismo. */
+    padding: calc(var(--header-h) + 20px) 20px var(--mobile-bottom-reserve) 35px;
   }
 }
