@@ -2,6 +2,18 @@
 
 _Actualizado: 2026-08-27_
 
+## Pendiente: selector de idioma funcional (portugués)
+
+Hoy el botón "ES" del header es decorativo (`cursor:default`, no hace
+nada al click) — el tooltip ya menciona "próximamente EN / FR / PT" pero
+no hay ninguna interacción real. La usuaria pidió agregar portugués;
+queda pendiente para retomar más adelante. Dos alcances muy distintos a
+decidir cuando se retome:
+- Solo la interacción: desplegar ES/PT al click, cambiar la etiqueta del
+  botón — sin traducir el contenido del sitio todavía.
+- Traducción completa: traducir el contenido visible de los 4 módulos y
+  que cambiar de idioma cambie el texto de verdad — mucho más trabajo.
+
 ## Se saca fondo.jpg — gris oscuro liso (2026-08-27)
 
 `.bg-layer` (hub) y `.rc-bg-layer` (compartida por los 3 módulos) usaban

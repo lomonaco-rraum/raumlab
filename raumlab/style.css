@@ -51,11 +51,17 @@ body {
 }
 
 /* BARRA SUPERIOR */
+/* position:relative como referencia para el ícono centrado (position:
+   absolute, independiente del flujo flex de hamburguesa/texto/idioma). */
 .topbar {
+    position: relative;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     padding: 14px 32px 10px;
+    /* El ícono (56px, centrado con position:absolute) necesita más alto
+       del que le da el contenido de la fila (hamburguesa/texto/idioma,
+       ~23px) — min-height asegura que entre completo sin sobresalir. */
+    min-height: 84px;
 }
 
 .hamburger-btn {
@@ -80,9 +86,7 @@ body {
 }
 
 .topbar-logo {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
+    margin-left: 10px;
     font-family: var(--font-geist);
     font-size: 1.15rem;
     letter-spacing: 0.12em;
@@ -90,14 +94,27 @@ body {
     color: var(--text-color);
 }
 
+.logo-raum { font-weight: 400; }
+.logo-lab { font-weight: 100; }
+
+/* Ícono centrado en la barra, independiente de hamburguesa/texto/idioma —
+   por eso position:absolute en vez de vivir en el flujo flex. */
 .topbar-logo-icon {
-    height: 42px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    height: 56px;
     width: auto;
     display: block;
 }
 
-.logo-raum { font-weight: 400; }
-.logo-lab { font-weight: 100; }
+/* Empuja el selector de idioma al extremo derecho — hamburguesa y texto
+   quedan juntos a la izquierda, sin depender de justify-content:
+   space-between (que los separaría según el ancho de cada uno). */
+.lang-pill {
+    margin-left: auto;
+}
 
 .header-rule {
     height: 0.5px;
@@ -210,7 +227,7 @@ body {
 .nav-contacts-rule {
     height: 0.5px;
     margin: 32px 0 20px;
-    background: var(--text-color);
+    background: rgba(255, 255, 255, 0.35);
 }
 
 .nav-contacts {
