@@ -19,7 +19,7 @@
    ========================================================================== */
 
 :root {
-    --bg-navy: #0d1b2e;
+    --bg-navy: #141414;
     --surface-border: rgba(255, 255, 255, 0.09);
     --border-fine: rgba(242, 239, 233, 0.3);
     --text-color: #ffffff;
@@ -42,23 +42,13 @@ body.rc-body {
     position: relative;
 }
 
-/* CAPA DE FONDO — imagen rotada 180° (negro a la izquierda). Este archivo
-   vive en raumlab/, la misma carpeta que fondo.jpg — ruta relativa directa,
-   sin niveles que ajustar por módulo. */
-/* filter: grayscale — mismo criterio que .bg-layer en raumlab/style.css
-   (el fondo de la landing), para que los 3 módulos no queden con el fondo
-   a color mientras el hub está en blanco y negro. */
+/* CAPA DE FONDO — antes tenía fondo.jpg (16MB); gris oscuro liso, mismo
+   color que usa raumlab/style.css para el hub. */
 .rc-bg-layer {
     position: fixed;
     inset: 0;
     z-index: 0;
     background-color: var(--bg-navy);
-    background-image: url("fondo.jpg");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    transform: rotate(180deg);
-    filter: grayscale(1);
 }
 
 /* CONTENEDOR FIJO (BARRA SUPERIOR) */
@@ -486,19 +476,6 @@ body.rc-body {
 
     .rc-footer-copyright {
         font-size: 0.6rem;
-    }
-
-    /* Fondo con leve overscan: en celular la barra de direcciones del
-       navegador aparece/desaparece y cambia la altura del viewport en
-       vivo. Un fixed con inset:0 puede quedar momentáneamente más chico
-       que el viewport visual durante esa transición y dejar ver el
-       --bg-navy de base en vez de fondo.jpg. Sobrepasar el viewport un
-       poco de cada lado evita ese borde expuesto. */
-    .rc-bg-layer {
-        top: -3vh;
-        bottom: -3vh;
-        left: -2vw;
-        right: -2vw;
     }
 
     /* En celular no entra el grid de 3 columnas de escritorio (breadcrumb +

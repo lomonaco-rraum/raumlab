@@ -1,6 +1,25 @@
 # RAUMLAB — Estado del proyecto y hoja de ruta
 
-_Actualizado: 2026-08-23_
+_Actualizado: 2026-08-27_
+
+## Se saca fondo.jpg — gris oscuro liso (2026-08-27)
+
+`.bg-layer` (hub) y `.rc-bg-layer` (compartida por los 3 módulos) usaban
+una imagen de fondo (`fondo.jpg`, 16MB) con `filter: grayscale` y
+`transform: rotate(180deg)`. Se reemplazó por un color sólido — cada
+módulo ya tiene bastante ruido visual propio (muchos comandos/controles)
+como para sumarle un fondo con textura. `--bg-navy` (el color de fondo
+base, ya usado en toda la app para botones/íconos/modales, no solo el
+fondo) pasó de `#0d1b2e` (navy) a `#141414` (gris oscuro, casi negro) en
+`raumlab/style.css` y `raumlab/raumlab-chrome.css` — mismo nombre de
+variable, valor nuevo, así que el cambio se propaga solo a todo lo que ya
+usaba ese color.
+
+De paso se sacó el hack de overscan móvil en `.rc-bg-layer` (`top/bottom:
+±3vh`, `left/right: ±2vw`) — existía solo para tapar el borde de la
+imagen expuesto durante el resize de la barra de direcciones en Safari;
+con color liso no hace falta. `fondo.jpg` se borró del repo (ya no lo
+referencia nada).
 
 ## Menú lateral: desaturado + sin borde, scrim con blur (2026-08-23)
 
@@ -220,7 +239,7 @@ raumlab/
 ├── style.css                → estilos exclusivos de la landing
 ├── raumlab-chrome.css        → header/footer/nav compartidos por los 3 módulos
 ├── raumlab-chrome.js          → JS del mismo shell compartido
-├── fondo.jpg, flecha_*.png     → assets compartidos
+├── flecha_*.png, favicon.png, og-image.jpg → assets compartidos
 └── Presentación1.pdf            → mockup original de identidad visual
 
 in_site/      → módulo in_SITE (curaduría de salas expositivas 3D)

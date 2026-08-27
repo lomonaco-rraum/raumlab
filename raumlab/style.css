@@ -1,5 +1,5 @@
 :root {
-    --bg-navy: #0d1b2e;
+    --bg-navy: #141414;
     --surface-border: rgba(255, 255, 255, 0.09);
     --text-color: #ffffff;
     --font-geist: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -27,21 +27,13 @@ body {
     position: relative;
 }
 
-/* CAPA DE FONDO — imagen rotada 180° (negro a la izquierda).
-   filter: grayscale — prueba temporal a blanco y negro, pedida por el
-   usuario "por un momento"; sacar esta línea para volver al color
-   original (no se tocó el archivo fondo.jpg en sí). */
+/* CAPA DE FONDO — antes tenía fondo.jpg (16MB, de más para lo que aportaba
+   sobre el ruido visual que ya tienen los módulos). Gris oscuro liso. */
 .bg-layer {
     position: fixed;
     inset: 0;
     z-index: 0;
     background-color: var(--bg-navy);
-    background-image: url("fondo.jpg");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    transform: rotate(180deg);
-    filter: grayscale(1);
 }
 
 /* CONTENEDOR FIJO (CINTA + BARRA SUPERIOR) */
