@@ -67,7 +67,7 @@ body {
 
 .app-header h1 span {
     font-weight: 300;
-    color: #6c757d;
+    color: #757575;
 }
 
 .drop-zone-container {
@@ -464,7 +464,7 @@ body {
     font-size: 0.85rem;
     font-weight: 500;
     margin-bottom: 0.4rem;
-    color: #475569;
+    color: #575757;
 }
 
 .form-group input {
@@ -490,7 +490,12 @@ body {
     bottom: calc(var(--footer-h) + var(--workspace-bottom-reserve));
     width: var(--ancho-rail);
     max-height: var(--alto-dialogo);
-    background: rgba(242, 239, 233, 0.28);
+    /* Vidrio esmerilado gris (antes un beige cálido) — mismo criterio que
+       el resto de las ventanas emergentes del sitio. rgba(20,20,20) =
+       --bg-navy (#141414). */
+    background: rgba(20, 20, 20, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     color: var(--text-color);
     border: none;
     border-radius: 0;

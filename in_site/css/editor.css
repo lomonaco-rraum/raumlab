@@ -261,13 +261,21 @@
    flex (en vez del display:block que trae .viewer-btn) para poder repartir
    texto a la izquierda y el tilde a la derecha. */
 .btn-ficha-sala {
+    position: relative;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     gap: 10px;
 }
 
+/* Posición absoluta a la derecha: así el texto queda centrado en el botón
+   sin importar si el tilde está visible (una vez que la ficha ya tiene
+   descripción) o no. */
 .ficha-check {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -393,7 +401,12 @@
 .modal-box {
     width: 100%;
     max-width: 380px;
-    background: var(--bg-navy);
+    /* Vidrio esmerilado en vez de gris opaco liso — mínima transparencia +
+       blur, mismo criterio que el header/footer y los botones de RA.
+       rgba(20,20,20) = --bg-navy (#141414). */
+    background: rgba(20, 20, 20, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--surface-border);
     border-radius: 6px;
     padding: 30px 25px;
@@ -442,7 +455,17 @@
 
 .modal-actions .viewer-btn,
 .modal-actions .viewer-btn-main {
+    margin-top: 0;
     margin-bottom: 0;
+}
+
+/* .viewer-btn-main normalmente no tiene borde (es el único botón "relleno")
+   mientras que .viewer-btn sí — en pares Cancelar/Exportar o
+   Cancelar/Guardar eso los dejaba con distinta altura. Borde transparente
+   del mismo grosor: ocupa el mismo espacio sin cambiarle el aspecto. */
+.modal-actions .viewer-btn-main {
+    border: 1px solid transparent;
+    font-size: 0.78rem;
 }
 
 /* Vista previa (in-page, no navega a otra pestaña) */
@@ -522,16 +545,20 @@
     border: 1px solid var(--border-fine);
     background: rgba(255, 255, 255, 0.9);
     object-fit: contain;
-    transition: border-color 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .piece-thumb:hover .piece-thumb-image {
     border-color: var(--text-color);
 }
 
+/* Antes se indicaba la pieza activa con un borde naranja — se reemplaza
+   por borde blanco + un leve aumento de tamaño, sin salir del monocromo
+   (mismo criterio que el resto de la interfaz). Sin resplandor: se probó
+   y quedaba con demasiada iluminación. */
 .piece-thumb.active .piece-thumb-image {
-    border-color: #d97a3d;
-    box-shadow: 0 0 0 1px #d97a3d;
+    border-color: var(--text-color);
+    transform: scale(1.08);
 }
 
 .piece-thumb-label {
@@ -568,16 +595,5 @@
     }
     input, textarea, select {
         font-size: 16px !important; /* iOS hace zoom si el font es < 16px */
-    }
-    /* .modal-box usa --bg-navy (tinte azul) — en celular se pide negro/
-       escala de grises. .modal-box-preview (vista previa RA) hereda el
-       cambio porque comparte la misma clase .modal-box en el elemento. */
-    .modal-box {
-        background: #0a0a0a;
-    }
-    /* Con el span del check oculto (display:none), space-between deja el
-       único hijo visible pegado a la izquierda en vez de centrado. */
-    .btn-ficha-sala {
-        justify-content: center;
     }
 }

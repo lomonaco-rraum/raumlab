@@ -325,6 +325,11 @@ body {
     margin: 0;
 }
 
+.module-row h2 .card-h2-fine {
+    font-size: 0.8rem;
+    font-weight: 100;
+}
+
 .module-row .card-lede {
     max-width: 560px;
     font-size: 0.9rem;
@@ -339,6 +344,34 @@ body {
     color: var(--text-color);
     font-weight: 100;
     line-height: 1.4;
+}
+
+.card-more {
+    max-width: 560px;
+}
+
+/* Sin la flechita/triángulo nativo de <summary> — "Ver más" hace de
+   afordancia de click por sí solo (negrita), no hace falta un ícono aparte. */
+.card-more summary {
+    list-style: none;
+    cursor: pointer;
+}
+
+.card-more summary::-webkit-details-marker {
+    display: none;
+}
+
+.card-more[open] summary {
+    margin-bottom: 8px;
+}
+
+.card-more-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.card-more .card-detail + .card-detail {
+    margin-top: 8px;
 }
 
 .card-cta {
@@ -425,4 +458,23 @@ body {
 @media (max-width: 600px) {
     .nav-panel { width: 100%; }
     .main { padding: calc(var(--header-h) + 24px) 20px calc(var(--footer-h) + 24px); }
+
+    /* Sin fondo.jpg, el header/footer fijos son transparentes de verdad
+       (antes dejaban ver la imagen detrás; ahora dejan ver el contenido
+       que scrollea por abajo, superpuesto). Vidrio esmerilado en vez de
+       opaco liso: mismo tinte que --bg-navy, con transparencia + blur —
+       separa el contenido sin perder la sensación de capa flotante que
+       tiene en escritorio (ahí no hace falta: el contenido nunca llega a
+       superponerse). rgba(20,20,20,...) son los componentes de #141414. */
+    .header-stack {
+        background-color: rgba(20, 20, 20, 0.82);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+    }
+
+    .site-footer {
+        background-color: rgba(20, 20, 20, 0.82);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+    }
 }

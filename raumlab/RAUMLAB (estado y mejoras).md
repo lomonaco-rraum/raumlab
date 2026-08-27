@@ -294,10 +294,17 @@ se habían ido desalineando con el tiempo.
   footer, pantallas de introducción) — el CSS de mobile se ajustó por código,
   pero este entorno no tiene acceso a un navegador ni a un celular real para
   probarlo (mismo bloqueo que ya documentan los ESTADO.md de los módulos).
-- **Links muertos en la landing**: "Investigación", "Educación" y "Novedades"
-  del menú apuntan a anclas (`#investigacion`, `#educacion`, `#novedades`) que
-  no existen en la página — hoy no llevan a ningún lado. Solo "Recursos"
-  (grilla de módulos) y "Contacto" (footer) tienen contenido real detrás.
+- **Links de la landing (actualizado 2026-08-27)**: "Novedades" se sacó del
+  menú (la usuaria la va a manejar aparte, en Zoho — no es contenido de este
+  sitio). "Investigación" ya tiene contenido real: una vista (`#investigacion`,
+  mismo patrón de `view` mostrado/ocultado por JS que ya usaba "Recursos")
+  con la presentación de Paula Lomonaco (docente/investigadora/artista
+  visual, directora/fundadora de RaumLab) y un link a su perfil de
+  Academia.edu. Queda pendiente **"Educación"** — la idea acordada es un
+  espacio para pedir cursos/material, con actividades propuestas listadas
+  (mismo estilo de card que "Recursos") y el pedido vía `mailto:
+  info@raumlab.org` — falta que la usuaria mande el listado de actividades
+  para escribirlo con contenido real, no relleno.
 - **Selector de idioma ("ES")** es decorativo — el tooltip dice "próximamente
   EN / FR / PT", no cambia nada todavía.
 - **estereo_GRAF**: card visible en la landing, marcada "En desarrollo", sin

@@ -455,18 +455,22 @@ body.rc-body {
         --mobile-bottom-reserve: calc(var(--footer-h) + 50px);
     }
 
-    /* Header/footer eran transparentes por diseño (para dejar ver el fondo
-       detrás en desktop, donde el contenido nunca llega hasta ahí). En
-       celular el contenido SÍ scrollea por debajo de ambos, así que sin un
-       fondo opaco el texto que pasa por atrás se superpone y se hace
-       ilegible. Mismo color que .rc-bg-layer/--bg-navy para no introducir
-       un tono nuevo. */
+    /* Header/footer son transparentes por diseño en escritorio (el
+       contenido nunca llega hasta ahí). En celular el contenido SÍ
+       scrollea por debajo de ambos — vidrio esmerilado (mismo tinte que
+       --bg-navy, con transparencia + blur) en vez de opaco liso: separa
+       el contenido sin perder la sensación de capa flotante. rgba(20,20,20)
+       son los componentes de --bg-navy (#141414). */
     .rc-header-stack {
-        background-color: var(--bg-navy);
+        background-color: rgba(20, 20, 20, 0.82);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
     }
 
     .rc-footer {
-        background-color: var(--bg-navy);
+        background-color: rgba(20, 20, 20, 0.82);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
         padding: 0 0 10px;
     }
 

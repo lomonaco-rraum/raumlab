@@ -214,21 +214,21 @@ function buildRoom(width, depth) {
     if (roomFloorGrid) scene.remove(roomFloorGrid);
     if (floorMesh) scene.remove(floorMesh);
 
-    // Piso color Beige in_SITE
+    // Piso gris neutro
     const floorGeo = new THREE.PlaneGeometry(width, depth);
-    const floorMat = new THREE.MeshStandardMaterial({ 
-        color: 0xF3F2EE, 
-        roughness: 0.9, 
-        side: THREE.DoubleSide 
+    const floorMat = new THREE.MeshStandardMaterial({
+        color: 0xF1F1F1,
+        roughness: 0.9,
+        side: THREE.DoubleSide
     });
     floorMesh = new THREE.Mesh(floorGeo, floorMat);
     floorMesh.rotation.x = -Math.PI / 2;
     floorMesh.receiveShadow = true;
     scene.add(floorMesh);
 
-    // Grilla en tonos oliva suaves
+    // Grilla en tonos de gris (antes oliva)
     const divisions = Math.max(width, depth);
-    roomFloorGrid = new THREE.GridHelper(divisions, divisions, 0xC6C6B5, 0xDEDECD);
+    roomFloorGrid = new THREE.GridHelper(divisions, divisions, 0xC0C0C0, 0xD8D8D8);
     roomFloorGrid.scale.set(width / divisions, 1, depth / divisions);
     roomFloorGrid.position.y = 0.005; // Un pelín más arriba para evitar z-fighting
     scene.add(roomFloorGrid);

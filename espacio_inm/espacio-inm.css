@@ -677,8 +677,11 @@ html, body.rc-body {
   align-items: center;
   justify-content: center;
   padding: 40px;
-  background: rgba(6, 9, 16, 0.85);
+  /* Era navy (rgba(6,9,16)), leftover de antes del cambio a gris —
+     rgba(20,20,20) = --bg-navy (#141414). */
+  background: rgba(20, 20, 20, 0.85);
   backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 
 .rc-modal[hidden] { display: none; }
@@ -898,7 +901,7 @@ html, body.rc-body {
     left: 20px;
     right: 20px;
     z-index: 600;
-    background: rgba(13, 27, 46, 0.9);
+    background: rgba(20, 20, 20, 0.9);
     border-color: var(--text-color);
   }
   #ar-exit.rc-ar-exit-floating,

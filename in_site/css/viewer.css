@@ -117,8 +117,13 @@
     bottom: 30px;
     left: 30px;
     padding: 14px 22px;
-    background: rgba(255, 255, 255, 0.08);
+    /* Gris oscuro + blur en vez de blanco casi invisible: flota sobre el
+       viewport 3D claro (#FAFAFA), donde un fondo blanco transparente con
+       texto blanco quedaba ilegible. Mismo criterio en todos los botones
+       de RA del sitio. rgba(20,20,20) = --bg-navy (#141414). */
+    background: rgba(20, 20, 20, 0.75);
     backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     color: var(--text-color);
     font-weight: 300;
     border: 1px solid var(--border-fine);
@@ -252,15 +257,11 @@
 @media (max-width: 768px) {
     .viewer-group { margin-bottom: 15px; }
     .viewer-btn-main { margin-top: 10px; }
-    /* Texto blanco sobre el canvas casi blanco (#FAFAFA) lo hacía
-       ilegible — se invierte a texto oscuro sobre un fondo claro opaco. */
     #ar-button {
         bottom: 20px;
         left: 20px;
         padding: 12px 18px;
         font-size: 0.75rem;
-        color: var(--bg-navy);
-        background: rgba(255, 255, 255, 0.85);
     }
     .panel-indice-wrapper { max-height: 30vh; margin-bottom: 15px; }
 }

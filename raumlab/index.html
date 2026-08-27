@@ -69,7 +69,6 @@
                 </li>
                 <li class="nav-item"><a class="nav-link" href="#investigacion">Investigación</a></li>
                 <li class="nav-item"><a class="nav-link" href="#educacion">Educación</a></li>
-                <li class="nav-item"><a class="nav-link" href="#novedades">Novedades</a></li>
                 <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
             </ul>
 
@@ -170,6 +169,30 @@
                 </section>
             </div>
 
+            <!-- INVESTIGACIÓN -->
+            <div class="view" id="view-investigacion" hidden>
+                <section class="modules-list">
+
+                    <article class="module-row" id="paula-lomonaco">
+                        <div class="module-row-head">
+                            <h2>Paula Lomonaco <span class="card-h2-fine">(Rosario, 1988)</span></h2>
+                        </div>
+                        <p class="card-lede">Docente, investigadora y artista visual.</p>
+                        <details class="card-more">
+                            <summary class="card-detail">Directora y fundadora del laboratorio transdisciplinar raumlab.org <span class="card-more-label">Ver más</span></summary>
+                            <p class="card-detail">Docente de Representación gráfica (FCEIA), Geometría descriptiva (FAPyD) y Metodologías y técnicas de documentación del patrimonio en la Diplomatura en Gestión y Preservación del Patrimonio Arquitectónico y Territorial (FAPyD) en la Universidad Nacional de Rosario.</p>
+                            <p class="card-detail">Desde el 2014 se ha capacitado en torno al relevamiento y documentación del patrimonio cultural en el departamento Modelli de la Universitá degli Studi di Salerno y en la Universitá degli Studi di Napoli Federico II, Italia. En el marco de las capacitaciones científico-técnicas, en 2017 ha participado del Proyecto de investigación “Ensayos de restitución fotogramétrica de bajo coste mediante fotografía digital; aplicadas al levantamiento de obras de Chillida y Oteiza.”</p>
+                            <p class="card-detail">Desde el 2012 ha formado parte de proyectos de investigación en torno al relevamiento del patrimonio industrial radicados en el Laboratorio de relevamientos digitales de la FAPyD, acreditados y financiados por organismos oficiales.</p>
+                            <p class="card-detail">Becaria del Consejo Interuniversitario Nacional (2019), con el proyecto Relevamiento y documentación de bienes culturales, en la Facultad de Arquitectura, Planeamiento y Diseño, de la Universidad Nacional de Rosario.</p>
+                            <p class="card-detail">Autora de artículos en actas de congresos nacionales e internacionales (Egrafía Argentina y L’Unione Italiana del Disegno), y revistas académicas periódicas de la FAPyD (A&amp;P) abordando investigaciones y propuestas científicas en torno a la representación.</p>
+                            <p class="card-detail">Entiende su producción artística como dispositivos experimentales que articulan arte, ciencia y filosofía. Mediante propuestas instalativas de intervenciones híbridas configura experiencias en torno a la pregunta ontológica sobre el espacio.</p>
+                        </details>
+                        <a href="https://independent.academia.edu/PaulaLomonaco2" class="card-cta" target="_blank" rel="noopener" aria-label="Explorar el perfil en Academia.edu (se abre en una pestaña nueva)"><span class="card-cta-label">Explorar</span><img src="flecha_derecha_ui.png" alt="" class="cta-arrow-img"></a>
+                    </article>
+
+                </section>
+            </div>
+
         </main>
 
         <!-- FOOTER -->
@@ -199,23 +222,36 @@
 
         const viewHome = document.getElementById('view-home');
         const viewRecursos = document.getElementById('view-recursos');
+        const viewInvestigacion = document.getElementById('view-investigacion');
+        const views = [viewHome, viewRecursos, viewInvestigacion];
 
-        function showRecursos() {
-            viewHome.hidden = true;
-            viewRecursos.hidden = false;
+        function showView(view) {
+            views.forEach(v => { v.hidden = (v !== view); });
         }
-        function showHome() {
-            viewRecursos.hidden = true;
-            viewHome.hidden = false;
-        }
+        function showHome() { showView(viewHome); }
+        function showRecursos() { showView(viewRecursos); }
+        function showInvestigacion() { showView(viewInvestigacion); }
 
-        // Entrar directo a Recursos: el botón "Recursos" de los 3 módulos
-        // ahora es un link real a acá con #recursos (antes no navegaba a
-        // ningún lado, solo desplegaba una lista local). Sin esto, aterrizar
-        // con ese hash mostraba igual el texto curatorial por defecto.
+        // Entrar directo a una vista por hash: el botón "Recursos" de los 3
+        // módulos, y el link "Investigación" del menú, navegan acá con su
+        // hash — antes "Recursos" no navegaba a ningún lado, solo desplegaba
+        // una lista local. Sin esto, aterrizar con ese hash mostraba igual
+        // el texto curatorial por defecto.
         if (location.hash === '#recursos') {
             showRecursos();
+        } else if (location.hash === '#investigacion') {
+            showInvestigacion();
         }
+
+        const investigacionLink = document.querySelector('.nav-link[href="#investigacion"]');
+        if (investigacionLink) investigacionLink.addEventListener('click', showInvestigacion);
+
+        // "Educación" todavía no tiene vista propia (falta el contenido) —
+        // sin esto, al no ocultar nada, se quedaba mostrando lo último que
+        // estuviera visible (ej. Investigación), como si fuera su contenido.
+        // Volver al inicio hasta que se arme la vista real.
+        const educacionLink = document.querySelector('.nav-link[href="#educacion"]');
+        if (educacionLink) educacionLink.addEventListener('click', showHome);
 
         const navToggle = document.getElementById('navToggle');
         const navPanel = document.getElementById('navPanel');
