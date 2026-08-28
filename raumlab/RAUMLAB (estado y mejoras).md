@@ -300,6 +300,25 @@ se habían ido desalineando con el tiempo.
    listener enganchado en esa instancia — no hacía nada. Se reemplazó por una
    llamada directa al método real (`viewer.onWindowResize()`).
 
+## Adaptativo — oculta el cuadro de diálogo en mobile (2026-08-28, cierre del día)
+
+`#panel-dialogo` (el cuadro que usa `mostrarMensaje()` para guiar los
+pasos) tiene posición fija con medidas de escritorio
+(`left:48px; width:var(--ancho-rail)=300px`, pensadas para la columna
+izquierda de la fila de 3 columnas) — en el layout apilado de mobile
+(Adaptativo, el único módulo con workspace accesible ahí) quedaba
+superpuesto sobre el resto del contenido en vez de anclado a una
+columna que a ese ancho ya no existe. La pantalla del celular es
+demasiado chica para además sumarle esa caja aparte, así que se oculta
+por completo en `@media (max-width: 768px)` (`#panel-dialogo.visible {
+display: none; }`) en vez de reposicionarla — los mensajes de guía
+siguen existiendo para escritorio, en mobile la usuaria se guía por la
+UI misma (los vértices con nombre sobre la imagen, los desplegables,
+etc.).
+
+Verificado con captura headless real a 390×844 (mismo método que el
+resto de la ronda): confirmado que el cuadro ya no aparece superpuesto.
+
 ## Adaptativo — corrige regresión visual del recorte anterior (2026-08-28)
 
 La usuaria mandó una captura de su propio navegador real (Chrome, no la

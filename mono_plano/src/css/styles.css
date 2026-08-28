@@ -1445,6 +1445,17 @@ input[type="number"] {
         text-align: center;
     }
 
+    /* #panel-dialogo (mostrarMensaje) usa medidas fijas de escritorio
+       (left:48px, width:--ancho-rail=300px) — en el layout apilado de
+       mobile (Adaptativo, el único módulo con workspace accesible acá)
+       queda superpuesto sobre el resto del contenido en vez de anclado a
+       una columna que ya no existe en ese ancho. La pantalla es
+       demasiado chica para sumarle esta caja aparte — se oculta entera,
+       en vez de reposicionarla. */
+    #panel-dialogo.visible {
+        display: none;
+    }
+
     /* ADAPTATIVO — a diferencia de Fotoplano/Fotomosaico, si tiene sentido
        en celular (4 vértices arrastrables con el dedo, no una tabla de
        puntos). Selector compuesto (2 clases) a propósito: pesa más que el
