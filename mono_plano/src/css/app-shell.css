@@ -30,6 +30,15 @@
        así que su z-index (definido arriba) vuelve a tener efecto. */
     #app-main {
         position: relative;
+        /* La regla de escritorio de arriba deja top:var(--header-h) puesto
+           para el position:fixed. Con position:relative ese top SIGUE
+           funcionando (como offset relativo a la posición natural, no se
+           anula solo porque cambia position) — sin resetearlo acá, el
+           elemento bajaba header-h (por top) + header-h+20 (por su propio
+           padding-top) = casi el doble. Confirmado con un panel de debug
+           real en el celular: appMain quedaba en top=131 en vez de 0, con
+           header-h=131 — la duplicación exacta. */
+        top: 0;
         min-height: calc(100vh - var(--header-h) - var(--mobile-bottom-reserve));
         padding: calc(var(--header-h) + 20px) 20px var(--mobile-bottom-reserve);
     }
