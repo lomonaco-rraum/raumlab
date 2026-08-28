@@ -300,6 +300,30 @@ se habían ido desalineando con el tiempo.
    listener enganchado en esa instancia — no hacía nada. Se reemplazó por una
    llamada directa al método real (`viewer.onWindowResize()`).
 
+## Adaptativo — corrige regresión visual del recorte anterior (2026-08-28)
+
+La usuaria mandó una captura de su propio navegador real (Chrome, no la
+de prueba) mostrando dos problemas que el recorte anterior había
+introducido, aunque el número de scroll diera 0: el botón "Reiniciar"
+había quedado como un link subrayado suelto (se leía como texto, no
+como acción — "falta el botón de reiniciar"), y los desplegables
+("Seleccionar")/el toggle Vertical-Horizontal/el botón Generar tenían
+alturas distintas entre sí porque cada uno se había ajustado por
+separado en la carrera por ganar espacio, sin chequear consistencia
+visual entre ellos.
+
+Corrección: mismo font-size (0.75rem) y mismo padding vertical (8px)
+en `.capa-selector-boton`/`.controles-toggle-btn`/`.btn-text`/
+`.btn-primary` dentro de `#panel-adaptativo` — con borde transparente en
+`.btn-primary` (que no tiene borde propio) para igualar la altura sin
+cambiarle el aspecto, mismo criterio que ya usa `.viewer-btn-main` en
+in_SITE. "Reiniciar" pasó a botón chico de verdad (borde + fondo propio
+al pasar el mouse), no un link. Reverificado con el mismo método de
+captura headless (ver sección de abajo): al restaurar alturas prolijas
+volvió a aparecer scroll (57px), se recortaron de nuevo SOLO los
+márgenes entre elementos (no las alturas de los controles) hasta
+0px, iterando con captura real en cada paso — no a ojo.
+
 ## Adaptativo — verificación real con navegador headless (2026-08-28)
 
 La usuaria preguntó "¿no podés verificarlo?" ante el reclamo de que
