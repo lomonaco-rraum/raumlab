@@ -70,6 +70,8 @@ botonesModo.forEach((btn) => {
     btn.addEventListener('click', () => {
         if (btn.dataset.modo === 'tutoriales') {
             mostrarInstrucciones();
+        } else if (btn.dataset.modo === 'adaptativo') {
+            mostrarAdaptativo();
         } else {
             mostrarWorkspace(btn.dataset.modo === 'fotomosaico' ? 'fotomosaico' : 'fotoplano');
         }
@@ -90,6 +92,27 @@ function mostrarIntro() {
             <p class="rc-intro-detail">Confección de fotoplanos y fotomosaicos orientados al relevamiento del patrimonio cultural y el registro de obras artísticas bidimensionales. Corrección de la deformación geométrica de las imágenes mediante métodos analítico, geométrico y adaptativo.</p>
         </div>
     `;
+
+    // Aviso de "solo en PC" — Fotoplano/Fotomosaico están ocultos del subnav
+    // en mobile (no entran las 4 pestañas), así que sin esto no habría forma
+    // de que la usuaria móvil supiera que existen. Aparece una sola vez al
+    // entrar al módulo, no en cada pestaña — ver rcIsMobile() en
+    // raumlab-chrome.js (mismo breakpoint que el resto del sitio).
+    if (window.rcIsMobile && window.rcIsMobile()) {
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        overlay.innerHTML = `
+            <div class="modal-box">
+                <h3>Fotoplano y Fotomosaico</h3>
+                <p class="modal-box-text">Para desarrollos de fotoplanos y fotomosaicos de alta precisión, accedé desde la versión de escritorio. Desde el celular está disponible <strong>Adaptativo</strong>, pensado para este formato.</p>
+                <div class="modal-actions">
+                    <button type="button" class="btn-primary btn-full" id="btn-cerrar-aviso-mobile">Entendido</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+        document.getElementById('btn-cerrar-aviso-mobile').addEventListener('click', () => overlay.remove());
+    }
 }
 
 mostrarIntro();
@@ -109,6 +132,7 @@ function mostrarInstrucciones() {
             <aside class="instr-nav">
                 <button type="button" class="instr-nav-item" data-instr="instr-fotoplano">Fotoplano</button>
                 <button type="button" class="instr-nav-item" data-instr="instr-fotomosaico">Fotomosaico</button>
+                <button type="button" class="instr-nav-item" data-instr="instr-adaptativo">Adaptativo</button>
             </aside>
 
             <div class="instr-panel">
@@ -123,10 +147,15 @@ function mostrarInstrucciones() {
                         foto no cubre todo el objeto, permite fusionar varias
                         en un <strong>fotomosaico</strong>. Pensado para
                         documentación de patrimonio cultural y piezas
-                        artísticas planas. Corre enteramente en el navegador,
-                        y está pensado para escritorio: el marcado punto a
-                        punto sobre una imagen no tiene un equivalente cómodo
-                        en celular.
+                        artísticas planas. Corre enteramente en el navegador.
+                        Fotoplano y Fotomosaico están pensados para
+                        escritorio: el marcado punto a punto sobre una imagen
+                        no tiene un equivalente cómodo en celular.
+                        <strong>Adaptativo</strong> es la excepción — versión
+                        simplificada (4 vértices arrastrables en vez de una
+                        tabla de puntos, tamaño de papel preseteado en vez de
+                        coordenadas reales) pensada justamente para eso, y es
+                        el único de los tres disponible desde el celular.
                     </p>
                     <p>Elegí un modo de la lista para ver sus instrucciones.</p>
                 </div>
@@ -203,6 +232,27 @@ function mostrarInstrucciones() {
                         como una capa distinta en el DXF, para poder
                         activarla o desactivarla en AutoCAD.
                     </p>
+                </div>
+
+                <div class="instr-body" id="instr-adaptativo">
+                    <h2>Adaptativo</h2>
+                    <p>
+                        Versión simplificada de la rectificación, pensada
+                        para obras artísticas de bastidor conocido — y el
+                        único de los tres modos disponible desde el celular.
+                        En vez de marcar puntos de control con coordenadas
+                        reales, alcanza con los 4 vértices del contorno y un
+                        tamaño de papel estándar.
+                    </p>
+
+                    <h3>Paso a paso</h3>
+                    <ol>
+                        <li>Cargá una imagen.</li>
+                        <li>Marcá los 4 vértices del contorno de la obra, en sentido horario empezando abajo a la izquierda. Se pueden arrastrar para ajustar la precisión.</li>
+                        <li>Elegí el tamaño real: A5, A4, A3, A2 (con orientación vertical u horizontal), o personalizado en milímetros.</li>
+                        <li>Elegí la resolución de salida: Baja, Media o Alta.</li>
+                        <li>Generá el Adaptativo y descargalo.</li>
+                    </ol>
                 </div>
 
             </div>
@@ -1678,6 +1728,498 @@ function mostrarWorkspace(modo) {
             fusionarSiguiente(rectificadoCombinado, restantes.slice(1));
         });
     }
+}
+
+// =====================================================================
+// ADAPTATIVO — modo simplificado pensado para mobile (a diferencia de
+// Fotoplano/Fotomosaico, que están pensados para escritorio, ver
+// app-shell.css): exactamente 4 vértices arrastrables en vez de una tabla
+// de N puntos de control, tamaño de papel preseteado (A5/A4/A3/A2 +
+// personalizado) en vez de coordenadas reales cargadas a mano, y
+// resolución en 3 niveles (Baja/Media/Alta, en DPI) en vez de un GSD en
+// mm/px. Reutiliza el mismo motor de homografía que Fotoplano
+// (calcularHomografia de geometry.js) y el mismo loop de warpeo por
+// muestreo inverso — con exactamente 4 correspondencias el ajuste por
+// mínimos cuadrados da la solución exacta, es el mismo cálculo.
+// Una sola imagen, sin miniaturas/fusión (eso es exclusivo de
+// Fotomosaico) — por eso tiene su propio flujo en vez de sumarse a
+// mostrarWorkspace(), que está armado alrededor de esa lógica de
+// multi-imagen. Sin zoom (a diferencia de Fotoplano): la imagen se
+// muestra completa, ajustada al ancho de la columna — los 4 vértices son
+// arrastrables para ajustar precisión, no hace falta acercar con la
+// rueda del mouse (que además no tiene equivalente táctil en celular).
+// =====================================================================
+function mostrarAdaptativo() {
+    mostrarPanelDialogo();
+    let archivoImagen = null;
+
+    render();
+
+    function render() {
+        inicioScreen.innerHTML = `
+            <div class="workspace-layout adaptativo-layout">
+                <aside class="rail-izquierdo">
+                    <div class="panel-crear-proyecto">
+                        <div class="panel-content">
+                            ${!archivoImagen ? `
+                                <button id="btn-cargar-adaptativo" class="btn-text btn-full">Cargar Imagen</button>
+                                <input type="file" id="file-input-adaptativo" accept="image/*" hidden>
+                            ` : `<button id="btn-cerrar-adaptativo" class="btn-text btn-full">Cerrar Proyecto</button>`}
+                        </div>
+                    </div>
+                    <div id="area-descarga-adaptativo"></div>
+                </aside>
+
+                <div id="area-imagen-adaptativo" class="fotoplano-canvas-area"></div>
+
+                <aside class="rail-derecho" id="area-controles-adaptativo"></aside>
+            </div>
+        `;
+
+        const fileInput = document.getElementById('file-input-adaptativo');
+        if (fileInput) {
+            document.getElementById('btn-cargar-adaptativo').addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    archivoImagen = file;
+                    render();
+                }
+            });
+        }
+        const btnCerrar = document.getElementById('btn-cerrar-adaptativo');
+        if (btnCerrar) btnCerrar.addEventListener('click', () => location.reload());
+
+        const contenedorImagen = document.getElementById('area-imagen-adaptativo');
+        const contenedorControles = document.getElementById('area-controles-adaptativo');
+        const contenedorDescarga = document.getElementById('area-descarga-adaptativo');
+
+        if (archivoImagen) {
+            crearEstacionAdaptativo(archivoImagen, contenedorImagen, { contenedorControles, contenedorDescarga });
+        } else {
+            contenedorImagen.innerHTML = `<div class="fotoplano-canvas-placeholder">Cargá una imagen para empezar.</div>`;
+            contenedorControles.innerHTML = '';
+            contenedorDescarga.innerHTML = '';
+        }
+    }
+}
+
+// Formatos ISO en mm, en orientación vertical (ancho × alto) — el toggle
+// Vertical/Horizontal de la UI intercambia w/h sobre estos valores base.
+const FORMATOS_ADAPTATIVO = {
+    a5: { label: 'A5', w: 148, h: 210 },
+    a4: { label: 'A4', w: 210, h: 297 },
+    a3: { label: 'A3', w: 297, h: 420 },
+    a2: { label: 'A2', w: 420, h: 594 },
+};
+
+// Presets de resolución en DPI (no GSD numérico como Fotoplano — acá el
+// tamaño real ya está fijado por el formato de papel, lo único variable
+// es cuántos píxeles por pulgada le da la salida).
+const RESOLUCIONES_ADAPTATIVO = {
+    baja: { label: 'Baja', dpi: 100 },
+    media: { label: 'Media', dpi: 200 },
+    alta: { label: 'Alta', dpi: 300 },
+};
+
+function crearEstacionAdaptativo(file, contenedor, opciones) {
+    const imageUrl = URL.createObjectURL(file);
+
+    // vertices: hasta 4 puntos {xImg, yImg}, en sentido horario empezando
+    // abajo a la izquierda (abajo-izq. → arriba-izq. → arriba-der. →
+    // abajo-der.) — ese orden es el que después define la orientación de
+    // la homografía, así que hay que ser consistente al armar
+    // puntosVirtuales en btnGenerar.
+    let vertices = [];
+    let arrastrando = null;
+    let formatoSeleccionado = 'a4';
+    let orientacion = 'vertical';
+    let resolucionSeleccionada = 'media';
+
+    const imagenHtml = `
+        <div style="display: flex; flex-direction: column; height: 100%; min-height: 0;">
+            <div id="view-mode-bar-adaptativo" class="view-mode-tabs">
+                <button id="btn-view-original-adaptativo" type="button" class="active" data-view="original">Imagen Original</button>
+                <button id="btn-view-rectified-adaptativo" type="button" data-view="rectificado">Adaptativo</button>
+            </div>
+            <div class="canvas-area" id="canvas-container-adaptativo" style="cursor: crosshair;">
+                <div id="image-wrapper-adaptativo" style="position: relative; display: inline-flex; justify-content: center; align-items: center;">
+                    <img id="main-image-adaptativo" src="${imageUrl}" style="max-width: 100%; max-height: 100%; height: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.3); border-radius: 4px; display: block; touch-action: none;" />
+                    <canvas id="rectified-canvas-adaptativo" style="display: none; max-width: 100%; height: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.3); border-radius: 4px; background: black;"></canvas>
+                    <svg id="overlay-svg-adaptativo" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></svg>
+                </div>
+            </div>
+        </div>
+    `;
+
+    const controlesHtml = `
+        <div id="panel-adaptativo" class="controles-panel" style="display: flex; flex-direction: column; flex: 1; min-height: 0;">
+            <div class="panel-content">
+
+                <h3 class="controles-heading">1. Vértices del contorno</h3>
+                <p class="controles-hint">Marcá los 4 vértices de la obra sobre la imagen, en sentido horario empezando abajo a la izquierda. Se pueden arrastrar para ajustar.</p>
+                <div class="controles-hint" id="contador-vertices-adaptativo">0 / 4 vértices marcados</div>
+                <button id="btn-reset-vertices-adaptativo" class="btn-text btn-full">Reiniciar vértices</button>
+
+                <hr class="controles-divider">
+
+                <h3 class="controles-heading">2. Tamaño real</h3>
+                <div class="controles-radio-group" id="grupo-formato-adaptativo">
+                    ${Object.entries(FORMATOS_ADAPTATIVO).map(([valor, f]) => `
+                        <label><input type="radio" name="formato-adaptativo" value="${valor}" ${valor === formatoSeleccionado ? 'checked' : ''}> ${f.label} (${f.w} × ${f.h} mm)</label>
+                    `).join('')}
+                    <label><input type="radio" name="formato-adaptativo" value="personalizado"> Personalizado</label>
+                </div>
+
+                <div class="controles-toggle-row" id="grupo-orientacion-adaptativo">
+                    <button type="button" class="controles-toggle-btn active" data-orientacion="vertical">Vertical</button>
+                    <button type="button" class="controles-toggle-btn" data-orientacion="horizontal">Horizontal</button>
+                </div>
+
+                <div id="grupo-personalizado-adaptativo" style="display: none;">
+                    <div class="controles-field-row">
+                        <span>Ancho (X):</span>
+                        <div style="display: flex; gap: 0.3rem; align-items: center;">
+                            <input type="number" id="input-ancho-personalizado" value="210" step="1" min="1" class="controles-input-num" /> mm
+                        </div>
+                    </div>
+                    <div class="controles-field-row">
+                        <span>Alto (Y):</span>
+                        <div style="display: flex; gap: 0.3rem; align-items: center;">
+                            <input type="number" id="input-alto-personalizado" value="297" step="1" min="1" class="controles-input-num" /> mm
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="controles-divider">
+
+                <h3 class="controles-heading">3. Resolución</h3>
+                <div class="controles-toggle-row" id="grupo-resolucion-adaptativo">
+                    ${Object.entries(RESOLUCIONES_ADAPTATIVO).map(([valor, r]) => `
+                        <button type="button" class="controles-toggle-btn ${valor === resolucionSeleccionada ? 'active' : ''}" data-resolucion="${valor}">${r.label}</button>
+                    `).join('')}
+                </div>
+
+                <hr class="controles-divider">
+
+                <button id="btn-generar-adaptativo" class="btn-primary btn-full" disabled>Generar Adaptativo</button>
+            </div>
+        </div>
+
+        <div id="panel-resultado-adaptativo" class="panel-content" style="display: none;">
+            <p class="controles-hint" id="info-resultado-adaptativo"></p>
+        </div>
+    `;
+
+    if (opciones.contenedorControles) {
+        contenedor.innerHTML = imagenHtml;
+        opciones.contenedorControles.innerHTML = controlesHtml;
+    } else {
+        contenedor.innerHTML = `
+            <div class="workspace-layout adaptativo-layout">
+                ${imagenHtml}
+                <div class="sidebar-panel">${controlesHtml}</div>
+            </div>
+        `;
+    }
+
+    if (opciones.contenedorDescarga) {
+        opciones.contenedorDescarga.innerHTML = `
+            <a id="btn-descargar-adaptativo" class="btn-text btn-full" style="display: none; text-decoration: none; margin-bottom: 0.5rem;" download="adaptativo-rectificado.png">⬇ Descargar Adaptativo</a>
+        `;
+    }
+
+    const imgElement = document.getElementById('main-image-adaptativo');
+    const canvasRectificado = document.getElementById('rectified-canvas-adaptativo');
+    // Un <canvas> sin width/height explícitos arranca en 300×150 (default
+    // del navegador, no 0) — sin esto, la guarda de btnViewRectified de
+    // más abajo (canvasRectificado.width === 0) nunca se cumplía, y se
+    // podía pasar a "Ver Adaptativo" antes de generar nada.
+    canvasRectificado.width = 0;
+    canvasRectificado.height = 0;
+    const svgOverlay = document.getElementById('overlay-svg-adaptativo');
+    const btnViewOriginal = document.getElementById('btn-view-original-adaptativo');
+    const btnViewRectified = document.getElementById('btn-view-rectified-adaptativo');
+    const btnDescargar = document.getElementById('btn-descargar-adaptativo');
+    const contadorVertices = document.getElementById('contador-vertices-adaptativo');
+    const btnResetVertices = document.getElementById('btn-reset-vertices-adaptativo');
+    const btnGenerar = document.getElementById('btn-generar-adaptativo');
+    const grupoOrientacion = document.getElementById('grupo-orientacion-adaptativo');
+    const grupoPersonalizado = document.getElementById('grupo-personalizado-adaptativo');
+    const inputAnchoPersonalizado = document.getElementById('input-ancho-personalizado');
+    const inputAltoPersonalizado = document.getElementById('input-alto-personalizado');
+    const panelAdaptativo = document.getElementById('panel-adaptativo');
+    const panelResultado = document.getElementById('panel-resultado-adaptativo');
+    const infoResultado = document.getElementById('info-resultado-adaptativo');
+
+    const SVG_NS = "http://www.w3.org/2000/svg";
+    const BLANCO = "#f2efe9";
+    const ETIQUETAS_VERTICES = ['abajo-izq.', 'arriba-izq.', 'arriba-der.', 'abajo-der.'];
+
+    function imgAClient(xImg, yImg) {
+        const scaleX = imgElement.clientWidth / imgElement.naturalWidth;
+        const scaleY = imgElement.clientHeight / imgElement.naturalHeight;
+        return { x: xImg * scaleX, y: yImg * scaleY };
+    }
+
+    function dibujarCruz(xImg, yImg, etiqueta) {
+        const p = imgAClient(xImg, yImg);
+        const l = 9;
+        [[p.x - l, p.y, p.x + l, p.y], [p.x, p.y - l, p.x, p.y + l]].forEach(([x1, y1, x2, y2]) => {
+            const line = document.createElementNS(SVG_NS, "line");
+            line.setAttribute("x1", x1); line.setAttribute("y1", y1);
+            line.setAttribute("x2", x2); line.setAttribute("y2", y2);
+            line.setAttribute("stroke", BLANCO); line.setAttribute("stroke-width", "2.5");
+            line.setAttribute("stroke-linecap", "round");
+            svgOverlay.appendChild(line);
+        });
+        if (etiqueta) {
+            const text = document.createElementNS(SVG_NS, "text");
+            text.setAttribute("x", p.x + 12); text.setAttribute("y", p.y - 12);
+            text.setAttribute("fill", BLANCO); text.setAttribute("font-size", "11px"); text.setAttribute("font-weight", "600");
+            text.textContent = etiqueta;
+            svgOverlay.appendChild(text);
+        }
+    }
+
+    function redibujarSVG() {
+        svgOverlay.innerHTML = "";
+        if (vertices.length >= 3) {
+            const pointsStr = vertices.map(v => {
+                const p = imgAClient(v.xImg, v.yImg);
+                return `${p.x},${p.y}`;
+            }).join(' ');
+            const polygon = document.createElementNS(SVG_NS, "polygon");
+            polygon.setAttribute("points", pointsStr);
+            polygon.setAttribute("fill", "rgba(242, 239, 233, 0.12)");
+            polygon.setAttribute("stroke", BLANCO);
+            polygon.setAttribute("stroke-width", "2");
+            svgOverlay.appendChild(polygon);
+        }
+        vertices.forEach((v, i) => dibujarCruz(v.xImg, v.yImg, ETIQUETAS_VERTICES[i]));
+    }
+
+    function actualizarEstado() {
+        contadorVertices.textContent = `${vertices.length} / 4 vértices marcados`;
+        btnGenerar.disabled = vertices.length < 4;
+    }
+
+    window.addEventListener('resize', redibujarSVG);
+    imgElement.addEventListener('load', redibujarSVG);
+
+    // Marcado y arrastre — Pointer Events (no mouse/touch por separado):
+    // un mismo código atiende mouse en escritorio y dedo en celular, que es
+    // justo el caso de uso de este modo. RADIO_ARRASTRE es el radio de
+    // detección en píxeles de PANTALLA (no de imagen) — bastante generoso
+    // porque tiene que funcionar con el dedo, no solo con un cursor fino.
+    const RADIO_ARRASTRE = 22;
+
+    function posicionDesdeEvento(e) {
+        const rect = imgElement.getBoundingClientRect();
+        const xClient = e.clientX - rect.left;
+        const yClient = e.clientY - rect.top;
+        const scaleX = imgElement.naturalWidth / imgElement.clientWidth;
+        const scaleY = imgElement.naturalHeight / imgElement.clientHeight;
+        return {
+            xImg: Math.round(xClient * scaleX),
+            yImg: Math.round(yClient * scaleY),
+            xClient, yClient
+        };
+    }
+
+    function indiceVerticeCercano(xClient, yClient) {
+        let mejor = -1, mejorDist = RADIO_ARRASTRE;
+        vertices.forEach((v, i) => {
+            const p = imgAClient(v.xImg, v.yImg);
+            const d = Math.hypot(p.x - xClient, p.y - yClient);
+            if (d < mejorDist) { mejorDist = d; mejor = i; }
+        });
+        return mejor;
+    }
+
+    imgElement.addEventListener('pointerdown', (e) => {
+        if (canvasRectificado.style.display === 'block') return;
+        const pos = posicionDesdeEvento(e);
+        const idx = indiceVerticeCercano(pos.xClient, pos.yClient);
+        if (idx >= 0) {
+            arrastrando = idx;
+            imgElement.setPointerCapture(e.pointerId);
+        } else if (vertices.length < 4) {
+            vertices.push({ xImg: pos.xImg, yImg: pos.yImg });
+            redibujarSVG();
+            actualizarEstado();
+        }
+    });
+
+    imgElement.addEventListener('pointermove', (e) => {
+        if (arrastrando === null) return;
+        const pos = posicionDesdeEvento(e);
+        vertices[arrastrando] = { xImg: pos.xImg, yImg: pos.yImg };
+        redibujarSVG();
+    });
+
+    imgElement.addEventListener('pointerup', () => { arrastrando = null; });
+    imgElement.addEventListener('pointercancel', () => { arrastrando = null; });
+
+    btnResetVertices.addEventListener('click', () => {
+        vertices = [];
+        redibujarSVG();
+        actualizarEstado();
+    });
+
+    const contenedorControlesReal = opciones.contenedorControles || contenedor;
+
+    contenedorControlesReal.querySelectorAll('input[name="formato-adaptativo"]').forEach((r) => {
+        r.addEventListener('change', () => {
+            formatoSeleccionado = r.value;
+            const esPersonalizado = formatoSeleccionado === 'personalizado';
+            grupoOrientacion.style.display = esPersonalizado ? 'none' : 'flex';
+            grupoPersonalizado.style.display = esPersonalizado ? 'block' : 'none';
+        });
+    });
+
+    grupoOrientacion.querySelectorAll('.controles-toggle-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            orientacion = btn.dataset.orientacion;
+            grupoOrientacion.querySelectorAll('.controles-toggle-btn').forEach((b) => b.classList.remove('active'));
+            btn.classList.add('active');
+        });
+    });
+
+    const grupoResolucion = document.getElementById('grupo-resolucion-adaptativo');
+    grupoResolucion.querySelectorAll('.controles-toggle-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            resolucionSeleccionada = btn.dataset.resolucion;
+            grupoResolucion.querySelectorAll('.controles-toggle-btn').forEach((b) => b.classList.remove('active'));
+            btn.classList.add('active');
+        });
+    });
+
+    function obtenerTamanioReal() {
+        if (formatoSeleccionado === 'personalizado') {
+            const w = parseFloat(inputAnchoPersonalizado.value) || 210;
+            const h = parseFloat(inputAltoPersonalizado.value) || 297;
+            return { w, h };
+        }
+        const f = FORMATOS_ADAPTATIVO[formatoSeleccionado];
+        return orientacion === 'horizontal' ? { w: f.h, h: f.w } : { w: f.w, h: f.h };
+    }
+
+    btnViewOriginal.addEventListener('click', () => {
+        imgElement.style.display = 'block';
+        canvasRectificado.style.display = 'none';
+        btnViewOriginal.classList.add('active');
+        btnViewRectified.classList.remove('active');
+        btnDescargar.style.display = 'none';
+        svgOverlay.style.display = 'block';
+        panelResultado.style.display = 'none';
+        panelAdaptativo.style.display = 'flex';
+    });
+
+    btnViewRectified.addEventListener('click', () => {
+        if (canvasRectificado.width === 0) return;
+        imgElement.style.display = 'none';
+        canvasRectificado.style.display = 'block';
+        btnViewOriginal.classList.remove('active');
+        btnViewRectified.classList.add('active');
+        btnDescargar.style.display = 'block';
+        svgOverlay.style.display = 'none';
+        panelAdaptativo.style.display = 'none';
+        panelResultado.style.display = 'block';
+    });
+
+    btnGenerar.addEventListener('click', () => {
+        try {
+            if (vertices.length !== 4) throw new Error("Marcá los 4 vértices del contorno.");
+
+            const { w: wMm, h: hMm } = obtenerTamanioReal();
+            if (!(wMm > 0) || !(hMm > 0)) throw new Error("El tamaño elegido no es válido.");
+
+            // xObj/yObj en metros — mismas unidades que usa calcularHomografia
+            // en Fotoplano (pxPorMetro), así se reutiliza tal cual ese motor
+            // sin tocar geometry.js. Orden de vertices[]: abajo-izq.,
+            // arriba-izq., arriba-der., abajo-der. (sentido horario) — yObj
+            // crece hacia arriba, igual que en el método Geométrico.
+            const wM = wMm / 1000, hM = hMm / 1000;
+            const puntosVirtuales = [
+                { xImg: vertices[0].xImg, yImg: vertices[0].yImg, xObj: 0,  yObj: 0 },
+                { xImg: vertices[1].xImg, yImg: vertices[1].yImg, xObj: 0,  yObj: hM },
+                { xImg: vertices[2].xImg, yImg: vertices[2].yImg, xObj: wM, yObj: hM },
+                { xImg: vertices[3].xImg, yImg: vertices[3].yImg, xObj: wM, yObj: 0 },
+            ];
+
+            const H = calcularHomografia(puntosVirtuales);
+
+            const dpi = RESOLUCIONES_ADAPTATIVO[resolucionSeleccionada].dpi;
+            const pxPorMetro = dpi / 25.4 * 1000;
+
+            const outWidth = Math.max(1, Math.round(wM * pxPorMetro));
+            const outHeight = Math.max(1, Math.round(hM * pxPorMetro));
+
+            // Resguardo: un tipeo en Personalizado (ej. cm en vez de mm)
+            // podría pedir un canvas de decenas de miles de píxeles por
+            // lado, algo que el navegador no puede generar de forma
+            // confiable. A2 a 300dpi (la combinación más grande de los
+            // presets) ronda 5000×7000 — el límite deja margen sobre eso.
+            const LIMITE_PX = 6000;
+            if (outWidth > LIMITE_PX || outHeight > LIMITE_PX) {
+                throw new Error(`El tamaño resultante (${outWidth}×${outHeight}px) es demasiado grande. Probá con una resolución menor o revisá el tamaño personalizado.`);
+            }
+
+            const offScreenCanvas = document.createElement('canvas');
+            offScreenCanvas.width = imgElement.naturalWidth;
+            offScreenCanvas.height = imgElement.naturalHeight;
+            const offCtx = offScreenCanvas.getContext('2d');
+            offCtx.drawImage(imgElement, 0, 0);
+            const imgDataOriginal = offCtx.getImageData(0, 0, offScreenCanvas.width, offScreenCanvas.height);
+
+            canvasRectificado.width = outWidth;
+            canvasRectificado.height = outHeight;
+            const outCtx = canvasRectificado.getContext('2d');
+            const imgDataDestino = outCtx.createImageData(outWidth, outHeight);
+
+            const HInv = invertirMatriz3x3(H);
+
+            for (let yOut = 0; yOut < outHeight; yOut++) {
+                for (let xOut = 0; xOut < outWidth; xOut++) {
+                    const X = xOut / pxPorMetro;
+                    const Y = hM - (yOut / pxPorMetro);
+
+                    const denom = HInv[2][0] * X + HInv[2][1] * Y + HInv[2][2];
+                    const xOriginal = (HInv[0][0] * X + HInv[0][1] * Y + HInv[0][2]) / denom;
+                    const yOriginal = (HInv[1][0] * X + HInv[1][1] * Y + HInv[1][2]) / denom;
+
+                    const srcX = Math.round(xOriginal);
+                    const srcY = Math.round(yOriginal);
+
+                    if (srcX >= 0 && srcX < offScreenCanvas.width && srcY >= 0 && srcY < offScreenCanvas.height) {
+                        const indexSrc = (srcY * offScreenCanvas.width + srcX) * 4;
+                        const indexDest = (yOut * outWidth + xOut) * 4;
+                        imgDataDestino.data[indexDest] = imgDataOriginal.data[indexSrc];
+                        imgDataDestino.data[indexDest + 1] = imgDataOriginal.data[indexSrc + 1];
+                        imgDataDestino.data[indexDest + 2] = imgDataOriginal.data[indexSrc + 2];
+                        imgDataDestino.data[indexDest + 3] = 255;
+                    }
+                }
+            }
+
+            outCtx.putImageData(imgDataDestino, 0, 0);
+
+            const dataUrl = canvasRectificado.toDataURL('image/png');
+            btnDescargar.href = dataUrl;
+            btnDescargar.download = `adaptativo_${Math.round(wMm)}x${Math.round(hMm)}mm_${dpi}dpi.png`;
+
+            infoResultado.textContent = `${outWidth} × ${outHeight} px — ${Math.round(wMm)} × ${Math.round(hMm)} mm a ${dpi} dpi.`;
+            mostrarMensaje(`Adaptativo generado con éxito (${outWidth}×${outHeight}px). Ya podés descargarlo.`, 'exito');
+            btnViewRectified.click();
+
+        } catch (error) {
+            mostrarMensaje("Error en la rectificación: " + error.message, 'error');
+            console.error(error);
+        }
+    });
+
+    actualizarEstado();
 }
 
 function mostrarPantallaPuntosHomologos(resultadoA, resultadoB, onFusionado) {

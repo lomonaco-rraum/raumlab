@@ -300,6 +300,60 @@ se habían ido desalineando con el tiempo.
    listener enganchado en esa instancia — no hacía nada. Se reemplazó por una
    llamada directa al método real (`viewer.onWindowResize()`).
 
+## Adaptativo — cuarto modo de trans_FORMA (2026-08-28)
+
+Modo nuevo, más simple que Fotoplano/Fotomosaico y pensado justamente para
+eso: es el único de los cuatro accesible desde el celular (Fotoplano y
+Fotomosaico requieren escritorio, ver más abajo).
+
+- **Flujo**: cargar imagen → marcar los 4 vértices del contorno de la obra
+  (sentido horario, empezando abajo-izquierda: abajo-izq. → arriba-izq. →
+  arriba-der. → abajo-der. — arrastrables para ajustar precisión) → elegir
+  tamaño real (A5/A4/A3/A2 con toggle vertical/horizontal, o personalizado
+  en mm) → elegir resolución (Baja/Media/Alta, en DPI: 100/200/300) →
+  generar → descargar.
+- **Reutiliza el motor de homografía de Fotoplano** (`calcularHomografia`
+  de `geometry.js`) sin tocarlo: con exactamente 4 correspondencias
+  imagen↔objeto, el ajuste por mínimos cuadrados da la solución exacta.
+  También reutiliza el loop de warpeo por muestreo inverso de
+  `crearEstacionFotoplano` (adaptado, no compartido como función — la
+  lógica de UI alrededor es demasiado distinta para reutilizar la función
+  completa). `xObj/yObj` en metros para que las unidades calcen con ese
+  motor sin modificarlo.
+- **Sin zoom** (a diferencia de Fotoplano, que solo tiene zoom por rueda
+  del mouse, sin equivalente táctil): la imagen se muestra completa,
+  ajustada al ancho de columna — los vértices arrastrables alcanzan para
+  ajustar precisión sin necesitar acercar.
+- **Interacción con Pointer Events** (`pointerdown`/`pointermove`/
+  `pointerup`), no mouse events como el resto de trans_FORMA — mismo
+  código atiende mouse en escritorio y dedo en celular. Radio de detección
+  de arrastre de 22px de pantalla (generoso a propósito, para el dedo).
+- **Mobile**: Fotoplano/Fotomosaico se ocultan del subnav (`.rc-subnav
+  button[data-modo="fotoplano/fotomosaico"] { display:none }`,
+  `mono_plano/src/css/styles.css`) — antes estaban visibles pero llevaban
+  a un aviso de "usá escritorio" recién al entrar (`.workspace-mobile-notice`,
+  ya existente). Además, un modal aparece una sola vez al entrar al módulo
+  en mobile (`mostrarIntro()`) explicando que Fotoplano/Fotomosaico
+  requieren escritorio y que Adaptativo es la alternativa — sin esto no
+  habría forma de que la usuaria supiera que esos dos modos existen, ya
+  que las pestañas están ocultas. El layout de Adaptativo (`.workspace-layout.adaptativo-layout`,
+  selector compuesto a propósito) es la EXCEPCIÓN a la regla general
+  `.workspace-layout{display:none}` en mobile — reflow a una columna en
+  vez de ocultarse.
+- **Corrección de un error propio**: en la conversación donde se acordó
+  "sentido horario, empezando abajo a la izquierda", el orden que propuse
+  (abajo-izq. → abajo-der. → arriba-der. → arriba-izq.) estaba mal
+  etiquetado — ese orden es antihorario. El sentido horario real desde
+  abajo-izquierda es abajo-izq. → arriba-izq. → arriba-der. → abajo-der.
+  (equivalente a la lista de `border-radius` en CSS: TL,TR,BR,BL,
+  rotada para arrancar en BL). Implementado con el orden geométricamente
+  correcto, no el que propuse originalmente — de haber usado el original,
+  el resultado hubiera salido espejado.
+- **Sin probar en navegador real** (mismo bloqueo que el resto de esta
+  ronda) — en particular, sin confirmar visualmente el layout mobile a una
+  columna, el arrastre táctil de los vértices, y que el warpeo con 4
+  puntos (en vez de N≥4 como Analítico) da un resultado correcto.
+
 ## Pendiente / conocido pero no resuelto
 
 - **Sin verificar en dispositivo móvil real** todo lo de esta ronda (header,

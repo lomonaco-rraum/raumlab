@@ -957,6 +957,90 @@ input[type="number"] {
     cursor: pointer;
 }
 
+/* Selector tipo segmented control (Vertical/Horizontal, Baja/Media/Alta en
+   Adaptativo) — alternativa a .controles-radio-group cuando las opciones
+   son pocas y cortas, más cómodo para tocar con el dedo que radios. */
+.controles-toggle-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.controles-toggle-btn {
+    flex: 1;
+    padding: 8px 6px;
+    text-align: center;
+    background: transparent;
+    color: var(--text-color);
+    font-family: var(--font-geist);
+    font-size: 0.72rem;
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border: 1px solid var(--border-fine);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.controles-toggle-btn:hover {
+    border-color: var(--text-color);
+    background-color: rgba(255, 255, 255, 0.07);
+}
+
+.controles-toggle-btn.active {
+    border-color: var(--text-color);
+    background-color: rgba(255, 255, 255, 0.12);
+    font-weight: 600;
+}
+
+/* Aviso "solo en PC" (Fotoplano/Fotomosaico) — mismo criterio visual que
+   el resto del sitio: vidrio esmerilado sobre --bg-navy. Aparece una sola
+   vez al entrar al módulo en mobile (ver mostrarIntro() en app.js). */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    background: rgba(6, 9, 16, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.modal-box {
+    width: 100%;
+    max-width: 420px;
+    background: rgba(20, 20, 20, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--surface-border);
+    border-radius: 6px;
+    padding: 22px;
+}
+
+.modal-box h3 {
+    font-family: var(--font-geist);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-color);
+    font-weight: 400;
+    margin-bottom: 12px;
+}
+
+.modal-box-text {
+    font-family: var(--font-geist);
+    font-size: 0.85rem;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--text-color);
+}
+
+.modal-actions {
+    margin-top: 18px;
+}
+
 .controles-checkbox-row {
     display: flex;
     align-items: center;
@@ -1179,6 +1263,16 @@ input[type="number"] {
 }
 
 @media (max-width: 768px) {
+    /* Fotoplano/Fotomosaico requieren escritorio (ver .workspace-mobile-notice
+       más abajo) — en mobile no entran las 4 pestañas cómodas, así que se
+       ocultan del subnav directamente en vez de llevar a un aviso por
+       pestaña. El aviso general vive en la pantalla de introducción (ver
+       mostrarIntro() en app.js), no acá. */
+    .rc-module-subheader .rc-subnav button[data-modo="fotoplano"],
+    .rc-module-subheader .rc-subnav button[data-modo="fotomosaico"] {
+        display: none;
+    }
+
     .mode-intro-content {
         /* #app-main (app-shell.css) en mobile YA pone
            padding: calc(header-h+20) 20px mobile-bottom-reserve; en sus
@@ -1206,6 +1300,34 @@ input[type="number"] {
         line-height: 1.6;
         padding: 60px 24px;
         text-align: center;
+    }
+
+    /* ADAPTATIVO — a diferencia de Fotoplano/Fotomosaico, si tiene sentido
+       en celular (4 vértices arrastrables con el dedo, no una tabla de
+       puntos). Selector compuesto (2 clases) a propósito: pesa más que el
+       .workspace-layout{display:none} de arriba sin importar el orden en
+       el archivo, y así queda claro en el propio selector que es la
+       excepción puntual, no un cambio a la regla general. Reflow a una
+       columna — la fila de 3 columnas de escritorio no entra en un
+       celular. */
+    .workspace-layout.adaptativo-layout {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px 20px var(--workspace-bottom-reserve);
+        overflow: visible;
+        height: auto;
+    }
+    .adaptativo-layout .rail-izquierdo,
+    .adaptativo-layout .rail-derecho {
+        width: 100%;
+    }
+    .adaptativo-layout .fotoplano-canvas-area {
+        flex: none;
+        min-height: 280px;
+    }
+    .adaptativo-layout .miniaturas-rail {
+        padding-bottom: 0;
     }
 
     .instr-layout {
