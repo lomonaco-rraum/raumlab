@@ -300,6 +300,19 @@ se habían ido desalineando con el tiempo.
    listener enganchado en esa instancia — no hacía nada. Se reemplazó por una
    llamada directa al método real (`viewer.onWindowResize()`).
 
+## Adaptativo — cuarto modo de trans_FORMA (2026-08-28, tres rondas de revisión el mismo día)
+
+**Tercera revisión** — el zoom/encaje de la segunda ronda quedó
+confirmado funcionando. Dos ajustes finos:
+- El cuadro de diálogo decía "seleccioná y llevá" el vértice pero no
+  explicaba el gesto (clic sostenido + arrastrar) — la usuaria tuvo que
+  probarlo sola para descubrirlo. Mensaje actualizado, explícito.
+- Ancho y Alto personalizados pasaron de dos filas apiladas a una sola
+  fila compartida (con un solo "mm" al final, no repetido) — el objetivo
+  es que el panel de controles entre completo sin scroll vertical; cada
+  fila por separado ya entraba en una línea (ronda anterior), pero dos
+  filas seguían usando más alto del que el panel tiene disponible.
+
 ## Adaptativo — cuarto modo de trans_FORMA (2026-08-28, dos rondas de revisión el mismo día)
 
 **Segunda revisión — causa raíz encontrada, no solo síntomas**: la usuaria

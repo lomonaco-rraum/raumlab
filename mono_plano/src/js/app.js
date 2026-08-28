@@ -1909,18 +1909,16 @@ function crearEstacionAdaptativo(file, contenedor, opciones) {
 
                 <!-- Siempre presentes (no aparecen/desaparecen): deshabilitadas
                      salvo que el formato elegido sea "Personalizado" — evita
-                     el salto de layout de mostrar/ocultar. -->
-                <div class="controles-field-row controles-field-row-compact">
-                    <span>Ancho (X):</span>
-                    <div class="controles-field-inline">
-                        <input type="number" id="input-ancho-personalizado" value="210" step="1" min="1" class="controles-input-num" disabled /> mm
-                    </div>
-                </div>
-                <div class="controles-field-row controles-field-row-compact">
-                    <span>Alto (Y):</span>
-                    <div class="controles-field-inline">
-                        <input type="number" id="input-alto-personalizado" value="297" step="1" min="1" class="controles-input-num" disabled /> mm
-                    </div>
+                     el salto de layout de mostrar/ocultar. Ancho y Alto
+                     comparten una sola fila (no dos apiladas) para ahorrar
+                     el alto que le hacía falta al panel para entrar sin
+                     scroll — un solo "mm" al final, no repetido por campo. -->
+                <div class="controles-field-row-pair">
+                    <label for="input-ancho-personalizado">Ancho (X):</label>
+                    <input type="number" id="input-ancho-personalizado" value="210" step="1" min="1" class="controles-input-num" disabled />
+                    <label for="input-alto-personalizado">Alto (Y):</label>
+                    <input type="number" id="input-alto-personalizado" value="297" step="1" min="1" class="controles-input-num" disabled />
+                    <span>mm</span>
                 </div>
 
                 <hr class="controles-divider">
@@ -2147,7 +2145,7 @@ function crearEstacionAdaptativo(file, contenedor, opciones) {
         vertices = posicionesIniciales();
         redibujarSVG();
         actualizarPosibilidadGenerar();
-        mostrarMensaje('Seleccioná cada vértice del polígono y llevalo a su lugar sobre el contorno real de la obra. Con la rueda del mouse (o pellizcando con dos dedos) podés acercar para más precisión.', 'info');
+        mostrarMensaje('Hacé clic sostenido sobre un vértice y arrastralo hasta su lugar sobre el contorno real de la obra. Con la rueda del mouse (o pellizcando con dos dedos) podés acercar para más precisión.', 'info');
     }
     imgElement.addEventListener('load', alCargarImagen);
     // Si la imagen ya estaba en caché, "load" puede disparar antes de que

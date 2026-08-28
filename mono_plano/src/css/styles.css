@@ -1013,24 +1013,28 @@ input[type="number"] {
 
 /* Ancho/Alto personalizados (Adaptativo) — siempre presentes, no
    aparecen/desaparecen con el formato elegido (ver app.js,
-   actualizarDisponibilidadFormato): solo se habilitan/deshabilitan. En
-   escritorio, en una sola línea (nowrap) — el mobile angosto sigue
-   pudiendo envolver si hace falta. */
-.controles-field-row-compact {
+   actualizarDisponibilidadFormato): solo se habilitan/deshabilitan.
+   Ancho y Alto comparten una sola fila (no dos apiladas, con su propio
+   "mm" cada una) — ahorra el alto que le faltaba al panel para entrar
+   sin scroll vertical. */
+.controles-field-row-pair {
+    display: flex;
+    align-items: center;
     flex-wrap: nowrap;
-    gap: 8px;
+    gap: 6px;
+    margin-bottom: 8px;
+    color: var(--text-color);
+    font-weight: 300;
+    font-size: 0.75rem;
 }
 
-.controles-field-row-compact span {
+.controles-field-row-pair label {
     white-space: nowrap;
 }
 
-.controles-field-inline {
-    display: flex;
-    gap: 0.3rem;
-    align-items: center;
+.controles-field-row-pair .controles-input-num {
+    width: 42px;
     flex-shrink: 0;
-    font-size: 0.75rem;
 }
 
 /* .controles-input-num de base es un recuadro claro (rgba(242,239,233,.5),
@@ -1038,7 +1042,7 @@ input[type="number"] {
    necesita leerse gris, no solo semitransparente (opacity sola difumina
    todo por igual — fondo, borde y texto — y contra el fondo oscuro del
    panel terminaba viéndose como un rectángulo fantasma en vez de gris). */
-.controles-field-row-compact input:disabled {
+.controles-field-row-pair input:disabled {
     background: rgba(150, 150, 150, 0.2);
     color: rgba(24, 24, 27, 0.55);
 }
