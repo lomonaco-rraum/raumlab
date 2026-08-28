@@ -601,5 +601,42 @@
 <script src="vendor/jszip.min.js"></script>
 
 <script src="espacio-inm.js"></script>
+
+<!-- 🔧 DEBUG TEMPORAL — diagnóstico del espacio de más entre el header y el
+     texto de introducción en mobile. Sacar apenas se resuelva. -->
+<script>
+(function () {
+    if (!window.rcIsMobile || !window.rcIsMobile()) return;
+    function debugPanel() {
+        var el = document.getElementById('rc-debug-panel');
+        if (!el) {
+            el = document.createElement('div');
+            el.id = 'rc-debug-panel';
+            el.style.cssText = 'position:fixed;top:4px;left:4px;z-index:9999;background:#0f0;color:#000;font-size:10px;font-family:monospace;padding:6px;max-width:96vw;white-space:pre-wrap;line-height:1.4;';
+            document.body.appendChild(el);
+        }
+        var hs = document.querySelector('.rc-header-stack');
+        var appMain = document.getElementById('app-main');
+        var screenEl = document.querySelector('.screen');
+        var intro = document.querySelector('.mode-intro-content');
+        var lede = document.querySelector('.rc-intro-lede');
+        function rect(node) { return node ? node.getBoundingClientRect() : null; }
+        var out = [];
+        out.push('headerVar=' + getComputedStyle(document.documentElement).getPropertyValue('--header-h'));
+        out.push('bottomVar=' + getComputedStyle(document.documentElement).getPropertyValue('--mobile-bottom-reserve'));
+        out.push('headerStack.offsetHeight=' + (hs ? hs.offsetHeight : 'null') + ' bottom=' + (rect(hs) ? rect(hs).bottom.toFixed(1) : 'null'));
+        out.push('appMain position=' + (appMain ? getComputedStyle(appMain).position : 'null') + ' paddingTop=' + (appMain ? getComputedStyle(appMain).paddingTop : 'null') + ' top=' + (rect(appMain) ? rect(appMain).top.toFixed(1) : 'null'));
+        out.push('screen top=' + (rect(screenEl) ? rect(screenEl).top.toFixed(1) : 'null'));
+        out.push('introContent paddingTop=' + (intro ? getComputedStyle(intro).paddingTop : 'null') + ' top=' + (rect(intro) ? rect(intro).top.toFixed(1) : 'null'));
+        out.push('lede top=' + (rect(lede) ? rect(lede).top.toFixed(1) : 'null'));
+        el.textContent = out.join('\n');
+    }
+    debugPanel();
+    window.addEventListener('load', debugPanel);
+    window.addEventListener('resize', debugPanel);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(debugPanel);
+    setTimeout(debugPanel, 1500);
+})();
+</script>
 </body>
 </html>
