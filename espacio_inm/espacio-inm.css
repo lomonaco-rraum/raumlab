@@ -962,14 +962,18 @@ html, body.rc-body {
   }
 
   .mode-intro-content {
-    /* Sin header-h acá — mismo motivo que .tool-main arriba: #app-main
-       (app-shell.css) ya reserva ese alto en su propio padding-top, así
-       que sumarlo de nuevo duplicaba el espacio vacío bajo el header
-       (quedaba el doble que en in_SITE, que sí es el único contenedor y
-       por eso calcula header-h una sola vez en .rc-intro-screen).
-       padding-bottom var(--mobile-bottom-reserve): reserva lugar para
-       VOLVER (position:fixed, anclado a --footer-h), mismo criterio que
-       ya usa in_SITE en .rc-intro-screen para esto mismo. */
-    padding: 0 20px var(--mobile-bottom-reserve) 35px;
+    /* #app-main (app-shell.css) en mobile YA pone
+       padding: calc(header-h+20) 20px mobile-bottom-reserve; en sus
+       CUATRO lados (no solo arriba) — la vez pasada solo se corrigió el
+       padding-top de acá (quedaba 2×header-h), pero derecha/abajo tenían
+       el mismo problema (20+20 y reserve+reserve) y la izquierda daba
+       55px en vez de 35 (20 de #app-main + 35 propios), todo invisible
+       mirando esta regla sola sin sumar la de #app-main. Ahora acá solo
+       se agrega lo que falta para igualar los totales de in_SITE
+       (.rc-intro-screen, el único módulo con un solo contenedor): arriba
+       0 (header-h+20 ya cerrado), derecha 0 (20 ya cerrado), abajo 0
+       (mobile-bottom-reserve ya cerrado), izquierda 15 (20+15=35, el
+       margen documentado). */
+    padding: 0 0 0 15px;
   }
 }

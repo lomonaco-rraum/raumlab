@@ -306,6 +306,29 @@ se habían ido desalineando con el tiempo.
   footer, pantallas de introducción) — el CSS de mobile se ajustó por código,
   pero este entorno no tiene acceso a un navegador ni a un celular real para
   probarlo (mismo bloqueo que ya documentan los ESTADO.md de los módulos).
+- **Posición de la pantalla de introducción en mobile — fix incompleto
+  corregido (2026-08-28)**: la usuaria probó en celular real la ronda
+  anterior (que decía dejar in_SITE/espacio_INM/trans_FORMA con el mismo
+  margen) y el texto de espacio_INM/trans_FORMA seguía sin coincidir con
+  in_SITE. Causa real: en mobile, `#app-main` (`app-shell.css`, compartido
+  por espacio_INM y trans_FORMA — in_SITE no lo usa, tiene un solo
+  contenedor `.rc-intro-screen`) ya pone
+  `padding: calc(header-h+20) 20px mobile-bottom-reserve;` — es decir,
+  reserva los CUATRO lados, no solo arriba. `.mode-intro-content` (la
+  pantalla de intro en sí, hija de `#app-main`) volvía a sumar su propio
+  padding en los cuatro lados encima. Un primer intento en esta misma
+  ronda solo corrigió el padding-top (quedaba en header-h × 2) pero dejó
+  intactos derecha/abajo (20+20 y mobile-bottom-reserve × 2) y sobre todo
+  la izquierda, que daba 55px en vez del margen de 35px documentado más
+  arriba (20 de `#app-main` + 35 propios) — nada de esto se nota mirando
+  la regla de `.mode-intro-content` sola, hay que sumarla con la de
+  `#app-main` para verlo. Fix real:
+  `.mode-intro-content { padding: 0 0 0 15px; }` en mobile — cero en los
+  tres lados que `#app-main` ya cierra exacto, y 15px de margen propio a
+  la izquierda (20+15=35, igual que in_SITE). Mismo cambio en
+  `espacio_inm/espacio-inm.css` y `mono_plano/src/css/styles.css`.
+  Sigue sin verificarse en un celular real — la usuaria lo va a probar
+  después de este push.
 - **Links de la landing (actualizado 2026-08-27)**: "Novedades" se sacó del
   menú (la usuaria la va a manejar aparte, en Zoho — no es contenido de este
   sitio). "Investigación" ya tiene contenido real: una vista (`#investigacion`,
