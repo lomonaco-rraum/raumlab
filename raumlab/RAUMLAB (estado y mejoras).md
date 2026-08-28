@@ -312,11 +312,48 @@ se habían ido desalineando con el tiempo.
   mismo patrón de `view` mostrado/ocultado por JS que ya usaba "Recursos")
   con la presentación de Paula Lomonaco (docente/investigadora/artista
   visual, directora/fundadora de RaumLab) y un link a su perfil de
-  Academia.edu. Queda pendiente **"Educación"** — la idea acordada es un
-  espacio para pedir cursos/material, con actividades propuestas listadas
-  (mismo estilo de card que "Recursos") y el pedido vía `mailto:
-  info@raumlab.org` — falta que la usuaria mande el listado de actividades
-  para escribirlo con contenido real, no relleno.
+  Academia.edu. **"Educación" implementada (2026-08-28)**, a partir del
+  contenido final que mandó la usuaria en `revision de textos.txt` — más
+  simple que la primera aproximación del 27/08 (esa hablaba de una card
+  por módulo vinculando in_SITE/espacio_INM/trans_FORMA como recurso
+  formativo; se descartó a favor de esto):
+  - Vista `#educacion` (mismo patrón `view` que Recursos/Investigación),
+    con dos tarjetas en `.modules-list`: **Soporte** y **Materiales
+    didácticos**. En el menú, "Educación" pasó a ser un `nav-item.has-sub`
+    igual que "Recursos", con esas dos entradas en el submenú — al
+    elegirlas se muestra la vista y hace scroll a la tarjeta
+    correspondiente (no son páginas propias, viven en `raumlab/index.html`).
+  - **Soporte**: tarjeta con la propuesta de valor y un botón "Solicitar"
+    que abre un modal (`#soporte-modal-overlay`) con el formulario
+    completo pedido: nombre y apellido, correo, entidad educativa/cultural,
+    checkboxes de "objeto de la solicitud" (capacitación/colaboración/
+    asesoría/otros, con campo condicional si se tilda "otros"), checkboxes
+    de "contexto/marco" (educativo/artístico-cultural/investigación/otro,
+    con código de proyecto + becaria sí/no si se tilda "investigación"),
+    descripción libre, y Cancelar/Enviar. Mecanismo de envío resuelto:
+    **`mailto:info@raumlab.org`** con asunto y cuerpo prearmados a partir
+    de las respuestas (se descartó Formspree/Netlify Forms por ahora — sin
+    dependencias de terceros, consistente con los demás contactos del
+    sitio que ya usan `mailto:`).
+  - **Materiales didácticos**: tarjeta placeholder ("Próximamente"/"En
+    preparación") — reserva el lugar en el menú, todavía sin el contenido
+    real (fichas de los PDFs propios). Pendiente que la usuaria lo mande.
+  - Estilos nuevos en `style.css`: `.view-lede`/`.view-detail` (intro de
+    la vista), y el sistema de modal/formulario (`.modal-overlay`,
+    `.modal-box`, `.input-row`, `.form-fieldset`, `.checkbox-row`,
+    `.form-btn`/`.form-btn-main`) — mismo criterio visual que el modal de
+    exportación de in_SITE (`in_site/editor.html`), pero con sus propias
+    clases porque `raumlab/index.html` no carga `raumlab-chrome.css` (no
+    tiene la variable `--border-fine`; se usó `--surface-border`, ya
+    definida en este `style.css`).
+  - **Sin probar en navegador real**: este entorno no tiene Chromium ni
+    Node disponibles para levantar un visor headless (mismo bloqueo que ya
+    documentan otras rondas de este archivo). Se validó de forma estática
+    (IDs sin duplicar, cada `getElementById` del script tiene su elemento,
+    llaves de CSS y tags balanceados) pero falta la verificación visual
+    real: abrir el menú, entrar a Educación → Soporte, tildar "otros" e
+    "investigación" para confirmar que los campos condicionales aparecen,
+    y mandar el formulario de prueba.
 - **Selector de idioma ("ES")** es decorativo — el tooltip dice "próximamente
   EN / FR / PT", no cambia nada todavía.
 - **estereo_GRAF**: card visible en la landing, marcada "En desarrollo", sin

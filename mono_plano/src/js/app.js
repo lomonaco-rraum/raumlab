@@ -86,8 +86,8 @@ botonesModo.forEach((btn) => {
 function mostrarIntro() {
     inicioScreen.innerHTML = `
         <div class="mode-intro-content">
-            <p class="rc-intro-lede">Módulo para la rectificación de imágenes fotográficas.</p>
-            <p class="rc-intro-detail">Corrección de deformación de la perspectiva mediante métodos analítico y geométrico. Módulo para la confección de fotoplanos orientados a la documentación de patrimonio cultural y piezas artísticas bidimensionales.</p>
+            <p class="rc-intro-lede">Módulo para la rectificación de imágenes.</p>
+            <p class="rc-intro-detail">Confección de fotoplanos y fotomosaicos orientados al relevamiento del patrimonio cultural y el registro de obras artísticas bidimensionales. Corrección de la deformación geométrica de las imágenes mediante métodos analítico, geométrico y adaptativo.</p>
         </div>
     `;
 }

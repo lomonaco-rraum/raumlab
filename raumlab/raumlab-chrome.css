@@ -249,6 +249,15 @@ body.rc-body {
     color: #ffffff;
 }
 
+/* estereo_GRAF en el submenú de Recursos — mismo criterio que
+   raumlab/style.css (.nav-sublist span[aria-disabled="true"]), acá
+   porque el resto de los módulos comparte este chrome en vez del suyo
+   propio. */
+.rc-nav-sublist span[aria-disabled="true"] {
+    opacity: 0.45;
+    cursor: default;
+}
+
 .rc-nav-scrim {
     position: fixed;
     inset: 0;

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>espacio_INM — RaumLab</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Generación y visualización de imágenes esféricas: proyecciones equirrectangulares a partir de mapas cubemap, con mapeo de coordenadas esféricas para visualización inmersiva.">
+  <meta name="description" content="Generación y visualización de imágenes esféricas: proyecciones equirectangulares a partir de mapas cubemap, con mapeo de coordenadas esféricas para visualización inmersiva.">
   <link rel="canonical" href="https://raumlab.org/espacio_inm/">
   <link rel="icon" type="image/png" href="../raumlab/favicon.png">
 
@@ -13,14 +13,14 @@
   <meta property="og:locale" content="es_AR">
   <meta property="og:url" content="https://raumlab.org/espacio_inm/">
   <meta property="og:title" content="espacio_INM — RaumLab">
-  <meta property="og:description" content="Generación y visualización de imágenes esféricas: proyecciones equirrectangulares a partir de mapas cubemap, con mapeo de coordenadas esféricas para visualización inmersiva.">
+  <meta property="og:description" content="Generación y visualización de imágenes esféricas: proyecciones equirectangulares a partir de mapas cubemap, con mapeo de coordenadas esféricas para visualización inmersiva.">
   <meta property="og:image" content="https://raumlab.org/og-image.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
 
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="espacio_INM — RaumLab">
-  <meta name="twitter:description" content="Generación y visualización de imágenes esféricas: proyecciones equirrectangulares a partir de mapas cubemap, con mapeo de coordenadas esféricas para visualización inmersiva.">
+  <meta name="twitter:description" content="Generación y visualización de imágenes esféricas: proyecciones equirectangulares a partir de mapas cubemap, con mapeo de coordenadas esféricas para visualización inmersiva.">
   <meta name="twitter:image" content="https://raumlab.org/og-image.jpg">
 
   <script type="application/ld+json">
@@ -90,6 +90,7 @@
                 <li><a href="index.html" class="active">espacio_INM</a></li>
                 <li><a href="../in_site/index.html">in_SITE</a></li>
                 <li><a href="../mono_plano/index.html">trans_FORMA</a></li>
+                <li><span aria-disabled="true" aria-label="estereo_GRAF — todavía no disponible">estereo_GRAF</span></li>
             </ul>
         </li>
         <li class="rc-nav-item"><a class="rc-nav-link" href="../raumlab/index.html#investigacion">Investigación</a></li>
@@ -103,8 +104,8 @@
 
   <!-- ===================== Introducción ===================== -->
   <section id="mode-intro" class="mode-content mode-intro-content active">
-    <p class="rc-intro-lede">Generación y visualización de imágenes esféricas.</p>
-    <p class="rc-intro-detail">Generación de proyecciones equirrectangulares a partir de mapa de cubos. Especificaciones técnicas sobre el mapeo de coordenadas esféricas, conversión de formato cubemap y optimización para visualización inmersiva.</p>
+    <p class="rc-intro-lede">Creación y visualización de imágenes inmersivas.</p>
+    <p class="rc-intro-detail">Confección de proyecciones equirectangulares a partir de mapa de cubos y obtención de proyecciones planas convencionales a partir de imágenes esféricas. Edición de entornos mediante fotomontajes digitales, permite la combinación y fusión de la fotografía y el dibujo analógico y digital. En soportes móviles, cuenta con visualización inmersiva RA.</p>
   </section>
 
   <!-- ===================== Modo: Crear ===================== -->
@@ -125,12 +126,12 @@
           <h3 class="settings-heading">Operación</h3>
           <div class="picker" id="picker-operacion">
             <button type="button" class="picker-boton" aria-haspopup="listbox" aria-expanded="false">
-              <span class="picker-boton-label">Mapa de cubos → Equirrectangular</span>
+              <span class="picker-boton-label">Mapa de cubos → Equirectangular</span>
               <span class="picker-chevron" aria-hidden="true">▾</span>
             </button>
             <ul class="picker-lista" role="listbox" hidden>
-              <li role="option"><button type="button" class="picker-opcion tab-btn active" data-target="cm2eq">Mapa de cubos → Equirrectangular</button></li>
-              <li role="option"><button type="button" class="picker-opcion tab-btn" data-target="eq2cm">Equirrectangular → Mapa de cubos</button></li>
+              <li role="option"><button type="button" class="picker-opcion tab-btn active" data-target="cm2eq">Mapa de cubos → Equirectangular</button></li>
+              <li role="option"><button type="button" class="picker-opcion tab-btn" data-target="eq2cm">Equirectangular → Mapa de cubos</button></li>
             </ul>
           </div>
         </div>
@@ -343,7 +344,7 @@
       <div class="rail-izquierdo">
         <div class="cube-face">
           <button type="button" class="file-btn" data-target="eqr">+</button>
-          <span>Equirrectangular</span>
+          <span>Equirectangular</span>
           <input type="file" id="eqr" accept="image/*" style="display:none;">
         </div>
 
@@ -374,7 +375,7 @@
     <div class="rail-izquierdo">
       <div class="cube-face">
         <button type="button" class="file-btn" data-target="viewer-input">+</button>
-        <span>Equirrectangular</span>
+        <span>Equirectangular</span>
         <input type="file" id="viewer-input" accept="image/*" style="display:none;">
       </div>
       <div class="status" id="status-viewer"></div>
@@ -490,34 +491,34 @@
         <div class="instr-body" id="instr-crear">
           <h2>Crear</h2>
           <p>
-            Dos operaciones. <strong>Mapa de cubos → Equirrectangular</strong>:
+            Dos operaciones. <strong>Mapa de cubos → Equirectangular</strong>:
             armás el panorama a partir de 6 caras sueltas o de una única
-            imagen en cruz (4:3). <strong>Equirrectangular → Mapa de
+            imagen en cruz (4:3). <strong>Equirectangular → Mapa de
             cubos</strong>: el camino inverso — subís un panorama ya armado y
             lo descargás como sus 6 caras por separado.
           </p>
 
-          <h3>Mapa de cubos → Equirrectangular, paso a paso</h3>
+          <h3>Mapa de cubos → Equirectangular, paso a paso</h3>
           <ol>
             <li>Elegí el modo de carga: <strong>6 caras</strong> (una imagen cuadrada por cara) o <strong>Mapa de cubos</strong> (una sola imagen en cruz, relación 4:3).</li>
             <li>Cargá las imágenes correspondientes — a medida que se cargan aparecen sus miniaturas en el diagrama.</li>
             <li>Si una cara quedó mal orientada, hacé clic en ella para abrir el editor de la derecha: rotar ±90°, espejar vertical/horizontal, o reemplazar la imagen.</li>
             <li>Elegí la orientación inicial del panorama y, si las caras tienen transparencia, activá "Incluir transparencia" y elegí un fondo (uno de los presets o una imagen propia).</li>
             <li>Apretá <strong>Crear</strong> — el panorama se arma y podés revisarlo con <strong>Vista previa</strong> antes de descargar.</li>
-            <li>Elegí la resolución de descarga (Baja/Media/Alta) y descargá el equirrectangular final.</li>
+            <li>Elegí la resolución de descarga (Baja/Media/Alta) y descargá el equirectangular final.</li>
           </ol>
 
           <h3>El camino inverso, paso a paso</h3>
           <ol>
-            <li>Elegí "Equirrectangular → Mapa de cubos".</li>
-            <li>Cargá un panorama equirrectangular (relación de aspecto 2:1 — el doble de ancho que de alto).</li>
+            <li>Elegí "Equirectangular → Mapa de cubos".</li>
+            <li>Cargá un panorama equirectangular (relación de aspecto 2:1 — el doble de ancho que de alto).</li>
             <li>Apretá <strong>Crear Cubemap</strong> y descargá el ZIP con las 6 caras por separado.</li>
           </ol>
 
           <h3>Sobre los formatos</h3>
           <p>
             Cada cara del cubo tiene que ser cuadrada (1:1), el mapa de cubos
-            en cruz tiene relación 4:3, y el equirrectangular 2:1. Una imagen
+            en cruz tiene relación 4:3, y el equirectangular 2:1. Una imagen
             fuera de esa proporción no se acepta.
           </p>
         </div>
@@ -525,7 +526,7 @@
         <div class="instr-body" id="instr-visualizar">
           <h2>Visualizar</h2>
           <p>
-            Subís un panorama equirrectangular propio para recorrerlo en el
+            Subís un panorama equirectangular propio para recorrerlo en el
             visor esférico, con la posibilidad de verlo en Realidad Aumentada
             desde el celular.
           </p>

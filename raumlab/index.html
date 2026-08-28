@@ -71,7 +71,13 @@
                     </ul>
                 </li>
                 <li class="nav-item"><a class="nav-link" href="#investigacion">Investigación</a></li>
-                <li class="nav-item"><a class="nav-link" href="#educacion">Educación</a></li>
+                <li class="nav-item has-sub" id="educacionItem">
+                    <button class="nav-link nav-sub-toggle" id="educacionToggle" type="button" aria-expanded="false" aria-controls="educacionSub">Educación</button>
+                    <ul class="nav-sublist" id="educacionSub">
+                        <li><a href="#soporte" class="nav-sub-link" data-target="soporte">Soporte</a></li>
+                        <li><a href="#materiales" class="nav-sub-link" data-target="materiales">Materiales didácticos</a></li>
+                    </ul>
+                </li>
                 <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
             </ul>
 
@@ -92,35 +98,20 @@
             <!-- INICIO -->
             <div class="view" id="view-home">
                 <div class="home-curatorial">
-                    <h1>Laboratorio de investigación y desarrollo transdisciplinar</h1>
+                    <h1>Laboratorio experimental de investigación y desarrollo transdisciplinar</h1>
                     <p>
-                        RaumLab es un laboratorio experimental en torno al espacio y su
-                        representación. No toma la representación como un dato dado, sino
-                        como un problema a revisar: cada convención gráfica —el plano, la
-                        perspectiva, la imagen esférica— encierra una forma de mirar y de
-                        habitar el espacio, y esa forma puede repensarse. Esa investigación
-                        crítica orienta el desarrollo de cada recurso: herramientas digitales
-                        para expandir los lenguajes con los que se documenta, se representa y
-                        se recorre un espacio, más allá de sus formatos convencionales.
-                        Investigar esa gráfica es también intervenirla: no alcanza con
-                        describir sus límites, hace falta construir los recursos que la
-                        expandan.
+                        RaumLab es producto de investigaciones científico-artísticas en
+                        torno al concepto de espacio y su representación.
                     </p>
                     <p>
-                        De ahí nace un conjunto de recursos que va del relevamiento a la
-                        exhibición: instrumentos de documentación no convencional para
-                        registrar lo que existe; entornos virtuales para proyectar lo que
-                        todavía no —propuestas curatoriales, artísticas y pedagógicas que
-                        necesitan un espacio antes de tenerlo—; y modos de visualización que
-                        llevan esos resultados a la Realidad Aumentada, donde pueden
-                        recorrerse en vez de solo mirarse.
+                        Se trata de una plataforma de recursos digitales que permiten la
+                        expansión del campo de la expresión gráfica convencional y la
+                        apertura a otros modos de pensar y habitar el espacio contemporáneo.
                     </p>
                     <p>
-                        RaumLab es un proyecto sin fines de lucro: sus herramientas están
-                        pensadas para circular libremente, como un aporte a la
-                        democratización del conocimiento, para artistas, docentes,
-                        estudiantes e instituciones que necesiten representar el espacio de
-                        otra manera.
+                        RaumLab cuenta con instrucción y capacitación para instituciones
+                        educativas y artísticas, y una sección de soporte y colaboración
+                        para proyectos de investigación.
                     </p>
                 </div>
             </div>
@@ -135,7 +126,7 @@
                             <span class="card-status">V1.0</span>
                         </div>
                         <p class="card-lede">Espacio para la creación de proyectos curatoriales.</p>
-                        <p class="card-detail">Módulo apto para proyectos artísticos y contextos educativos. Diseño de salas expositivas con objetos 2D y 3D. Confección de fichas técnicas asociadas a las piezas incorporadas. Visualización en la web y mediante tecnología de RA.</p>
+                        <p class="card-detail">Módulo pensado para el desarrollo y difusión de proyectos artísticos y educativos. Diseño de escenas virtuales a partir de imágenes, videos y modelos tridimensionales. Confección de fichas técnicas de atributos del proyecto y de sus componentes. Visualización en la web y experiencia inmersiva mediante RA en los dispositivos móviles.</p>
                         <a href="../in_site/index.html" class="card-cta" aria-label="Ir a in_SITE"><span class="card-cta-label">Comenzar</span><img src="flecha_derecha_ui.png" alt="" class="cta-arrow-img"></a>
                     </article>
 
@@ -144,8 +135,8 @@
                             <h2>espacio_INM</h2>
                             <span class="card-status">V1.0</span>
                         </div>
-                        <p class="card-lede">Generación y visualización de imágenes esféricas.</p>
-                        <p class="card-detail">Generación de proyecciones equirrectangulares a partir de mapa de cubos. Especificaciones técnicas sobre el mapeo de coordenadas esféricas, conversión de formato cubemap y optimización para visualización inmersiva.</p>
+                        <p class="card-lede">Creación y visualización de imágenes inmersivas.</p>
+                        <p class="card-detail">Confección de proyecciones equirectangulares a partir de mapa de cubos y obtención de proyecciones planas convencionales a partir de imágenes esféricas. Edición de entornos mediante fotomontajes digitales, permite la combinación y fusión de la fotografía y el dibujo analógico y digital. En soportes móviles, cuenta con visualización inmersiva RA.</p>
                         <a href="../espacio_inm/index.html" class="card-cta" aria-label="Ir a espacio_INM"><span class="card-cta-label">Comenzar</span><img src="flecha_derecha_ui.png" alt="" class="cta-arrow-img"></a>
                     </article>
 
@@ -154,8 +145,8 @@
                             <h2>trans_FORMA</h2>
                             <span class="card-status">V1.0</span>
                         </div>
-                        <p class="card-lede">Módulo para la rectificación de imágenes fotográficas.</p>
-                        <p class="card-detail">Corrección de deformación de la perspectiva mediante métodos analítico y geométrico. Módulo para la confección de fotoplanos orientados a la documentación de patrimonio cultural y piezas artísticas bidimensionales.</p>
+                        <p class="card-lede">Módulo para la rectificación de imágenes.</p>
+                        <p class="card-detail">Confección de fotoplanos y fotomosaicos orientados al relevamiento del patrimonio cultural y el registro de obras artísticas bidimensionales. Corrección de la deformación geométrica de las imágenes mediante métodos analítico, geométrico y adaptativo.</p>
                         <a href="../mono_plano/index.html" class="card-cta" aria-label="Ir a trans_FORMA"><span class="card-cta-label">Comenzar</span><img src="flecha_derecha_ui.png" alt="" class="cta-arrow-img"></a>
                     </article>
 
@@ -190,19 +181,138 @@
                             <p class="card-detail">Autora de artículos en actas de congresos nacionales e internacionales (Egrafía Argentina y L’Unione Italiana del Disegno), y revistas académicas periódicas de la FAPyD (A&amp;P) abordando investigaciones y propuestas científicas en torno a la representación.</p>
                             <p class="card-detail">Entiende su producción artística como dispositivos experimentales que articulan arte, ciencia y filosofía. Mediante propuestas instalativas de intervenciones híbridas configura experiencias en torno a la pregunta ontológica sobre el espacio.</p>
                         </details>
+                        <div class="contact-links">
+                            <a href="mailto:paula.lomonaco@fapyd.unr.edu.ar" class="contact-link">
+                                <svg class="icon" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                paula.lomonaco@fapyd.unr.edu.ar
+                            </a>
+                            <a href="https://www.instagram.com/lomonaco.paula" target="_blank" rel="noopener" class="contact-link">
+                                <svg class="icon" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                                @lomonaco.paula
+                            </a>
+                        </div>
                         <a href="https://independent.academia.edu/PaulaLomonaco2" class="card-cta" target="_blank" rel="noopener" aria-label="Explorar el perfil en Academia.edu (se abre en una pestaña nueva)"><span class="card-cta-label">Explorar</span><img src="flecha_derecha_ui.png" alt="" class="cta-arrow-img"></a>
                     </article>
 
                 </section>
             </div>
 
+            <!-- EDUCACIÓN -->
+            <div class="view" id="view-educacion" hidden>
+                <p class="view-lede">Espacio de instrucción y soporte.</p>
+                <p class="view-detail">El laboratorio raumlab ofrece capacitación para instituciones educativas y culturales, y una sección de colaboración para proyectos de investigación enmarcados en convocatorias públicas. Disponibiliza para contextos educativos recursos teórico-prácticos en torno a la expresión y representación gráfica y el relevamiento no convencional de bienes culturales.</p>
+
+                <section class="modules-list">
+
+                    <article class="module-row" id="soporte">
+                        <div class="module-row-head">
+                            <h2>Soporte</h2>
+                        </div>
+                        <p class="card-lede">Cursos, capacitaciones y colaboración.</p>
+                        <p class="card-detail">Solicite cursos, soporte o seguimiento para propuestas o proyectos radicados en entidades educativas y/o culturales.</p>
+                        <button type="button" class="card-cta" id="btnSolicitarSoporte"><span class="card-cta-label">Solicitar</span><img src="flecha_derecha_ui.png" alt="" class="cta-arrow-img"></button>
+                    </article>
+
+                    <article class="module-row" id="materiales">
+                        <div class="module-row-head">
+                            <h2>Materiales didácticos</h2>
+                            <span class="card-status">Próximamente</span>
+                        </div>
+                        <p class="card-detail">Material de apoyo teórico-práctico en torno a la expresión y representación gráfica y el relevamiento no convencional de bienes culturales. En preparación.</p>
+                    </article>
+
+                </section>
+            </div>
+
+            <!-- CONTACTO -->
+            <div class="view" id="view-contacto" hidden>
+                <section class="modules-list">
+                    <article class="module-row" id="contacto-lista">
+                        <div class="module-row-head">
+                            <h2>Contacto</h2>
+                        </div>
+                        <div class="contact-links">
+                            <a href="mailto:info@raumlab.org" class="contact-link">
+                                <svg class="icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                info@raumlab.org
+                            </a>
+                            <a href="https://www.instagram.com/raum.lab" target="_blank" rel="noopener" class="contact-link">
+                                <svg class="icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                                @raum.lab
+                            </a>
+                        </div>
+                    </article>
+                </section>
+            </div>
+
         </main>
 
         <!-- FOOTER -->
-        <footer class="site-footer" id="contacto">
+        <footer class="site-footer">
             <div class="footer-rule"></div>
             <p class="footer-copyright">© 2026 raumlab<br>Rosario, Argentina</p>
         </footer>
+
+        <!-- SOLICITUD DE SOPORTE -->
+        <div id="soporte-modal-overlay" class="modal-overlay hidden">
+            <div class="modal-box">
+                <h3>Solicitar soporte</h3>
+                <form id="soporte-form">
+                    <div class="input-row">
+                        <label for="soporte-nombre">Nombre y apellido del solicitante</label>
+                        <input type="text" id="soporte-nombre" required>
+                    </div>
+                    <div class="input-row">
+                        <label for="soporte-email">Correo de contacto</label>
+                        <input type="email" id="soporte-email" required>
+                    </div>
+                    <div class="input-row">
+                        <label for="soporte-entidad">Entidad educativa/cultural</label>
+                        <input type="text" id="soporte-entidad">
+                    </div>
+
+                    <fieldset class="form-fieldset">
+                        <legend>Objeto</legend>
+                        <label class="checkbox-row"><input type="checkbox" name="soporte-objeto" value="Capacitación">Capacitación</label>
+                        <label class="checkbox-row"><input type="checkbox" name="soporte-objeto" value="Colaboración">Colaboración</label>
+                        <label class="checkbox-row"><input type="checkbox" name="soporte-objeto" value="Asesoría">Asesoría</label>
+                        <label class="checkbox-row"><input type="checkbox" name="soporte-objeto" value="Otro">Otro</label>
+                    </fieldset>
+
+                    <fieldset class="form-fieldset">
+                        <legend>Contexto/marco</legend>
+                        <label class="checkbox-row"><input type="checkbox" name="soporte-contexto" value="Educativo">Educativo</label>
+                        <label class="checkbox-row"><input type="checkbox" name="soporte-contexto" value="Artístico-cultural">Artístico-cultural</label>
+                        <label class="checkbox-row"><input type="checkbox" id="soporte-contexto-investigacion" name="soporte-contexto" value="Investigación">Investigación</label>
+                        <label class="checkbox-row"><input type="checkbox" name="soporte-contexto" value="Otro">Otro</label>
+                        <div id="soporte-investigacion-extra" class="input-conditional-group hidden">
+                            <div class="input-row">
+                                <label for="soporte-codigo-proyecto">Código del proyecto</label>
+                                <input type="text" id="soporte-codigo-proyecto">
+                            </div>
+                            <div class="input-row">
+                                <label for="soporte-becaria">¿Beneficiaria/o de becas?</label>
+                                <select id="soporte-becaria">
+                                    <option value="">—</option>
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <div class="input-row">
+                        <label for="soporte-descripcion">Descripción</label>
+                        <textarea id="soporte-descripcion" rows="3" maxlength="1200" placeholder="Propuesta, marco, objetivos, estado del proyecto, etc."></textarea>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" id="btn-soporte-cancel" class="form-btn">Cancelar</button>
+                        <button type="submit" id="btn-soporte-enviar" class="form-btn-main">Enviar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
     </div>
 
@@ -226,7 +336,9 @@
         const viewHome = document.getElementById('view-home');
         const viewRecursos = document.getElementById('view-recursos');
         const viewInvestigacion = document.getElementById('view-investigacion');
-        const views = [viewHome, viewRecursos, viewInvestigacion];
+        const viewEducacion = document.getElementById('view-educacion');
+        const viewContacto = document.getElementById('view-contacto');
+        const views = [viewHome, viewRecursos, viewInvestigacion, viewEducacion, viewContacto];
 
         function showView(view) {
             views.forEach(v => { v.hidden = (v !== view); });
@@ -234,6 +346,8 @@
         function showHome() { showView(viewHome); }
         function showRecursos() { showView(viewRecursos); }
         function showInvestigacion() { showView(viewInvestigacion); }
+        function showEducacion() { showView(viewEducacion); }
+        function showContacto() { showView(viewContacto); }
 
         // Entrar directo a una vista por hash: el botón "Recursos" de los 3
         // módulos, y el link "Investigación" del menú, navegan acá con su
@@ -244,17 +358,17 @@
             showRecursos();
         } else if (location.hash === '#investigacion') {
             showInvestigacion();
+        } else if (location.hash === '#educacion' || location.hash === '#soporte' || location.hash === '#materiales') {
+            showEducacion();
+        } else if (location.hash === '#contacto') {
+            showContacto();
         }
 
         const investigacionLink = document.querySelector('.nav-link[href="#investigacion"]');
         if (investigacionLink) investigacionLink.addEventListener('click', showInvestigacion);
 
-        // "Educación" todavía no tiene vista propia (falta el contenido) —
-        // sin esto, al no ocultar nada, se quedaba mostrando lo último que
-        // estuviera visible (ej. Investigación), como si fuera su contenido.
-        // Volver al inicio hasta que se arme la vista real.
-        const educacionLink = document.querySelector('.nav-link[href="#educacion"]');
-        if (educacionLink) educacionLink.addEventListener('click', showHome);
+        const contactoLink = document.querySelector('.nav-link[href="#contacto"]');
+        if (contactoLink) contactoLink.addEventListener('click', showContacto);
 
         const navToggle = document.getElementById('navToggle');
         const navPanel = document.getElementById('navPanel');
@@ -282,6 +396,29 @@
             showRecursos();
         });
 
+        const educacionToggle = document.getElementById('educacionToggle');
+        const educacionItem = document.getElementById('educacionItem');
+
+        educacionToggle.addEventListener('click', () => {
+            const isOpen = educacionItem.classList.toggle('open');
+            educacionToggle.setAttribute('aria-expanded', String(isOpen));
+            showEducacion();
+        });
+
+        // Soporte y Materiales didácticos son secciones de la misma vista
+        // Educación (no páginas propias, a diferencia de espacio_INM/in_SITE/
+        // trans_FORMA en Recursos) — al elegirlas hay que mostrar la vista y
+        // además cerrar el menú y llevar el scroll hasta esa tarjeta.
+        navPanel.querySelectorAll('.nav-sub-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                showEducacion();
+                closeNav();
+                const target = document.getElementById(link.dataset.target);
+                if (target) requestAnimationFrame(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+            });
+        });
+
         navPanel.querySelectorAll('.nav-item > .nav-link[href]').forEach(link => {
             link.addEventListener('click', closeNav);
         });
@@ -303,6 +440,68 @@
             }
             lastScrollY = currentY;
         }, { passive: true });
+
+        // MODAL "SOLICITAR SOPORTE" — sitio estático sin servidor propio: el
+        // envío arma un mailto: a info@raumlab.org con los datos precargados
+        // en vez de depender de un backend o un servicio de terceros.
+        const soporteModal = document.getElementById('soporte-modal-overlay');
+        const soporteForm = document.getElementById('soporte-form');
+        const btnSolicitarSoporte = document.getElementById('btnSolicitarSoporte');
+        const btnSoporteCancel = document.getElementById('btn-soporte-cancel');
+
+        function openSoporteModal() { soporteModal.classList.remove('hidden'); }
+        function closeSoporteModal() { soporteModal.classList.add('hidden'); }
+
+        btnSolicitarSoporte.addEventListener('click', openSoporteModal);
+        btnSoporteCancel.addEventListener('click', () => { soporteForm.reset(); closeSoporteModal(); });
+        soporteModal.addEventListener('click', (e) => { if (e.target === soporteModal) closeSoporteModal(); });
+
+        // Campo condicional: "Investigación" en Contexto/marco habilita
+        // código de proyecto y si es beneficiaria de becas.
+        const soporteContextoInvestigacion = document.getElementById('soporte-contexto-investigacion');
+        const soporteInvestigacionExtra = document.getElementById('soporte-investigacion-extra');
+        soporteContextoInvestigacion.addEventListener('change', () => {
+            soporteInvestigacionExtra.classList.toggle('hidden', !soporteContextoInvestigacion.checked);
+            if (!soporteContextoInvestigacion.checked) {
+                document.getElementById('soporte-codigo-proyecto').value = '';
+                document.getElementById('soporte-becaria').value = '';
+            }
+        });
+
+        soporteForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const nombre = document.getElementById('soporte-nombre').value.trim();
+            const email = document.getElementById('soporte-email').value.trim();
+            const entidad = document.getElementById('soporte-entidad').value.trim();
+
+            const objeto = Array.from(soporteForm.querySelectorAll('input[name="soporte-objeto"]:checked')).map(el => el.value);
+            const contexto = Array.from(soporteForm.querySelectorAll('input[name="soporte-contexto"]:checked')).map(el => el.value);
+            const codigoProyecto = document.getElementById('soporte-codigo-proyecto').value.trim();
+            const becaria = document.getElementById('soporte-becaria').value;
+            const descripcion = document.getElementById('soporte-descripcion').value.trim();
+
+            const lineas = [
+                `Nombre y apellido: ${nombre}`,
+                `Correo de contacto: ${email}`,
+                `Entidad educativa/cultural: ${entidad || '—'}`,
+                `Objeto de la solicitud: ${objeto.join(', ') || '—'}`,
+                `Contexto/marco: ${contexto.join(', ') || '—'}`,
+            ];
+            if (soporteContextoInvestigacion.checked) {
+                lineas.push(`Código de proyecto: ${codigoProyecto || '—'}`);
+                lineas.push(`Beneficiaria/o de becas: ${becaria || '—'}`);
+            }
+            lineas.push('', 'Descripción:', descripcion || '—');
+
+            const asunto = encodeURIComponent(`Solicitud de soporte — ${nombre}`);
+            const cuerpo = encodeURIComponent(lineas.join('\n'));
+            window.location.href = `mailto:info@raumlab.org?subject=${asunto}&body=${cuerpo}`;
+
+            soporteForm.reset();
+            soporteInvestigacionExtra.classList.add('hidden');
+            closeSoporteModal();
+        });
     </script>
 
 </body>

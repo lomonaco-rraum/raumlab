@@ -145,10 +145,15 @@ body {
     z-index: 250;
     background: rgba(10, 10, 10, 0.92);
     backdrop-filter: blur(10px);
-    padding: calc(var(--header-h) + 30px) 32px 40px;
+    /* padding-bottom deja lugar al footer fijo (--footer-h), para que los
+       íconos de contacto —empujados al fondo del panel, ver
+       .nav-contacts-rule— no queden tapados detrás. */
+    padding: calc(var(--header-h) + 30px) 32px calc(var(--footer-h) + 24px);
     transform: translateX(-100%);
     transition: transform 0.3s ease;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 .nav-panel.open {
@@ -225,10 +230,12 @@ body {
 }
 
 /* CONTACTO — dentro del panel de navegación (no en el footer: ver nota de
-   .site-footer más abajo, mismo criterio que en el resto de los módulos). */
+   .site-footer más abajo, mismo criterio que en el resto de los módulos).
+   margin-top:auto empuja la línea (y los íconos que siguen) al fondo real
+   del panel en vez de quedar pegados debajo del último ítem del menú. */
 .nav-contacts-rule {
     height: 0.5px;
-    margin: 32px 0 20px;
+    margin: auto 0 20px;
     background: rgba(255, 255, 255, 0.35);
 }
 
@@ -402,6 +409,38 @@ body {
     margin-top: 8px;
 }
 
+/* Vínculos de contacto dentro de una tarjeta (ficha de Investigación,
+   vista Contacto) — ícono + texto en negrita, sin el celeste/subrayado
+   típico de link: la afordancia de click la da el ícono + el peso del
+   texto, no el color. */
+.contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.contact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.84rem;
+}
+
+.contact-link svg {
+    flex-shrink: 0;
+    transition: transform 0.15s ease;
+}
+
+.contact-link:hover svg,
+.contact-link:focus-visible svg {
+    transform: scale(1.15);
+}
+
 .card-cta {
     align-self: flex-end;
     margin-top: 6px;
@@ -411,6 +450,14 @@ body {
     text-decoration: none;
     line-height: 1;
     transition: transform 0.15s ease;
+    /* Reset de botón nativo: .card-cta también se usa en <button> (ej.
+       "Solicitar" en Educación), no solo en <a>. */
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    color: var(--text-color);
+    cursor: pointer;
 }
 
 /* El nudge de hover vive en .card-cta (sin rotación propia), no en el
@@ -481,6 +528,225 @@ body {
     color: var(--text-color);
     font-family: var(--font-geist);
     line-height: 1.4;
+}
+
+/* EDUCACIÓN — mismo criterio que .home-curatorial: bloque de texto
+   centrado sobre .main, antes de la lista de tarjetas (Soporte /
+   Materiales didácticos). */
+.view-lede {
+    max-width: 760px;
+    margin: 0 auto 8px;
+    font-family: var(--font-geist);
+    font-weight: 300;
+    font-size: 1rem;
+    color: var(--text-color);
+}
+
+.view-detail {
+    max-width: 760px;
+    margin: 0 auto 32px;
+    font-family: var(--font-geist);
+    font-weight: 100;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--text-color);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* MODAL — "Solicitar soporte" (Educación). Mismo criterio visual que el
+   resto del sitio: vidrio esmerilado sobre --bg-navy, sin cards con fondo
+   propio salvo acá, donde hace falta separarlo del contenido de atrás. */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 400;
+    background: rgba(6, 9, 16, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.modal-box {
+    width: 100%;
+    /* 720px era para forzar 4 columnas de igual ancho en los checkboxes;
+       con flex + space-between (ver .form-fieldset) cada casilla ya usa
+       su ancho natural, así que el modal puede volver a un ancho acorde
+       al resto de sus campos (inputs/textarea) en vez de quedar de más. */
+    max-width: 500px;
+    max-height: 92vh;
+    overflow-y: auto;
+    background: rgba(20, 20, 20, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--surface-border);
+    border-radius: 6px;
+    padding: 28px 32px;
+}
+
+.modal-box h3 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-color);
+    font-weight: 400;
+    margin-bottom: 20px;
+    font-family: var(--font-geist);
+}
+
+.input-row {
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.input-row label {
+    font-size: 0.7rem;
+    color: var(--text-color);
+    font-weight: 100;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.modal-box input[type="text"],
+.modal-box input[type="email"],
+.modal-box select,
+.modal-box textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--surface-border);
+    border-radius: 4px;
+    font-size: 0.78rem;
+    color: var(--text-color);
+    background-color: transparent;
+    font-family: var(--font-geist);
+}
+
+.modal-box input:focus,
+.modal-box select:focus,
+.modal-box textarea:focus {
+    border-color: var(--text-color);
+    outline: none;
+}
+
+.modal-box input::placeholder,
+.modal-box textarea::placeholder {
+    color: var(--text-color);
+    opacity: 0.5;
+    font-weight: 300;
+}
+
+.modal-box select option {
+    background: var(--bg-navy);
+}
+
+/* Siempre 4 columnas fijas (no auto-fit: con auto-fit, si la 4ta no
+   entraba justa bajaba sola a la fila siguiente). Fuente/gap ajustados
+   para que "Artístico-cultural" —el texto más largo— entre en una sola
+   línea dentro de ese ancho fijo, incluso en el modal angosto.
+
+   display:flex + justify-content:space-between (no grid de 4 columnas
+   iguales): con columnas iguales, una palabra corta como "Otro" queda
+   pegada al borde IZQUIERDO de su columna y deja todo el sobrante de esa
+   columna como aire a la derecha, después de la última casilla — el
+   margen derecho visual termina siendo mucho más grande que el
+   izquierdo. space-between en cambio ubica la primera casilla pegada al
+   margen izquierdo y la última pegada al margen derecho (mismo margen
+   que el resto del formulario), reactivo aunque el texto de cada una
+   tenga distinto largo. flex-basis:100% en legend/grupo condicional
+   fuerza que ocupen su propia línea entera (ver .form-fieldset legend /
+   .input-conditional-group). */
+.form-fieldset {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    row-gap: 10px;
+    border: none;
+    padding: 0;
+    margin: 0 0 18px;
+}
+
+.form-fieldset legend {
+    flex: 1 0 100%;
+    font-size: 0.72rem;
+    color: var(--text-color);
+    font-weight: 100;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+    padding: 0;
+}
+
+.input-conditional-group {
+    flex: 1 0 100%;
+    margin-top: 2px;
+}
+
+.checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.74rem;
+    font-weight: 300;
+    color: var(--text-color);
+    margin-bottom: 0;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.checkbox-row input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    accent-color: var(--text-color);
+    cursor: pointer;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.form-btn,
+.form-btn-main {
+    flex: 1;
+    text-align: center;
+    padding: 10px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 400;
+    font-family: var(--font-geist);
+    transition: all 0.2s ease;
+}
+
+.form-btn {
+    background: transparent;
+    color: var(--text-color);
+    border: 1px solid var(--surface-border);
+}
+
+.form-btn:hover {
+    border-color: var(--text-color);
+    background-color: rgba(255, 255, 255, 0.07);
+}
+
+.form-btn-main {
+    background: rgba(255, 255, 255, 0.5);
+    color: var(--bg-navy);
+    border: none;
+}
+
+.form-btn-main:hover {
+    background: var(--text-color);
+    font-weight: 600;
 }
 
 @media (max-width: 600px) {

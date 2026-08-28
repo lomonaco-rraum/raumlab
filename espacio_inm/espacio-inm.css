@@ -962,10 +962,14 @@ html, body.rc-body {
   }
 
   .mode-intro-content {
-    /* padding-bottom era 20px fijo — no reservaba lugar para VOLVER
-       (position:fixed, anclado a --footer-h), así que el texto podía
-       superponerse. var(--mobile-bottom-reserve) es el mismo criterio
-       que ya usa in_SITE en .rc-intro-screen para esto mismo. */
-    padding: calc(var(--header-h) + 20px) 20px var(--mobile-bottom-reserve) 35px;
+    /* Sin header-h acá — mismo motivo que .tool-main arriba: #app-main
+       (app-shell.css) ya reserva ese alto en su propio padding-top, así
+       que sumarlo de nuevo duplicaba el espacio vacío bajo el header
+       (quedaba el doble que en in_SITE, que sí es el único contenedor y
+       por eso calcula header-h una sola vez en .rc-intro-screen).
+       padding-bottom var(--mobile-bottom-reserve): reserva lugar para
+       VOLVER (position:fixed, anclado a --footer-h), mismo criterio que
+       ya usa in_SITE en .rc-intro-screen para esto mismo. */
+    padding: 0 20px var(--mobile-bottom-reserve) 35px;
   }
 }

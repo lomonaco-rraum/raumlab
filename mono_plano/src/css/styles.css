@@ -1180,11 +1180,17 @@ input[type="number"] {
 
 @media (max-width: 768px) {
     .mode-intro-content {
-        /* padding-bottom era 24px fijo — no reservaba lugar para VOLVER
-           (position:fixed, anclado a --footer-h), así que el texto podía
-           superponerse. var(--mobile-bottom-reserve) es el mismo criterio
-           que ya usa in_SITE en .rc-intro-screen para esto mismo. */
-        padding: 24px 20px var(--mobile-bottom-reserve) 35px;
+        /* Sin top propio acá: #app-main (app-shell.css) ya reserva
+           header-h + 20px en su padding-top; sumarle 24px más encima
+           dejaba esta pantalla con más aire bajo el header que in_SITE
+           (que es el único contenedor y calcula header-h una sola vez en
+           .rc-intro-screen) — mismo diagnóstico que espacio_INM, que
+           además duplicaba el header-h entero, no solo 24px.
+           padding-bottom var(--mobile-bottom-reserve): reserva lugar
+           para VOLVER (position:fixed, anclado a --footer-h), mismo
+           criterio que ya usa in_SITE en .rc-intro-screen para esto
+           mismo. */
+        padding: 0 20px var(--mobile-bottom-reserve) 35px;
     }
     .workspace-layout {
         display: none;
