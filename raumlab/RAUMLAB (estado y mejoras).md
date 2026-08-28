@@ -300,6 +300,49 @@ se habían ido desalineando con el tiempo.
    listener enganchado en esa instancia — no hacía nada. Se reemplazó por una
    llamada directa al método real (`viewer.onWindowResize()`).
 
+## Adaptativo — cuarto modo de trans_FORMA (2026-08-28, dos rondas de revisión el mismo día)
+
+**Segunda revisión — causa raíz encontrada, no solo síntomas**: la usuaria
+reportó que la imagen no encajaba en pantalla y que era imposible
+agarrar/arrastrar los vértices del polígono. Causa real: la primera
+versión ajustaba la imagen por CSS (`max-width/max-height:100%`), pero el
+contenedor directo de la imagen no tenía una altura definida — un
+porcentaje de alto no se puede calcular sin eso, así que el navegador lo
+ignoraba y la imagen se mostraba a tamaño natural completo (por eso no
+encajaba, y por eso los vértices quedaban fuera de la vista o
+inalcanzables). Se reemplazó por la mecánica REAL de Fotoplano
+(`medirEscalaAjustada`/`aplicarEscala`/`fijarTamanioActivo`, que miden el
+contenedor con JS y asignan ancho/alto en píxeles), agregando zoom con
+rueda del mouse en escritorio y **pellizco de dos dedos en mobile** (no
+existía en ningún lado del sitio, se construyó de cero con Pointer
+Events — 2 punteros activos = pellizco centrado en el punto medio; 1
+puntero sobre un vértice = arrastre; 1 puntero en el resto de la imagen =
+pan, necesario porque `touch-action:none` en la imagen desactiva también
+el scroll táctil nativo).
+
+Otros cambios de esta segunda ronda:
+- Se sacó la checklist de vértices por completo — la usuaria aclaró que
+  la idea era trabajar directo con el polígono (vértices con nombre
+  dibujados sobre la imagen, ver `ETIQUETAS_VERTICES`), no una lista de
+  texto aparte.
+- "Cerrar Proyecto" mueve, y la ventana de diálogo (`#panel-dialogo`)
+  ahora se usa para guiar los pasos (al cargar la imagen, al reiniciar
+  vértices, al no haber imagen todavía) — antes solo se usaba para
+  errores/éxito de "Generar", faltaba en el resto del flujo.
+- Menús de formato/resolución sin valor por defecto: arrancan en
+  "Seleccionar", y "Generar" permanece deshabilitado hasta elegir ambos
+  a propósito.
+- `.controles-field-row span` (el label de cualquier fila tipo "Ancho
+  real (X):") no tenía font-size propio — heredaba el default del
+  navegador (16px) al lado de un input de 0.75rem. Bug preexistente en
+  Fotoplano, no exclusivo de Adaptativo — se corrigió en la regla base,
+  beneficia a los dos.
+- Inputs deshabilitados (Ancho/Alto personalizados) pasan a un gris
+  sólido (no solo opacity, que contra el fondo oscuro se veía como un
+  rectángulo fantasma en vez de gris) — vuelven al tono claro normal
+  (`.controles-input-num`, ya casi blanco de por sí) al elegir
+  "Personalizado".
+
 ## Adaptativo — cuarto modo de trans_FORMA (2026-08-28, revisado el mismo día)
 
 Modo nuevo, más simple que Fotoplano/Fotomosaico y pensado justamente para

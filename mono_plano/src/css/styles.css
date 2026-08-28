@@ -921,6 +921,14 @@ input[type="number"] {
     font-weight: 300;
 }
 
+/* El label ("Ancho real (X):", etc.) no tenía font-size propio — heredaba
+   el default del navegador (16px) al lado de un input de 0.75rem, un
+   desnivel que ya estaba en Fotoplano, no solo en Adaptativo. Mismo
+   tamaño que el input para que se lean parejos. */
+.controles-field-row span {
+    font-size: 0.75rem;
+}
+
 .controles-input-num {
     width: 55px;
     padding: 5px 6px;
@@ -1003,59 +1011,6 @@ input[type="number"] {
     opacity: 0.55;
 }
 
-/* Checklist de vértices (Adaptativo) — reemplaza el contador "X / 4" por
-   una lista con un check por vértice, tildado apenas se lo selecciona
-   para arrastrar (ver tocado[] en app.js). */
-.controles-checklist {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin: 4px 0 12px;
-    font-family: var(--font-geist);
-    font-size: 0.78rem;
-    font-weight: 300;
-    color: var(--text-color);
-    opacity: 0.6;
-}
-
-.controles-checklist li {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: opacity 0.2s ease;
-}
-
-.controles-checklist li.checked {
-    opacity: 1;
-}
-
-.controles-checklist .check-icon {
-    width: 14px;
-    height: 14px;
-    flex-shrink: 0;
-    border: 1px solid var(--border-fine);
-    border-radius: 3px;
-    position: relative;
-}
-
-.controles-checklist li.checked .check-icon {
-    background: var(--text-color);
-    border-color: var(--text-color);
-}
-
-.controles-checklist li.checked .check-icon::after {
-    content: "";
-    position: absolute;
-    left: 4px;
-    top: 1px;
-    width: 4px;
-    height: 8px;
-    border: solid var(--bg-navy);
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
-}
-
 /* Ancho/Alto personalizados (Adaptativo) — siempre presentes, no
    aparecen/desaparecen con el formato elegido (ver app.js,
    actualizarDisponibilidadFormato): solo se habilitan/deshabilitan. En
@@ -1068,7 +1023,6 @@ input[type="number"] {
 
 .controles-field-row-compact span {
     white-space: nowrap;
-    font-size: 0.75rem;
 }
 
 .controles-field-inline {
@@ -1076,10 +1030,17 @@ input[type="number"] {
     gap: 0.3rem;
     align-items: center;
     flex-shrink: 0;
+    font-size: 0.75rem;
 }
 
+/* .controles-input-num de base es un recuadro claro (rgba(242,239,233,.5),
+   texto oscuro) — "activo" ya es ese tono casi blanco. Deshabilitado
+   necesita leerse gris, no solo semitransparente (opacity sola difumina
+   todo por igual — fondo, borde y texto — y contra el fondo oscuro del
+   panel terminaba viéndose como un rectángulo fantasma en vez de gris). */
 .controles-field-row-compact input:disabled {
-    opacity: 0.4;
+    background: rgba(150, 150, 150, 0.2);
+    color: rgba(24, 24, 27, 0.55);
 }
 
 /* Aviso "solo en PC" (Fotoplano/Fotomosaico) — mismo criterio visual que
