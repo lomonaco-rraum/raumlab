@@ -1883,9 +1883,7 @@ function crearEstacionAdaptativo(file, contenedor, opciones) {
         <div id="panel-adaptativo" class="controles-panel" style="display: flex; flex-direction: column; flex: 1; min-height: 0;">
             <div class="panel-content">
 
-                <h3 class="controles-heading">1. Vértices del contorno</h3>
-                <p class="controles-hint">Seleccioná cada vértice del polígono y llevalo a su lugar sobre la imagen.</p>
-                <button id="btn-reset-vertices-adaptativo" class="btn-text btn-full">Reiniciar vértices</button>
+                <h3 class="controles-heading">1. Vértices del contorno <button type="button" id="btn-reset-vertices-adaptativo" class="controles-heading-action">Reiniciar</button></h3>
 
                 <hr class="controles-divider">
 

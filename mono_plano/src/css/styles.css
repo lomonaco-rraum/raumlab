@@ -1011,6 +1011,78 @@ input[type="number"] {
     opacity: 0.55;
 }
 
+/* Acción inline en el título de sección ("Reiniciar" junto a "1. Vértices
+   del contorno") — mismo lugar que el "?" de ayuda de Fotoplano
+   (.controles-help-btn), pero con texto en vez de ícono: reemplaza el
+   botón "Reiniciar vértices" que antes ocupaba su propia fila completa. */
+.controles-heading-action {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-family: var(--font-geist);
+    font-size: 0.65rem;
+    font-weight: 300;
+    text-transform: none;
+    letter-spacing: 0;
+    text-decoration: underline;
+    opacity: 0.7;
+    cursor: pointer;
+    padding: 0;
+}
+
+.controles-heading-action:hover {
+    opacity: 1;
+}
+
+/* Panel de Adaptativo específicamente (no Fotoplano, que ya tiene su
+   propio ritmo vertical probado): entra justo en pantallas de laptop
+   típicas (~768px de alto) sin scroll — verificado con captura real
+   (ver nota en RAUMLAB estado y mejoras.md), no a ojo. Compacta
+   .panel-content, encabezados, separadores y selectores solo dentro de
+   este panel — .controles-heading/.controles-divider/.capa-selector/etc.
+   siguen con su tamaño normal en el resto del sitio. */
+#panel-adaptativo .panel-content {
+    padding: 6px 20px;
+}
+
+#panel-adaptativo .controles-heading {
+    margin-bottom: 0;
+}
+
+#panel-adaptativo .controles-divider {
+    margin: 3px 0;
+}
+
+#panel-adaptativo .capa-selector {
+    margin-bottom: 1px;
+}
+
+#panel-adaptativo .capa-selector-lista {
+    max-height: 160px;
+}
+
+#panel-adaptativo .controles-toggle-row {
+    margin-bottom: 1px;
+}
+
+#panel-adaptativo .controles-toggle-btn {
+    padding: 6px;
+}
+
+#panel-adaptativo .controles-field-row-pair {
+    margin-bottom: 1px;
+}
+
+#panel-adaptativo .capa-selector-boton {
+    padding: 6px 10px;
+}
+
+#panel-adaptativo .btn-text,
+#panel-adaptativo .btn-primary {
+    padding: 6px 22px;
+}
+
 /* Ancho/Alto personalizados (Adaptativo) — siempre presentes, no
    aparecen/desaparecen con el formato elegido (ver app.js,
    actualizarDisponibilidadFormato): solo se habilitan/deshabilitan.

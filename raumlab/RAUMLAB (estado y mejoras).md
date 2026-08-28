@@ -300,6 +300,43 @@ se habían ido desalineando con el tiempo.
    listener enganchado en esa instancia — no hacía nada. Se reemplazó por una
    llamada directa al método real (`viewer.onWindowResize()`).
 
+## Adaptativo — verificación real con navegador headless (2026-08-28)
+
+La usuaria preguntó "¿no podés verificarlo?" ante el reclamo de que
+seguía apareciendo scroll — hasta acá cada ronda se probaba solo
+razonando sobre el CSS, sin ver el resultado real. Se encontró que este
+entorno SÍ tiene Microsoft Edge instalado
+(`C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe`), que
+soporta `--headless=new --screenshot=archivo.png --window-size=WxH
+--virtual-time-budget=ms`. Con un servidor HTTP local mínimo (PowerShell,
+`System.Net.HttpListener`, lanzado con `run_in_background` para que
+sobreviva entre llamadas — con `Start-Job` normal el proceso moría al
+terminar la invocación) sirviendo el repo, y una página de prueba
+temporal (`mono_plano/_test_adaptativo.html`, borrada al terminar) que
+simulaba clickear la pestaña Adaptativo y cargar una imagen real vía
+`DataTransfer`, se pudo tomar capturas reales del estado post-carga e
+inyectar un panel de medición (`scrollHeight` vs `clientHeight`) visible
+en la propia captura — mismo truco que ya se había usado antes para
+diagnosticar el bug de `top:header-h` en mobile, pero esta vez con
+captura visual real en vez de solo texto.
+
+Con esto se confirmó y resolvió el reclamo con datos, no a ojo:
+- A 1920×1080 el panel ya entraba sin scroll (`overflow=0`).
+- A 1366×768 (laptop típica) desbordaba **296px** — mucho más que lo
+  estimado a mano en rondas anteriores.
+- Recorte iterativo verificado con captura en cada paso (296 → 89 → 45 →
+  16 → **0px** a 1366×768): se sacó el párrafo de ayuda fijo del panel
+  (ya está en el cuadro de diálogo), se movió "Reiniciar vértices" a un
+  link chico junto al título de la sección 1 (en vez de una fila propia,
+  mismo lugar que el "?" de ayuda de Fotoplano), y se compactaron
+  paddings/márgenes DENTRO de `#panel-adaptativo` únicamente (selector
+  scoped, no toca `.panel-content`/`.controles-heading`/etc. compartidas
+  con Fotoplano).
+- A 720px de alto (ventana más chica todavía) queda un resto de 47px —
+  no se siguió comprimiendo más para no dejar el panel ilegible; el
+  objetivo elegido fue la altura de laptop más común (768px), no
+  cualquier alto posible.
+
 ## Adaptativo — cuarto modo de trans_FORMA (2026-08-28, tres rondas de revisión el mismo día)
 
 **Tercera revisión** — el zoom/encaje de la segunda ronda quedó
