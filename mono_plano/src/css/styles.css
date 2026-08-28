@@ -994,6 +994,94 @@ input[type="number"] {
     font-weight: 600;
 }
 
+.controles-toggle-btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
+.controles-toggle-row.disabled {
+    opacity: 0.55;
+}
+
+/* Checklist de vértices (Adaptativo) — reemplaza el contador "X / 4" por
+   una lista con un check por vértice, tildado apenas se lo selecciona
+   para arrastrar (ver tocado[] en app.js). */
+.controles-checklist {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 4px 0 12px;
+    font-family: var(--font-geist);
+    font-size: 0.78rem;
+    font-weight: 300;
+    color: var(--text-color);
+    opacity: 0.6;
+}
+
+.controles-checklist li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: opacity 0.2s ease;
+}
+
+.controles-checklist li.checked {
+    opacity: 1;
+}
+
+.controles-checklist .check-icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    border: 1px solid var(--border-fine);
+    border-radius: 3px;
+    position: relative;
+}
+
+.controles-checklist li.checked .check-icon {
+    background: var(--text-color);
+    border-color: var(--text-color);
+}
+
+.controles-checklist li.checked .check-icon::after {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 4px;
+    height: 8px;
+    border: solid var(--bg-navy);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* Ancho/Alto personalizados (Adaptativo) — siempre presentes, no
+   aparecen/desaparecen con el formato elegido (ver app.js,
+   actualizarDisponibilidadFormato): solo se habilitan/deshabilitan. En
+   escritorio, en una sola línea (nowrap) — el mobile angosto sigue
+   pudiendo envolver si hace falta. */
+.controles-field-row-compact {
+    flex-wrap: nowrap;
+    gap: 8px;
+}
+
+.controles-field-row-compact span {
+    white-space: nowrap;
+    font-size: 0.75rem;
+}
+
+.controles-field-inline {
+    display: flex;
+    gap: 0.3rem;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.controles-field-row-compact input:disabled {
+    opacity: 0.4;
+}
+
 /* Aviso "solo en PC" (Fotoplano/Fotomosaico) — mismo criterio visual que
    el resto del sitio: vidrio esmerilado sobre --bg-navy. Aparece una sola
    vez al entrar al módulo en mobile (ver mostrarIntro() en app.js). */
@@ -1328,6 +1416,17 @@ input[type="number"] {
     }
     .adaptativo-layout .miniaturas-rail {
         padding-bottom: 0;
+    }
+    /* .workspace-cerrar-proyecto es position:fixed con las medidas de
+       escritorio (left:48px, ancho de .rail-izquierdo) — sirve tal cual
+       en la fila de 3 columnas, pero en el apilado de una columna de acá
+       arriba tiene que fluir normal. Combinador de hermano adyacente
+       porque el botón es hermano de .adaptativo-layout, no está anidado
+       adentro (mismo lugar que en Fotoplano). */
+    .adaptativo-layout + .workspace-cerrar-proyecto {
+        position: static;
+        width: 100%;
+        margin-top: 12px;
     }
 
     .instr-layout {

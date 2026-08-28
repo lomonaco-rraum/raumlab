@@ -104,7 +104,7 @@ function mostrarIntro() {
         overlay.innerHTML = `
             <div class="modal-box">
                 <h3>Fotoplano y Fotomosaico</h3>
-                <p class="modal-box-text">Para desarrollos de fotoplanos y fotomosaicos de alta precisión, accedé desde la versión de escritorio. Desde el celular está disponible <strong>Adaptativo</strong>, pensado para este formato.</p>
+                <p class="modal-box-text">Para desarrollos de fotoplanos y fotomosaicos de alta precisión, accedé desde la versión de escritorio.</p>
                 <div class="modal-actions">
                     <button type="button" class="btn-primary btn-full" id="btn-cerrar-aviso-mobile">Entendido</button>
                 </div>
@@ -247,8 +247,8 @@ function mostrarInstrucciones() {
 
                     <h3>Paso a paso</h3>
                     <ol>
-                        <li>Cargá una imagen.</li>
-                        <li>Marcá los 4 vértices del contorno de la obra, en sentido horario empezando abajo a la izquierda. Se pueden arrastrar para ajustar la precisión.</li>
+                        <li>Cargá una imagen — aparecen los 4 vértices ya ubicados sobre la foto (abajo-izq., arriba-izq., arriba-der., abajo-der.), listos para ajustar.</li>
+                        <li>Seleccioná cada vértice y llevalo a su lugar sobre el contorno real de la obra.</li>
                         <li>Elegí el tamaño real: A5, A4, A3, A2 (con orientación vertical u horizontal), o personalizado en milímetros.</li>
                         <li>Elegí la resolución de salida: Baja, Media o Alta.</li>
                         <li>Generá el Adaptativo y descargalo.</li>
@@ -1756,6 +1756,10 @@ function mostrarAdaptativo() {
     render();
 
     function render() {
+        // "Cerrar Proyecto" como hermano de .workspace-layout, con la misma
+        // clase que usa Fotoplano (.workspace-cerrar-proyecto, position:fixed
+        // sobre la columna izquierda) — mismo criterio visual pedido como
+        // referencia, no un botón suelto dentro del riel.
         inicioScreen.innerHTML = `
             <div class="workspace-layout adaptativo-layout">
                 <aside class="rail-izquierdo">
@@ -1764,7 +1768,7 @@ function mostrarAdaptativo() {
                             ${!archivoImagen ? `
                                 <button id="btn-cargar-adaptativo" class="btn-text btn-full">Cargar Imagen</button>
                                 <input type="file" id="file-input-adaptativo" accept="image/*" hidden>
-                            ` : `<button id="btn-cerrar-adaptativo" class="btn-text btn-full">Cerrar Proyecto</button>`}
+                            ` : ''}
                         </div>
                     </div>
                     <div id="area-descarga-adaptativo"></div>
@@ -1774,6 +1778,7 @@ function mostrarAdaptativo() {
 
                 <aside class="rail-derecho" id="area-controles-adaptativo"></aside>
             </div>
+            ${archivoImagen ? `<button id="btn-cerrar-adaptativo" class="btn-text workspace-cerrar-proyecto">Cerrar Proyecto</button>` : ''}
         `;
 
         const fileInput = document.getElementById('file-input-adaptativo');
@@ -1825,12 +1830,19 @@ const RESOLUCIONES_ADAPTATIVO = {
 function crearEstacionAdaptativo(file, contenedor, opciones) {
     const imageUrl = URL.createObjectURL(file);
 
-    // vertices: hasta 4 puntos {xImg, yImg}, en sentido horario empezando
+    // vertices: siempre 4 puntos {xImg, yImg}, en sentido horario empezando
     // abajo a la izquierda (abajo-izq. → arriba-izq. → arriba-der. →
     // abajo-der.) — ese orden es el que después define la orientación de
     // la homografía, así que hay que ser consistente al armar
-    // puntosVirtuales en btnGenerar.
+    // puntosVirtuales en btnGenerar. Arrancan en posiciones por defecto
+    // (ver posicionesIniciales) apenas carga la imagen — no hace falta
+    // "crear" un punto tocando la imagen (eso confundía en celular: sin
+    // zoom, cualquier toque para simplemente mirar la foto generaba un
+    // punto nuevo). Ahora la única acción es seleccionar un vértice
+    // existente y arrastrarlo a su lugar — funciona igual con mouse que
+    // con el dedo, así que se aplicó también en escritorio.
     let vertices = [];
+    let tocado = [false, false, false, false];
     let arrastrando = null;
     let formatoSeleccionado = 'a4';
     let orientacion = 'vertical';
@@ -1843,7 +1855,7 @@ function crearEstacionAdaptativo(file, contenedor, opciones) {
                 <button id="btn-view-rectified-adaptativo" type="button" data-view="rectificado">Adaptativo</button>
             </div>
             <div class="canvas-area" id="canvas-container-adaptativo" style="cursor: crosshair;">
-                <div id="image-wrapper-adaptativo" style="position: relative; display: inline-flex; justify-content: center; align-items: center;">
+                <div id="image-wrapper-adaptativo" style="position: relative; margin: auto;">
                     <img id="main-image-adaptativo" src="${imageUrl}" style="max-width: 100%; max-height: 100%; height: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.3); border-radius: 4px; display: block; touch-action: none;" />
                     <canvas id="rectified-canvas-adaptativo" style="display: none; max-width: 100%; height: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.3); border-radius: 4px; background: black;"></canvas>
                     <svg id="overlay-svg-adaptativo" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></svg>
@@ -1852,23 +1864,42 @@ function crearEstacionAdaptativo(file, contenedor, opciones) {
         </div>
     `;
 
+    // Menús desplegables temáticos (.capa-selector, el mismo componente que
+    // ya usa Fotomosaico para "Elegir imagen") en vez de <select> nativo —
+    // el motivo original de esa decisión (el navegador no deja tematizar
+    // el fondo/acento de la lista abierta de un <select>) aplica igual acá.
+    const etiquetaFormato = (valor) => valor === 'personalizado'
+        ? 'Personalizado'
+        : `${FORMATOS_ADAPTATIVO[valor].label} (${FORMATOS_ADAPTATIVO[valor].w} × ${FORMATOS_ADAPTATIVO[valor].h} mm)`;
+    const etiquetaResolucion = (valor) => `${RESOLUCIONES_ADAPTATIVO[valor].label} (${RESOLUCIONES_ADAPTATIVO[valor].dpi} dpi)`;
+
     const controlesHtml = `
         <div id="panel-adaptativo" class="controles-panel" style="display: flex; flex-direction: column; flex: 1; min-height: 0;">
             <div class="panel-content">
 
                 <h3 class="controles-heading">1. Vértices del contorno</h3>
-                <p class="controles-hint">Marcá los 4 vértices de la obra sobre la imagen, en sentido horario empezando abajo a la izquierda. Se pueden arrastrar para ajustar.</p>
-                <div class="controles-hint" id="contador-vertices-adaptativo">0 / 4 vértices marcados</div>
+                <p class="controles-hint">Seleccioná cada vértice y llevalo a su lugar sobre la imagen.</p>
+                <ul class="controles-checklist" id="checklist-vertices-adaptativo">
+                    <li data-idx="0"><span class="check-icon"></span>Abajo Izq.</li>
+                    <li data-idx="1"><span class="check-icon"></span>Arriba Izq.</li>
+                    <li data-idx="2"><span class="check-icon"></span>Arriba Der.</li>
+                    <li data-idx="3"><span class="check-icon"></span>Abajo Der.</li>
+                </ul>
                 <button id="btn-reset-vertices-adaptativo" class="btn-text btn-full">Reiniciar vértices</button>
 
                 <hr class="controles-divider">
 
                 <h3 class="controles-heading">2. Tamaño real</h3>
-                <div class="controles-radio-group" id="grupo-formato-adaptativo">
-                    ${Object.entries(FORMATOS_ADAPTATIVO).map(([valor, f]) => `
-                        <label><input type="radio" name="formato-adaptativo" value="${valor}" ${valor === formatoSeleccionado ? 'checked' : ''}> ${f.label} (${f.w} × ${f.h} mm)</label>
-                    `).join('')}
-                    <label><input type="radio" name="formato-adaptativo" value="personalizado"> Personalizado</label>
+                <div class="capa-selector" id="formato-selector">
+                    <button type="button" class="capa-selector-boton" id="formato-selector-boton" aria-haspopup="listbox" aria-expanded="false">
+                        <span id="formato-selector-label">${etiquetaFormato(formatoSeleccionado)}</span>
+                    </button>
+                    <ul class="capa-selector-lista" id="formato-selector-lista" role="listbox" hidden>
+                        ${Object.keys(FORMATOS_ADAPTATIVO).map((valor) => `
+                            <li role="option"><button type="button" class="capa-selector-opcion ${valor === formatoSeleccionado ? 'activa' : ''}" data-formato="${valor}">${etiquetaFormato(valor)}</button></li>
+                        `).join('')}
+                        <li role="option"><button type="button" class="capa-selector-opcion" data-formato="personalizado">Personalizado</button></li>
+                    </ul>
                 </div>
 
                 <div class="controles-toggle-row" id="grupo-orientacion-adaptativo">
@@ -1876,28 +1907,34 @@ function crearEstacionAdaptativo(file, contenedor, opciones) {
                     <button type="button" class="controles-toggle-btn" data-orientacion="horizontal">Horizontal</button>
                 </div>
 
-                <div id="grupo-personalizado-adaptativo" style="display: none;">
-                    <div class="controles-field-row">
-                        <span>Ancho (X):</span>
-                        <div style="display: flex; gap: 0.3rem; align-items: center;">
-                            <input type="number" id="input-ancho-personalizado" value="210" step="1" min="1" class="controles-input-num" /> mm
-                        </div>
+                <!-- Siempre presentes (no aparecen/desaparecen): deshabilitadas
+                     salvo que el formato elegido sea "Personalizado" — evita
+                     el salto de layout de mostrar/ocultar. -->
+                <div class="controles-field-row controles-field-row-compact">
+                    <span>Ancho (X):</span>
+                    <div class="controles-field-inline">
+                        <input type="number" id="input-ancho-personalizado" value="210" step="1" min="1" class="controles-input-num" disabled /> mm
                     </div>
-                    <div class="controles-field-row">
-                        <span>Alto (Y):</span>
-                        <div style="display: flex; gap: 0.3rem; align-items: center;">
-                            <input type="number" id="input-alto-personalizado" value="297" step="1" min="1" class="controles-input-num" /> mm
-                        </div>
+                </div>
+                <div class="controles-field-row controles-field-row-compact">
+                    <span>Alto (Y):</span>
+                    <div class="controles-field-inline">
+                        <input type="number" id="input-alto-personalizado" value="297" step="1" min="1" class="controles-input-num" disabled /> mm
                     </div>
                 </div>
 
                 <hr class="controles-divider">
 
                 <h3 class="controles-heading">3. Resolución</h3>
-                <div class="controles-toggle-row" id="grupo-resolucion-adaptativo">
-                    ${Object.entries(RESOLUCIONES_ADAPTATIVO).map(([valor, r]) => `
-                        <button type="button" class="controles-toggle-btn ${valor === resolucionSeleccionada ? 'active' : ''}" data-resolucion="${valor}">${r.label}</button>
-                    `).join('')}
+                <div class="capa-selector" id="resolucion-selector">
+                    <button type="button" class="capa-selector-boton" id="resolucion-selector-boton" aria-haspopup="listbox" aria-expanded="false">
+                        <span id="resolucion-selector-label">${etiquetaResolucion(resolucionSeleccionada)}</span>
+                    </button>
+                    <ul class="capa-selector-lista" id="resolucion-selector-lista" role="listbox" hidden>
+                        ${Object.keys(RESOLUCIONES_ADAPTATIVO).map((valor) => `
+                            <li role="option"><button type="button" class="capa-selector-opcion ${valor === resolucionSeleccionada ? 'activa' : ''}" data-resolucion="${valor}">${etiquetaResolucion(valor)}</button></li>
+                        `).join('')}
+                    </ul>
                 </div>
 
                 <hr class="controles-divider">
@@ -1941,11 +1978,10 @@ function crearEstacionAdaptativo(file, contenedor, opciones) {
     const btnViewOriginal = document.getElementById('btn-view-original-adaptativo');
     const btnViewRectified = document.getElementById('btn-view-rectified-adaptativo');
     const btnDescargar = document.getElementById('btn-descargar-adaptativo');
-    const contadorVertices = document.getElementById('contador-vertices-adaptativo');
+    const checklistVertices = document.getElementById('checklist-vertices-adaptativo');
     const btnResetVertices = document.getElementById('btn-reset-vertices-adaptativo');
     const btnGenerar = document.getElementById('btn-generar-adaptativo');
     const grupoOrientacion = document.getElementById('grupo-orientacion-adaptativo');
-    const grupoPersonalizado = document.getElementById('grupo-personalizado-adaptativo');
     const inputAnchoPersonalizado = document.getElementById('input-ancho-personalizado');
     const inputAltoPersonalizado = document.getElementById('input-alto-personalizado');
     const panelAdaptativo = document.getElementById('panel-adaptativo');
@@ -1999,20 +2035,52 @@ function crearEstacionAdaptativo(file, contenedor, opciones) {
         vertices.forEach((v, i) => dibujarCruz(v.xImg, v.yImg, ETIQUETAS_VERTICES[i]));
     }
 
-    function actualizarEstado() {
-        contadorVertices.textContent = `${vertices.length} / 4 vértices marcados`;
-        btnGenerar.disabled = vertices.length < 4;
+    function actualizarChecklist() {
+        checklistVertices.querySelectorAll('li').forEach((li) => {
+            const i = parseInt(li.dataset.idx, 10);
+            li.classList.toggle('checked', tocado[i]);
+        });
     }
 
-    window.addEventListener('resize', redibujarSVG);
-    imgElement.addEventListener('load', redibujarSVG);
+    // Rectángulo inscripto con un margen del 18% por lado — punto de
+    // partida razonable para arrastrar desde ahí, no una posición al azar.
+    function posicionesIniciales() {
+        const w = imgElement.naturalWidth, h = imgElement.naturalHeight;
+        const mx = Math.round(w * 0.18), my = Math.round(h * 0.18);
+        return [
+            { xImg: mx, yImg: h - my },     // abajo-izq.
+            { xImg: mx, yImg: my },         // arriba-izq.
+            { xImg: w - mx, yImg: my },     // arriba-der.
+            { xImg: w - mx, yImg: h - my }, // abajo-der.
+        ];
+    }
 
-    // Marcado y arrastre — Pointer Events (no mouse/touch por separado):
-    // un mismo código atiende mouse en escritorio y dedo en celular, que es
-    // justo el caso de uso de este modo. RADIO_ARRASTRE es el radio de
+    // La imagen recién tiene naturalWidth/Height una vez cargada — acá se
+    // arman las posiciones iniciales de los 4 vértices y se habilita
+    // "Generar" (arranca disabled en el HTML: sin esto se podía generar
+    // antes de que la imagen terminara de cargar, con naturalWidth/Height
+    // todavía en 0).
+    function alCargarImagen() {
+        vertices = posicionesIniciales();
+        redibujarSVG();
+        btnGenerar.disabled = false;
+    }
+    imgElement.addEventListener('load', alCargarImagen);
+    // Si la imagen ya estaba en caché, "load" puede disparar antes de que
+    // este handler quede asignado — mismo criterio que crearEstacionFotoplano.
+    if (imgElement.complete && imgElement.naturalWidth > 0) alCargarImagen();
+
+    window.addEventListener('resize', redibujarSVG);
+
+    // Arrastre — Pointer Events (no mouse/touch por separado): un mismo
+    // código atiende mouse en escritorio y dedo en celular. Es la ÚNICA
+    // interacción: los 4 vértices ya existen desde que carga la imagen
+    // (ver posicionesIniciales), tocar la imagen nunca crea un punto nuevo
+    // — antes, sin zoom, cualquier toque para simplemente mirar la foto en
+    // celular generaba un punto sin querer. RADIO_ARRASTRE es el radio de
     // detección en píxeles de PANTALLA (no de imagen) — bastante generoso
     // porque tiene que funcionar con el dedo, no solo con un cursor fino.
-    const RADIO_ARRASTRE = 22;
+    const RADIO_ARRASTRE = 26;
 
     function posicionDesdeEvento(e) {
         const rect = imgElement.getBoundingClientRect();
@@ -2043,11 +2111,9 @@ function crearEstacionAdaptativo(file, contenedor, opciones) {
         const idx = indiceVerticeCercano(pos.xClient, pos.yClient);
         if (idx >= 0) {
             arrastrando = idx;
+            tocado[idx] = true;
+            actualizarChecklist();
             imgElement.setPointerCapture(e.pointerId);
-        } else if (vertices.length < 4) {
-            vertices.push({ xImg: pos.xImg, yImg: pos.yImg });
-            redibujarSVG();
-            actualizarEstado();
         }
     });
 
@@ -2062,35 +2128,70 @@ function crearEstacionAdaptativo(file, contenedor, opciones) {
     imgElement.addEventListener('pointercancel', () => { arrastrando = null; });
 
     btnResetVertices.addEventListener('click', () => {
-        vertices = [];
+        if (!imgElement.naturalWidth) return;
+        vertices = posicionesIniciales();
+        tocado = [false, false, false, false];
+        actualizarChecklist();
         redibujarSVG();
-        actualizarEstado();
     });
 
-    const contenedorControlesReal = opciones.contenedorControles || contenedor;
-
-    contenedorControlesReal.querySelectorAll('input[name="formato-adaptativo"]').forEach((r) => {
-        r.addEventListener('change', () => {
-            formatoSeleccionado = r.value;
-            const esPersonalizado = formatoSeleccionado === 'personalizado';
-            grupoOrientacion.style.display = esPersonalizado ? 'none' : 'flex';
-            grupoPersonalizado.style.display = esPersonalizado ? 'block' : 'none';
+    // Menús desplegables temáticos (mismo patrón que el selector "Elegir
+    // imagen" de Fotomosaico: botón + lista que se muestra/oculta a mano,
+    // en vez de <select> nativo — ver nota donde se arma controlesHtml).
+    function wireSelector(idSelector, idBoton, idLista, idLabel, datasetKey, onSeleccion) {
+        const selector = document.getElementById(idSelector);
+        const boton = document.getElementById(idBoton);
+        const lista = document.getElementById(idLista);
+        const label = document.getElementById(idLabel);
+        boton.addEventListener('click', () => {
+            const abierta = !lista.hidden;
+            lista.hidden = abierta;
+            boton.setAttribute('aria-expanded', String(!abierta));
         });
+        document.addEventListener('click', (e) => {
+            if (!selector.contains(e.target)) {
+                lista.hidden = true;
+                boton.setAttribute('aria-expanded', 'false');
+            }
+        });
+        lista.querySelectorAll('.capa-selector-opcion').forEach((opt) => {
+            opt.addEventListener('click', () => {
+                lista.querySelectorAll('.capa-selector-opcion').forEach((o) => o.classList.remove('activa'));
+                opt.classList.add('activa');
+                label.textContent = opt.textContent.trim();
+                lista.hidden = true;
+                boton.setAttribute('aria-expanded', 'false');
+                onSeleccion(opt.dataset[datasetKey]);
+            });
+        });
+    }
+
+    // Campos siempre visibles (ver controlesHtml): deshabilitados salvo que
+    // el formato elegido sea "Personalizado" — evita el salto de layout de
+    // mostrar/ocultar el bloque entero.
+    function actualizarDisponibilidadFormato() {
+        const esPersonalizado = formatoSeleccionado === 'personalizado';
+        inputAnchoPersonalizado.disabled = !esPersonalizado;
+        inputAltoPersonalizado.disabled = !esPersonalizado;
+        grupoOrientacion.querySelectorAll('.controles-toggle-btn').forEach((b) => { b.disabled = esPersonalizado; });
+        grupoOrientacion.classList.toggle('disabled', esPersonalizado);
+    }
+
+    wireSelector('formato-selector', 'formato-selector-boton', 'formato-selector-lista', 'formato-selector-label', 'formato', (valor) => {
+        formatoSeleccionado = valor;
+        actualizarDisponibilidadFormato();
     });
+
+    wireSelector('resolucion-selector', 'resolucion-selector-boton', 'resolucion-selector-lista', 'resolucion-selector-label', 'resolucion', (valor) => {
+        resolucionSeleccionada = valor;
+    });
+
+    actualizarDisponibilidadFormato();
 
     grupoOrientacion.querySelectorAll('.controles-toggle-btn').forEach((btn) => {
         btn.addEventListener('click', () => {
             orientacion = btn.dataset.orientacion;
             grupoOrientacion.querySelectorAll('.controles-toggle-btn').forEach((b) => b.classList.remove('active'));
-            btn.classList.add('active');
-        });
-    });
-
-    const grupoResolucion = document.getElementById('grupo-resolucion-adaptativo');
-    grupoResolucion.querySelectorAll('.controles-toggle-btn').forEach((btn) => {
-        btn.addEventListener('click', () => {
-            resolucionSeleccionada = btn.dataset.resolucion;
-            grupoResolucion.querySelectorAll('.controles-toggle-btn').forEach((b) => b.classList.remove('active'));
             btn.classList.add('active');
         });
     });
@@ -2130,8 +2231,6 @@ function crearEstacionAdaptativo(file, contenedor, opciones) {
 
     btnGenerar.addEventListener('click', () => {
         try {
-            if (vertices.length !== 4) throw new Error("Marcá los 4 vértices del contorno.");
-
             const { w: wMm, h: hMm } = obtenerTamanioReal();
             if (!(wMm > 0) || !(hMm > 0)) throw new Error("El tamaño elegido no es válido.");
 
@@ -2218,8 +2317,6 @@ function crearEstacionAdaptativo(file, contenedor, opciones) {
             console.error(error);
         }
     });
-
-    actualizarEstado();
 }
 
 function mostrarPantallaPuntosHomologos(resultadoA, resultadoB, onFusionado) {

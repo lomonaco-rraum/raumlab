@@ -300,11 +300,40 @@ se habían ido desalineando con el tiempo.
    listener enganchado en esa instancia — no hacía nada. Se reemplazó por una
    llamada directa al método real (`viewer.onWindowResize()`).
 
-## Adaptativo — cuarto modo de trans_FORMA (2026-08-28)
+## Adaptativo — cuarto modo de trans_FORMA (2026-08-28, revisado el mismo día)
 
 Modo nuevo, más simple que Fotoplano/Fotomosaico y pensado justamente para
 eso: es el único de los cuatro accesible desde el celular (Fotoplano y
 Fotomosaico requieren escritorio, ver más abajo).
+
+**Revisión del mismo día — cambió la interacción principal**: la primera
+versión pedía tocar la imagen para "crear" cada uno de los 4 vértices.
+En celular, sin zoom, cualquier toque para simplemente mirar la foto
+generaba un punto sin querer — imposible de usar bien. Ahora los 4
+vértices aparecen ya ubicados apenas carga la imagen (rectángulo inscripto
+al 18% de margen, `posicionesIniciales()`), y la única interacción es
+seleccionar un vértice existente y arrastrarlo a su lugar — nunca se
+"crean" puntos tocando. Se aplicó también en escritorio (no solo mobile),
+a pedido explícito de la usuaria. Otros ajustes de la misma revisión:
+- Checklist con tilde por vértice (`tocado[]`, marca cuándo se lo
+  seleccionó al menos una vez) en vez del contador "X / 4".
+- Formato de papel y resolución pasaron de radios/toggle a menús
+  desplegables temáticos, reutilizando el componente `.capa-selector` que
+  ya usaba Fotomosaico para "Elegir imagen" (no un `<select>` nativo — el
+  motivo ya documentado en el propio CSS es que el navegador no deja
+  tematizar el fondo/acento de la lista abierta de un `<select>`).
+- Ancho/Alto personalizados y el toggle Vertical/Horizontal ahora están
+  siempre visibles (deshabilitados salvo que el formato sea
+  "Personalizado"), no aparecen/desaparecen — evita el salto de layout.
+- "Cerrar Proyecto" pasó a usar la misma clase fija que Fotoplano
+  (`.workspace-cerrar-proyecto`, hermano de `.workspace-layout`, no un
+  botón suelto dentro del riel izquierdo) — con su propio override en
+  mobile (`position:static`) porque en Fotoplano nunca se prueba ahí (todo
+  ese workspace se oculta en mobile).
+- Imagen centrada en la columna central con `margin:auto` sobre el
+  wrapper (mismo patrón que Fotoplano), en vez de flexbox propio.
+- Texto del aviso "solo en PC" acortado (sacada la oración final, que no
+  aportaba).
 
 - **Flujo**: cargar imagen → marcar los 4 vértices del contorno de la obra
   (sentido horario, empezando abajo-izquierda: abajo-izq. → arriba-izq. →
