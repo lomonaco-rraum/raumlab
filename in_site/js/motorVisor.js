@@ -56,6 +56,36 @@ export function normalizarDatosJSON(datosSucios) {
     });
 }
 
+// Completa el texto de la ficha de sala con los campos a nivel de toda la
+// exposición del JSON (distintos de la ficha técnica por pieza) — ver
+// buildAttributesData en editor.js. Función de nivel superior (no depende
+// del closure de crearMotorVisor) para que otros motores, como el de
+// Registro, la reutilicen sin duplicar esta lógica.
+export function poblarFichaSala(refs, datosJSON) {
+    const { salaPlaceholder, salaDatosReales, salaTitulo, salaMetadatos, salaTextoCuratorial } = refs;
+    if (!salaPlaceholder || !salaDatosReales) return;
+
+    const titulo = (datosJSON && datosJSON.nombre_sala) || '';
+    const artista = (datosJSON && datosJSON.artista_colectivo) || '';
+    const anio = (datosJSON && datosJSON.anio_exposicion) || '';
+    const texto = (datosJSON && datosJSON.texto_curatorial) || '';
+
+    const hayDatos = !!(titulo || artista || anio || texto);
+
+    if (!hayDatos) {
+        salaPlaceholder.style.display = 'block';
+        salaDatosReales.style.display = 'none';
+        return;
+    }
+
+    salaPlaceholder.style.display = 'none';
+    salaDatosReales.style.display = 'block';
+
+    if (salaTitulo) salaTitulo.textContent = titulo || 'Sin título';
+    if (salaMetadatos) salaMetadatos.textContent = [artista, anio].filter(Boolean).join(' — ');
+    if (salaTextoCuratorial) salaTextoCuratorial.textContent = texto;
+}
+
 // refs: los IDs de DOM son los mismos en viewer.html y coleccion.html
 // (canvasContainer, arModelViewer, btnAR, panelCedula, listaObrasIndexadas,
 // cedulaPlaceholder, cedulaDatosReales, cedulaArtista, cedulaTitulo,
@@ -234,33 +264,6 @@ export function crearMotorVisor(refs) {
         });
     }
 
-    // Completa el texto de la ficha de sala con los campos nuevos del JSON
-    // (a nivel de toda la exposición, distintos de la ficha técnica por
-    // pieza) — ver buildAttributesData en editor.js.
-    function poblarFichaSala(datosJSON) {
-        if (!salaPlaceholder || !salaDatosReales) return;
-
-        const titulo = (datosJSON && datosJSON.nombre_sala) || '';
-        const artista = (datosJSON && datosJSON.artista_colectivo) || '';
-        const anio = (datosJSON && datosJSON.anio_exposicion) || '';
-        const texto = (datosJSON && datosJSON.texto_curatorial) || '';
-
-        const hayDatos = !!(titulo || artista || anio || texto);
-
-        if (!hayDatos) {
-            salaPlaceholder.style.display = 'block';
-            salaDatosReales.style.display = 'none';
-            return;
-        }
-
-        salaPlaceholder.style.display = 'none';
-        salaDatosReales.style.display = 'block';
-
-        if (salaTitulo) salaTitulo.textContent = titulo || 'Sin título';
-        if (salaMetadatos) salaMetadatos.textContent = [artista, anio].filter(Boolean).join(' — ');
-        if (salaTextoCuratorial) salaTextoCuratorial.textContent = texto;
-    }
-
     function mostrarObraEnPanel(idObra) {
         const obra = listaObrasProcesadas.find(o => o.id === idObra);
         if (!obra) {
@@ -370,14 +373,20 @@ export function crearMotorVisor(refs) {
         // reconstruye el panel curatorial + vincula videos si la escena ya cargó.
         setFichaTecnica(datosJSON) {
             listaObrasProcesadas = normalizarDatosJSON(datosJSON);
-            poblarFichaSala(datosJSON);
+            poblarFichaSala(
+                { salaPlaceholder, salaDatosReales, salaTitulo, salaMetadatos, salaTextoCuratorial },
+                datosJSON
+            );
             construirInterfazCuratorial();
         },
 
         limpiarFichaTecnica() {
             listaObrasProcesadas = [];
             mapaObrasPorNombre = new Map();
-            poblarFichaSala(null);
+            poblarFichaSala(
+                { salaPlaceholder, salaDatosReales, salaTitulo, salaMetadatos, salaTextoCuratorial },
+                null
+            );
             panelCedula.classList.remove('active');
         }
     };

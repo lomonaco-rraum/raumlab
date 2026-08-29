@@ -1,0 +1,37 @@
+/* ==========================================================================
+   in_SITE - REGISTRO (registro.css)
+   Estilos propios de la página de documentación exportable. Los controles
+   de formulario (botones, .placeholder-text, .sidebar-section-title) reusan
+   las clases ya definidas en viewer.css — acá solo va lo específico de
+   Registro, más un par de clases que existen en editor.css (.checkbox-row)
+   pero esta página no carga ese CSS completo (es todo del editor de salas,
+   no aplica acá), así que se copian solo esas reglas puntuales.
+   ========================================================================== */
+
+/* Copiado tal cual de editor.css (.checkbox-row) — mismo criterio visual
+   en toda la suite, sin cargar editor.css entero por una sola regla. */
+.checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: var(--text-color);
+    margin-bottom: 12px;
+    cursor: pointer;
+}
+
+.checkbox-row input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    accent-color: var(--text-color);
+    cursor: pointer;
+}
+
+.registro-export-section {
+    margin-bottom: 30px;
+}
+
+.registro-export-section .sidebar-section-title {
+    font-size: 0.68rem;
+}

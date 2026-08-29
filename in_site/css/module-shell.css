@@ -7,7 +7,8 @@
    ========================================================================== */
 
 #viewer-layout,
-#editor-layout {
+#editor-layout,
+#registro-layout {
     display: flex;
     align-items: stretch;
     gap: 56px;
@@ -97,7 +98,8 @@
 
 @media (max-width: 768px) {
     #viewer-layout,
-    #editor-layout {
+    #editor-layout,
+    #registro-layout {
         position: static;
         flex-direction: column;
         height: auto;

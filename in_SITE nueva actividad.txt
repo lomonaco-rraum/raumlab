@@ -1,0 +1,18 @@
+[in_SITE]
+Nueva pestaña (Proyectos/Visualizador/Galería/Tutoriales)
+Nombre: registro.
+[El objetivo es generar documentación a partir de los proyectos generados.]
+Para ello, el primer paso del usuario es cargar un proyecto: [GLB+JSON]
+Salida/exportación: archivo imagen PNG. 
+Tipos de proyección: 
+a) vista actual (toma la imagen orbitada de la pantalla)
+b) geometrales (vistas ortogonales- selección de las vistas mediante casillas de verificación)
+c) geometrales acotados (vistas ortogonales- selección de las vistas mediante casillas de verificación- se puede unificar con el anterior)
+d) imagen 360º (equirectangular desde un punto definido en la escena -XYZ)
+
+Atributos: inclusión de la descripción de la sala y de las piezas que se contienen - información tomada del JSON.
+La idea es que se permita la documentación de la escena por ejemplo para la presentación en concursos de arte. 
+Acompañar las imagenes con una lámina -que de cuenta que fue producida en raumlab- donde se describa:
+-titulo + texto curatorial.
+-atributos de cada pieza -quizás a modo de guía, una miniatura para detectarla-
+

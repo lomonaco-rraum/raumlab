@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizador — in_SITE</title>
+    <title>Registro — in_SITE</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100;300;400;500;700;800&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="../raumlab/raumlab-chrome.css">
     <link rel="stylesheet" href="css/module-shell.css">
     <link rel="stylesheet" href="css/viewer.css">
+    <link rel="stylesheet" href="css/registro.css">
 
     <script type="importmap">
         {
@@ -20,7 +21,6 @@
             }
         }
     </script>
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
 </head>
 <body class="rc-body">
 
@@ -48,10 +48,10 @@
             <p class="rc-breadcrumb">/in_SITE</p>
             <nav class="rc-subnav">
                 <a href="editor.html">Proyectos</a>
-                <a href="viewer.html" class="active">Visualizador</a>
+                <a href="viewer.html">Visualizador</a>
                 <a href="coleccion.html">Galería</a>
                 <a href="instrucciones.html">Tutoriales</a>
-                <a href="registro.html">Registro</a>
+                <a href="registro.html" class="active">Registro</a>
             </nav>
         </div>
     </div>
@@ -61,10 +61,10 @@
     <nav class="rc-nav-panel" id="navPanel">
         <ul class="rc-nav-list rc-nav-modes">
             <li class="rc-nav-item"><a class="rc-nav-link" href="editor.html">Proyectos</a></li>
-            <li class="rc-nav-item"><a class="rc-nav-link active" href="viewer.html">Visualizador</a></li>
+            <li class="rc-nav-item"><a class="rc-nav-link" href="viewer.html">Visualizador</a></li>
             <li class="rc-nav-item"><a class="rc-nav-link" href="coleccion.html">Galería</a></li>
             <li class="rc-nav-item"><a class="rc-nav-link" href="instrucciones.html">Tutoriales</a></li>
-            <li class="rc-nav-item"><a class="rc-nav-link" href="registro.html">Registro</a></li>
+            <li class="rc-nav-item"><a class="rc-nav-link active" href="registro.html">Registro</a></li>
         </ul>
         <ul class="rc-nav-list">
             <li class="rc-nav-item has-sub open" id="recursosItem">
@@ -82,84 +82,79 @@
         </ul>
     </nav>
 
-    <div id="viewer-layout">
+    <div id="registro-layout">
 
-        <aside class="viewer-sidebar" id="sidebar-left">
+        <aside class="viewer-sidebar" id="registro-sidebar-left">
 
-            <section class="viewer-group" id="salas-lista-section">
-                <h3 class="sidebar-section-title">Cargar Archivos</h3>
+            <section class="viewer-group" id="registro-carga-section">
+                <h3 class="sidebar-section-title">Cargar Proyecto</h3>
 
                 <label class="viewer-btn-file">
                     Escena (.GLB)
-                    <input type="file" id="file-user-glb" accept=".glb" style="display:none;">
+                    <input type="file" id="registro-file-glb" accept=".glb" style="display:none;">
                 </label>
 
                 <label class="viewer-btn-file" style="margin-top: 10px;">
                     Fichas técnicas (.JSON)
-                    <input type="file" id="file-user-json" accept=".json" style="display:none;">
+                    <input type="file" id="registro-file-json" accept=".json" style="display:none;">
                 </label>
 
-                <button id="btn-load-scene" class="viewer-btn-main">Visualizar Escena</button>
+                <button id="registro-btn-load" class="viewer-btn-main">Cargar Proyecto</button>
             </section>
 
-            <section class="viewer-group hidden" id="sala-ficha-section">
-                <button type="button" id="btn-volver-salas" class="btn-volver-salas">
+            <section class="viewer-group hidden" id="registro-ficha-section">
+                <button type="button" id="registro-btn-volver" class="btn-volver-salas">
                     <img src="../raumlab/flecha_derecha_ui.png" alt="" class="back-arrow-img">
-                    Cargar otra escena
+                    Cargar otro proyecto
                 </button>
-                <div id="sala-placeholder" class="placeholder-text">
-                    Esta escena no tiene ficha de sala cargada.
+                <div id="registro-sala-placeholder" class="placeholder-text">
+                    Este proyecto no tiene ficha de sala cargada.
                 </div>
-                <div id="sala-datos-reales" style="display: none;">
-                    <h3 id="sala-titulo" class="cedula-titulo"></h3>
-                    <p id="sala-metadatos" class="cedula-metadatos"></p>
-                    <div id="sala-texto-curatorial" class="cedula-descripcion"></div>
+                <div id="registro-sala-datos-reales" style="display: none;">
+                    <h3 id="registro-sala-titulo" class="cedula-titulo"></h3>
+                    <p id="registro-sala-metadatos" class="cedula-metadatos"></p>
+                    <div id="registro-sala-texto-curatorial" class="cedula-descripcion"></div>
                 </div>
             </section>
 
         </aside>
 
         <main class="viewer-main">
-            <div id="viewer-canvas-container"></div>
-
-            <!-- model-viewer invisible: solo existe para disparar la Realidad Aumentada
-                 nativa del dispositivo (Scene Viewer / Quick Look / WebXR), tal cual
-                 funcionaba antes. La vista de escritorio la dibuja Three.js en el div
-                 de arriba, para poder mostrar el video como textura real en 3D. -->
-            <model-viewer
-                id="ar-model-viewer"
-                ar
-                ar-modes="webxr scene-viewer quick-look"
-                alt="Visualización de Sala Expositiva 3D"
-                style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; overflow: hidden;">
-            </model-viewer>
-
-            <button id="ar-button">
-                Ver en Espacio Real
-            </button>
+            <div id="canvas-render-surface"></div>
         </main>
 
-        <article id="panel-cedula" class="cedula-panel">
+        <article class="cedula-panel" id="registro-sidebar-right">
+            <h3 class="sidebar-section-title" style="margin-bottom: 10px;">Exportar</h3>
 
-            <div class="panel-indice-wrapper">
-                <h3 class="sidebar-section-title" style="margin-bottom: 10px;">Obras en la Sala</h3>
-                <div id="lista-obras-indexadas" class="lista-obras-links">
-                    </div>
+            <div id="registro-export-placeholder" class="placeholder-text">
+                Cargá un proyecto (GLB + JSON) para habilitar las opciones de exportación.
             </div>
 
-            <div id="cedula-dinamica-content" class="cedula-content-active">
-                <div id="cedula-placeholder" class="placeholder-text">
-                    Seleccioná una obra de la lista o hacé click directo sobre la pieza en la sala.
-                </div>
-                <div id="cedula-datos-reales" style="display: none;">
-                    <h4 id="cedula-artista" class="cedula-artista"></h4>
-                    <h3 id="cedula-titulo" class="cedula-titulo"></h3>
-                    <p id="cedula-metadatos" class="cedula-metadatos"></p>
-                    <div id="cedula-descripcion" class="cedula-descripcion"></div>
-                    <div id="cedula-instalacion" class="cedula-instalacion" style="display: none;"></div>
-                </div>
-            </div>
+            <div id="registro-export-opciones" class="hidden">
 
+                <section class="registro-export-section">
+                    <h3 class="sidebar-section-title">Vista actual</h3>
+                    <button id="registro-btn-export-actual" class="viewer-btn-main">Descargar PNG</button>
+                </section>
+
+                <section class="registro-export-section">
+                    <h3 class="sidebar-section-title">Geometrales</h3>
+
+                    <label class="checkbox-row"><input type="checkbox" class="registro-check-vista" value="planta" checked> Planta</label>
+                    <label class="checkbox-row"><input type="checkbox" class="registro-check-vista" value="frontal" checked> Frontal</label>
+                    <label class="checkbox-row"><input type="checkbox" class="registro-check-vista" value="posterior"> Posterior</label>
+                    <label class="checkbox-row"><input type="checkbox" class="registro-check-vista" value="lateral-izq"> Lateral izquierda</label>
+                    <label class="checkbox-row"><input type="checkbox" class="registro-check-vista" value="lateral-der"> Lateral derecha</label>
+
+                    <label class="checkbox-row" style="margin-top: 10px;">
+                        <input type="checkbox" id="registro-check-incluir-piso" checked> Incluir plano base
+                    </label>
+
+                    <button id="registro-btn-export-geometrales" class="viewer-btn-main" style="margin-top: 10px;">Descargar seleccionadas (ZIP)</button>
+                    <button id="registro-btn-export-acotados" class="viewer-btn-main" style="margin-top: 8px;">Descargar con cotas (ZIP)</button>
+                </section>
+
+            </div>
         </article>
 
     </div>
@@ -175,6 +170,8 @@
     </footer>
 
     <script src="../raumlab/raumlab-chrome.js"></script>
-    <script type="module" src="js/viewer.js"></script>
+    <script src="vendor/jszip.min.js"></script>
+    <script src="vendor/jspdf.umd.min.js"></script>
+    <script type="module" src="js/registro.js"></script>
 </body>
 </html>
