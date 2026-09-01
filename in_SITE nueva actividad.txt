@@ -16,3 +16,53 @@ Acompañar las imagenes con una lámina -que de cuenta que fue producida en raum
 -titulo + texto curatorial.
 -atributos de cada pieza -quizás a modo de guía, una miniatura para detectarla-
 
+====================================================================
+SESIÓN 2026-09-01 — resumen y pendientes para retomar
+====================================================================
+
+Hecho hoy:
+- Lámina PDF (d, parcial): portada (título de la muestra + artista/año +
+  texto curatorial, título en cursiva) + una página por pieza (miniatura
+  aislada de la escena real — frontal sin perspectiva para cuadros/videos,
+  ángulo 3/4 para esculturas — título en cursiva, ficha técnica completa,
+  año/técnica/dimensiones en líneas separadas). Sin fechas en el pie.
+  Crédito "Producido en © raumlab" + logo, centrado, en toda página.
+- Diálogo de formato de página (tamaño A4/A3/Carta + orientación vertical/
+  horizontal), compartido entre la lámina y el PDF de acotados — se abre
+  antes de generar cualquiera de los dos PDF.
+- Geometrales acotados (c) pasó de PNG sueltos/ZIP a PDF multipágina (una
+  página por vista tildada). Texto y líneas de cota a tamaño real fijo
+  (2.5mm en la hoja final, no atado a densidad de render ni a qué tamaño
+  de hoja se elija) — antes el mismo texto salía más chico en Planta que
+  en Frontal. Margen de encuadre de cámara adaptativo para que las cotas no
+  se corten al borde en salas con más piezas. Corregido bug real: el
+  nombre de la pieza no aparecía en la ficha de esculturas (el mesh real
+  que dibuja OBJLoader no lleva el nombre de la pieza, solo sus
+  contenedores — sí funcionaba en cuadros/videos).
+  Membrete de cada página (nombre de vista + escala gráfica, pegados al
+  borde inferior real de la imagen; crédito + número de página en una
+  línea fija al pie) dibujado directo en la página del PDF, no "horneado"
+  en el render — así queda a tamaño/posición constante sin importar la
+  escala real de cada hoja.
+- Vista actual: selector de calidad (estándar / alta / fotomontaje-
+  impresión, esta última sin techo, usa el máximo de la GPU).
+- Las tres exportaciones de imagen (vista actual, geometrales, acotados)
+  llevan el crédito de marca — en vista actual/geometrales el tamaño del
+  texto de crédito iguala al de la etiqueta de la barra de escala.
+- Corregidos varios bugs de wiring propios de esta sesión (cámara del
+  visor orbital que se pisaba al generar miniaturas, botón "Generando…"
+  que no llegaba a pintarse, selector de calidad ilegible por CSS).
+
+Pendiente / sin confirmar:
+- Afinar más el anti-solapamiento de cotas en salas MUY cargadas de piezas
+  si hiciera falta después de probar con un caso real grande.
+
+PENDIENTES NUEVOS (pedidos hoy, para las próximas sesiones):
+1) Archivo propio del sitio que combine GLB+JSON en uno solo (hoy son dos
+   archivos separados al exportar/cargar un proyecto).
+2) Orden de navegación: "Registro" no debe quedar último en el menú/subnav
+   de in_SITE — "Tutoriales" debe ser el último ítem.
+3) Próxima sesión: empezar (d) imagen 360° equirectangular desde un punto
+   definido de la escena (XYZ) — el único tipo de proyección de la lista
+   original que todavía no se implementó.
+

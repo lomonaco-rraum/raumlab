@@ -35,3 +35,92 @@
 .registro-export-section .sidebar-section-title {
     font-size: 0.68rem;
 }
+
+/* background-color explícito (no transparent): el popup nativo del <select>
+   toma su fondo de acá, no del fondo oscuro de la página — con transparent
+   el texto (blanco, --text-color) queda blanco sobre el fondo claro por
+   default del navegador. Mismo motivo para el color de <option>. */
+.registro-select {
+    display: block;
+    width: 100%;
+    padding: 8px 10px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border-fine);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: var(--text-color);
+    background-color: var(--bg-navy);
+}
+
+.registro-select option {
+    background-color: var(--bg-navy);
+    color: var(--text-color);
+}
+
+/* Diálogo de formato de página (lámina + acotados en PDF) — copiado de
+   .modal-overlay/.modal-box/.modal-actions en editor.css (mismo patrón
+   visual "Ficha de la Sala/Exportar" en toda la suite), sin cargar
+   editor.css entero por estas reglas — mismo criterio que .checkbox-row
+   más arriba. .modal-box select es nuevo: el original solo estilaba
+   input/textarea, acá hace falta además para los selects de tamaño/
+   orientación (mismo fondo explícito que .registro-select, mismo motivo).
+   ========================================================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(6, 9, 16, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 400;
+}
+
+.modal-box {
+    width: 100%;
+    max-width: 380px;
+    background: rgba(20, 20, 20, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--surface-border);
+    border-radius: 6px;
+    padding: 30px 25px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+}
+
+.modal-box h3 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-color);
+    font-weight: 400;
+    margin-bottom: 20px;
+}
+
+.modal-box .input-row {
+    margin-bottom: 16px;
+}
+
+.modal-box select {
+    margin-bottom: 0;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.modal-actions .viewer-btn,
+.modal-actions .viewer-btn-main {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.modal-actions .viewer-btn-main {
+    border: 1px solid transparent;
+    font-size: 0.78rem;
+}

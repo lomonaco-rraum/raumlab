@@ -14,7 +14,10 @@ import { proyectarPuntoAPixel, UMBRAL_PLANO_FINO_M } from './registroGeometriaUt
 
 export const IDS_VISTAS_GEOMETRALES = ['planta', 'frontal', 'posterior', 'lateral-izq', 'lateral-der'];
 
-const DENSIDAD_DEFAULT_PX_POR_METRO = 300;
+// Exportada: registroDimensioning.js la usa como referencia para que el
+// tamaño de texto/líneas de cota se mantenga constante en términos reales,
+// sin importar qué densidad termine usando cada lote de exportación.
+export const DENSIDAD_DEFAULT_PX_POR_METRO = 300;
 const MAX_PIXEL_DIM_DEFAULT = 4096;
 
 // Aire real (en metros) alrededor del contenido de cada vista, para que la
@@ -80,12 +83,12 @@ export function calcularAlturaEscena(escenaCargada) {
 // (con margen de encuadre ya sumado) a partir de dimensiones_sala del JSON
 // (ancho/largo — la sala está centrada en el origen, ver buildRoom() en
 // editor.js) y la altura real de la escena cargada.
-export function construirConfiguracionVistas(datosProyecto, escenaCargada) {
+export function construirConfiguracionVistas(datosProyecto, escenaCargada, margenExtraM = 0) {
     const dimensionesSala = (datosProyecto && datosProyecto.dimensiones_sala) || {};
     const ancho = Number(dimensionesSala.ancho) || 4;
     const largo = Number(dimensionesSala.largo) || 4;
     const alturaEscena = calcularAlturaEscena(escenaCargada);
-    const m = MARGEN_ENCUADRE_M * 2;
+    const m = (MARGEN_ENCUADRE_M + margenExtraM) * 2;
 
     return {
         'planta': { id: 'planta', etiqueta: 'Planta', anchoReal: ancho + m, altoReal: largo + m },
@@ -154,27 +157,82 @@ function elegirLongitudBarra(anchoPx, densidadPxPorMetro) {
     return elegido;
 }
 
+// Referencia de resolución a la que están tunados los tamaños de la barra
+// de escala y el crédito de marca (línea 20px, fuente 13px, etc.) — a
+// MAYOR resolución de salida (el selector de calidad de Vista actual llega
+// hasta el maxTextureSize de la GPU, varios miles de px) se agrandan
+// proporcionalmente, si no quedan microscópicos en una exportación de
+// muchos megapíxeles. Math.max(1, ...): nunca por debajo de 1 — a
+// resoluciones típicas/chicas (frecuentes: una sala moderada a la
+// densidad default ronda 1000-1800px, por debajo de la referencia) el
+// factor se queda en el tamaño ya tunado en vez de encogerlo más todavía.
+// En los planos acotados esto no aplica — ahí la barra/crédito/etiqueta de
+// vista se dibujan aparte, directo en la página del PDF a tamaño real fijo
+// en mm (ver registroDimensioning.js), independiente de a qué resolución
+// se haya renderizado el contenido.
+function factorCromoPng(anchoPx, altoPx) {
+    return Math.max(1, Math.max(anchoPx, altoPx) / 2000);
+}
+
 function dibujarBarraEscala(ctx, densidadPxPorMetro, anchoPx, altoPx) {
+    const factor = factorCromoPng(anchoPx, altoPx);
     const metros = elegirLongitudBarra(anchoPx, densidadPxPorMetro);
     const largoPx = metros * densidadPxPorMetro;
-    const x0 = 20;
-    const y0 = altoPx - 20;
+    const x0 = 20 * factor;
+    const y0 = altoPx - 20 * factor;
+    const marcaPx = 5 * factor;
 
     ctx.save();
     ctx.strokeStyle = 'rgba(0,0,0,0.85)';
     ctx.fillStyle = 'rgba(0,0,0,0.85)';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2 * factor;
     ctx.beginPath();
     ctx.moveTo(x0, y0);
     ctx.lineTo(x0 + largoPx, y0);
-    ctx.moveTo(x0, y0 - 5);
-    ctx.lineTo(x0, y0 + 5);
-    ctx.moveTo(x0 + largoPx, y0 - 5);
-    ctx.lineTo(x0 + largoPx, y0 + 5);
+    ctx.moveTo(x0, y0 - marcaPx);
+    ctx.lineTo(x0, y0 + marcaPx);
+    ctx.moveTo(x0 + largoPx, y0 - marcaPx);
+    ctx.lineTo(x0 + largoPx, y0 + marcaPx);
     ctx.stroke();
-    ctx.font = '13px sans-serif';
+    ctx.font = `${13 * factor}px sans-serif`;
     ctx.textAlign = 'center';
-    ctx.fillText(`${metros} m`, x0 + largoPx / 2, y0 - 10);
+    ctx.fillText(`${metros} m`, x0 + largoPx / 2, y0 - 10 * factor);
+    ctx.restore();
+}
+
+// Crédito de marca, abajo CENTRADO (logo + texto como un solo bloque) — en
+// vista actual y geometrales (no en acotados, que dibuja su propio crédito
+// a tamaño fijo directo en la página del PDF, ver
+// registroDimensioning.js/exportarVistasAcotadasPDF). Tamaño del texto:
+// igual al de la etiqueta "X m" de la barra de escala (13 * factorCromoPng,
+// misma referencia) — pedido explícito, que se lean parecido entre sí.
+// `logo`: { canvas, aspecto } ya cargado y recoloreado a negro por
+// cargarLogoRaumlab() en registro.js — un <canvas> es un CanvasImageSource
+// válido para ctx.drawImage(), no hace falta decodificar de nuevo.
+const ALTO_LOGO_CREDITO_PX_BASE = 16;
+function dibujarCreditoImagen(ctx, anchoPx, altoPx, logo) {
+    const factor = factorCromoPng(anchoPx, altoPx);
+    const margen = 20 * factor;
+    const altoLogo = ALTO_LOGO_CREDITO_PX_BASE * factor;
+    const y = altoPx - margen;
+    const texto = 'Producido en © raumlab';
+
+    ctx.save();
+    ctx.font = `${13 * factor}px sans-serif`;
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = 'rgba(0,0,0,0.85)';
+
+    const anchoTexto = ctx.measureText(texto).width;
+    const anchoLogo = (logo && logo.canvas) ? altoLogo * (logo.aspecto || 1) : 0;
+    const gap = (logo && logo.canvas) ? 6 * factor : 0;
+    let x = (anchoPx - (anchoLogo + gap + anchoTexto)) / 2;
+
+    if (logo && logo.canvas) {
+        ctx.drawImage(logo.canvas, x, y - altoLogo / 2, anchoLogo, altoLogo);
+        x += anchoLogo + gap;
+    }
+    ctx.textAlign = 'left';
+    ctx.fillText(texto, x, y);
     ctx.restore();
 }
 
@@ -251,7 +309,7 @@ function dibujarIndicadoresDePlanos(ctx, escenaCargada, piso, camera, anchoPx, a
 // renderer, se redimensiona y se restaura al terminar).
 function renderizarVistaOffscreen({
     renderer, scene, camera, anchoPx, altoPx, dibujarCero, centroY, densidadPxPorMetro,
-    escenaCargada, piso, dibujarIndicadoresDePlano, dibujarCotasFn, fondoColor
+    escenaCargada, piso, dibujarIndicadoresDePlano, dibujarCotasFn, fondoColor, logo, omitirCromo
 }) {
     const colorClearOriginal = new THREE.Color();
     renderer.getClearColor(colorClearOriginal);
@@ -283,7 +341,15 @@ function renderizarVistaOffscreen({
     if (dibujarCotasFn) {
         dibujarCotasFn(ctx, anchoPx, altoPx);
     }
-    dibujarBarraEscala(ctx, densidadPxPorMetro, anchoPx, altoPx);
+    // omitirCromo: lo usan los planos acotados (c) — ahí la barra de
+    // escala/crédito/etiqueta de vista se dibujan aparte, directo en la
+    // página del PDF a tamaño fijo en mm (registroDimensioning.js), no
+    // horneados en estos píxeles — si no, quedan atados a la resolución de
+    // render en vez de a la hoja final elegida.
+    if (!omitirCromo) {
+        dibujarBarraEscala(ctx, densidadPxPorMetro, anchoPx, altoPx);
+        dibujarCreditoImagen(ctx, anchoPx, altoPx, logo);
+    }
 
     scene.background = fondoOriginal;
     renderer.setClearColor(colorClearOriginal, alphaClearOriginal);
@@ -296,7 +362,7 @@ function renderizarVistaOffscreen({
 // aspecto). Sin barra de escala ni línea de piso — eso es propio de las
 // vistas ortogonales arquitectónicas de (b)/(c), no de una vista libre.
 export function exportarVistaActual(motor, opciones = {}) {
-    const { ladoMaximoPx = 2000 } = opciones;
+    const { ladoMaximoPx = 2000, logo = null } = opciones;
 
     if (!motor.obtenerEscenaCargada()) {
         throw new Error('No hay ningún proyecto cargado.');
@@ -325,7 +391,9 @@ export function exportarVistaActual(motor, opciones = {}) {
     const canvasSalida = document.createElement('canvas');
     canvasSalida.width = anchoPx;
     canvasSalida.height = altoPx;
-    canvasSalida.getContext('2d').drawImage(renderer.domElement, 0, 0, anchoPx, altoPx);
+    const ctx = canvasSalida.getContext('2d');
+    ctx.drawImage(renderer.domElement, 0, 0, anchoPx, altoPx);
+    dibujarCreditoImagen(ctx, anchoPx, altoPx, logo);
     const dataURL = canvasSalida.toDataURL('image/png');
 
     scene.background = fondoOriginal;
@@ -346,7 +414,10 @@ export function renderizarLoteVistas(motor, idsSeleccionados, opciones = {}, arm
     const {
         incluirPiso = true,
         densidadDeseadaPxPorMetro = DENSIDAD_DEFAULT_PX_POR_METRO,
-        maxPixelDim = MAX_PIXEL_DIM_DEFAULT
+        maxPixelDim = MAX_PIXEL_DIM_DEFAULT,
+        margenExtraM = 0,
+        logo = null,
+        omitirCromo = false
     } = opciones;
 
     const escenaCargada = motor.obtenerEscenaCargada();
@@ -356,7 +427,7 @@ export function renderizarLoteVistas(motor, idsSeleccionados, opciones = {}, arm
     }
 
     const datosProyecto = motor.obtenerDatosProyecto();
-    const configs = construirConfiguracionVistas(datosProyecto, escenaCargada);
+    const configs = construirConfiguracionVistas(datosProyecto, escenaCargada, margenExtraM);
     const alturaEscena = calcularAlturaEscena(escenaCargada);
 
     const vistasParaDensidad = idsSeleccionados.map(id => ({
@@ -380,7 +451,7 @@ export function renderizarLoteVistas(motor, idsSeleccionados, opciones = {}, arm
         const esElevacion = id !== 'planta';
         const { camera, centro } = crearCamaraOrtografica(id, config.anchoReal, config.altoReal, alturaEscena);
         const overlay = armarOverlay
-            ? (armarOverlay({ id, config, camera, centro, esElevacion, escenaCargada, piso, datosProyecto }) || {})
+            ? (armarOverlay({ id, config, camera, centro, esElevacion, escenaCargada, piso, datosProyecto, densidadPxPorMetro }) || {})
             : {};
 
         const dataURL = renderizarVistaOffscreen({
@@ -391,7 +462,9 @@ export function renderizarLoteVistas(motor, idsSeleccionados, opciones = {}, arm
             escenaCargada, piso,
             dibujarIndicadoresDePlano: overlay.dibujarIndicadoresDePlano ?? (id === 'planta'),
             dibujarCotasFn: overlay.dibujarCotasFn,
-            fondoColor: overlay.fondoColor
+            fondoColor: overlay.fondoColor,
+            logo,
+            omitirCromo
         });
         return { id, etiqueta: config.etiqueta, dataURL, anchoPx, altoPx };
     });

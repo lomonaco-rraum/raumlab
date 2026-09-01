@@ -134,6 +134,11 @@
 
                 <section class="registro-export-section">
                     <h3 class="sidebar-section-title">Vista actual</h3>
+                    <select id="registro-select-calidad-actual" class="registro-select">
+                        <option value="1500">Estándar (pantalla/web)</option>
+                        <option value="3500" selected>Alta</option>
+                        <option value="max">Fotomontaje / impresión (máxima)</option>
+                    </select>
                     <button id="registro-btn-export-actual" class="viewer-btn-main">Descargar PNG</button>
                 </section>
 
@@ -151,12 +156,45 @@
                     </label>
 
                     <button id="registro-btn-export-geometrales" class="viewer-btn-main" style="margin-top: 10px;">Descargar seleccionadas (ZIP)</button>
-                    <button id="registro-btn-export-acotados" class="viewer-btn-main" style="margin-top: 8px;">Descargar con cotas (ZIP)</button>
+                    <button id="registro-btn-export-acotados" class="viewer-btn-main" style="margin-top: 8px;">Descargar con cotas (PDF)</button>
+                </section>
+
+                <section class="registro-export-section">
+                    <h3 class="sidebar-section-title">Lámina</h3>
+                    <button id="registro-btn-export-lamina" class="viewer-btn-main">Descargar PDF</button>
                 </section>
 
             </div>
         </article>
 
+    </div>
+
+    <div class="modal-overlay hidden" id="registro-modal-formato">
+        <div class="modal-box">
+            <h3>Formato de página</h3>
+
+            <div class="input-row">
+                <label class="cedula-metadatos" style="display:block; margin-bottom:6px;">Tamaño de hoja</label>
+                <select id="registro-formato-tamanio" class="registro-select">
+                    <option value="a4" selected>A4</option>
+                    <option value="a3">A3</option>
+                    <option value="carta">Carta</option>
+                </select>
+            </div>
+
+            <div class="input-row">
+                <label class="cedula-metadatos" style="display:block; margin-bottom:6px;">Orientación</label>
+                <select id="registro-formato-orientacion" class="registro-select">
+                    <option value="vertical" selected>Vertical</option>
+                    <option value="horizontal">Horizontal</option>
+                </select>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" id="registro-formato-cancelar" class="viewer-btn">Cancelar</button>
+                <button type="button" id="registro-formato-confirmar" class="viewer-btn-main">Descargar</button>
+            </div>
+        </div>
     </div>
 
     <a href="index.html" class="rc-back-link">
