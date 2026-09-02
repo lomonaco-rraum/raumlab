@@ -4,6 +4,7 @@ import { TransformControls } from 'three/addons/controls/TransformControls.js';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+import { empaquetarRML } from './rmlArchivo.js';
 
 // === VARIABLES GLOBALES ===
 let scene, camera, renderer, controls, transformControls;
@@ -1221,12 +1222,21 @@ function confirmarExportacion() {
 
     exporter.parse(
         exportGroup,
-        function (gltf) {
-            triggerDownload(gltf, `${nombreArchivo}.glb`, 'model/gltf-binary');
-
+        async function (gltf) {
+            // Con ficha vinculada, el par GLB+JSON sale empaquetado en un
+            // solo .rml (ver rmlArchivo.js) en vez de dos archivos sueltos
+            // — sin ficha, el .glb solo no cambia respecto a antes.
             if (incluirJson) {
-                const jsonString = buildAttributesJSON(nombreCrudo);
-                triggerDownload(jsonString, `${nombreArchivo}.json`, 'application/json');
+                try {
+                    const blob = await empaquetarRML(gltf, buildAttributesData(nombreCrudo));
+                    triggerDownload(blob, `${nombreArchivo}.rml`, 'application/zip');
+                } catch (error) {
+                    console.error("Error al empaquetar el .rml:", error);
+                    alert("Ocurrió un error al armar el archivo .rml. Revisá la consola para más detalles.");
+                    return;
+                }
+            } else {
+                triggerDownload(gltf, `${nombreArchivo}.glb`, 'model/gltf-binary');
             }
 
             cerrarModalExportacion();

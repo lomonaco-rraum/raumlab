@@ -5,8 +5,10 @@
    ========================================================================== */
 
 import { crearMotorVisor } from './motorVisor.js';
+import { desempaquetarRML } from './rmlArchivo.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+    const fileRml = document.getElementById('file-user-rml');
     const fileGlb = document.getElementById('file-user-glb');
     const fileJson = document.getElementById('file-user-json');
     const btnLoadScene = document.getElementById('btn-load-scene');
@@ -28,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         salaFichaContainer: document.getElementById('sala-ficha-section'),
         salaFichaVolverBtn: document.getElementById('btn-volver-salas'),
         onVolverASalas: () => {
+            fileRml.value = '';
             fileGlb.value = '';
             fileJson.value = '';
         },
@@ -38,7 +41,25 @@ document.addEventListener('DOMContentLoaded', () => {
         salaTextoCuratorial: document.getElementById('sala-texto-curatorial')
     });
 
-    btnLoadScene.addEventListener('click', () => {
+    // Prioriza el .rml (GLB+JSON empaquetados, ver rmlArchivo.js) si hay uno
+    // elegido; si no, cae al par de archivos sueltos de siempre.
+    btnLoadScene.addEventListener('click', async () => {
+        if (fileRml.files.length > 0) {
+            try {
+                const { glbBlob, datosJSON } = await desempaquetarRML(fileRml.files[0]);
+                motor.cargarGLB(URL.createObjectURL(glbBlob));
+                if (datosJSON) {
+                    motor.setFichaTecnica(datosJSON);
+                } else {
+                    motor.limpiarFichaTecnica();
+                }
+            } catch (error) {
+                console.error('Error al leer el archivo .rml:', error);
+                alert(error.message || 'No se pudo leer el archivo .rml.');
+            }
+            return;
+        }
+
         if (fileGlb.files.length > 0) {
             motor.cargarGLB(URL.createObjectURL(fileGlb.files[0]));
         }

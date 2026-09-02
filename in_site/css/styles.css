@@ -49,6 +49,14 @@ input, select, button, textarea {
     outline: none;
 }
 
+/* Resaltado táctil azul de WebKit/Chrome mobile al tocar un botón/enlace —
+   independiente de outline:none (WebKit lo maneja aparte) y visible en
+   cualquier <button>/<a> del sitio en celular, rompiendo la paleta
+   monocromática. */
+button, a {
+    -webkit-tap-highlight-color: transparent;
+}
+
 /* Evitamos distorsiones en elementos gráficos nativos */
 img, svg {
     display: inline-block;

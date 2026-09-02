@@ -89,9 +89,11 @@ export function crearMotorRegistro(refs) {
         controls.update();
     }
 
-    function limpiarEscenaAnterior() {
-        if (!escenaCargada) return;
-        escenaCargada.traverse((nodo) => {
+    // Libera geometrías/texturas de un árbol de objetos ya descartado —
+    // reusado tanto para la escena vieja (limpiarEscenaAnterior) como para
+    // una carga que llegó tarde y quedó superada (ver tokenCarga).
+    function disposeArbol(objeto) {
+        objeto.traverse((nodo) => {
             if (nodo.isMesh) {
                 nodo.geometry.dispose();
                 const materiales = Array.isArray(nodo.material) ? nodo.material : [nodo.material];
@@ -101,30 +103,56 @@ export function crearMotorRegistro(refs) {
                 });
             }
         });
+    }
+
+    function limpiarEscenaAnterior() {
+        if (!escenaCargada) return;
+        disposeArbol(escenaCargada);
         scene.remove(escenaCargada);
         escenaCargada = null;
     }
 
     initThree();
 
+    // Incrementado en cada cargarGLB() — si dos cargas quedan en vuelo a la
+    // vez (red lenta + la usuaria vuelve atrás y elige otro proyecto antes
+    // de que la primera termine, típico en celular) el callback de la
+    // carga VIEJA se descarta al llegar en vez de pisar la escena de la
+    // carga nueva, aunque haya tardado más y responda después.
+    let tokenCarga = 0;
+
     return {
+        // Devuelve una Promise que resuelve cuando la escena YA está
+        // aplicada (o rechaza si falló) — así quien llama puede esperar a
+        // que termine de verdad antes de mostrar la UI de "proyecto
+        // cargado" en vez de asumirlo apenas se dispara la carga.
         cargarGLB(url) {
             limpiarEscenaAnterior();
+            const miToken = ++tokenCarga;
 
             const loader = new GLTFLoader();
-            loader.load(
-                url,
-                (gltf) => {
-                    escenaCargada = gltf.scene;
-                    scene.add(escenaCargada);
-                    encuadrarCamara(escenaCargada);
-                },
-                undefined,
-                (error) => {
-                    console.error("Error al cargar el GLB:", error);
-                    alert("No se pudo cargar la escena .GLB. Revisá que el archivo sea válido.");
-                }
-            );
+            return new Promise((resolve, reject) => {
+                loader.load(
+                    url,
+                    (gltf) => {
+                        if (miToken !== tokenCarga) {
+                            disposeArbol(gltf.scene);
+                            return;
+                        }
+                        escenaCargada = gltf.scene;
+                        scene.add(escenaCargada);
+                        encuadrarCamara(escenaCargada);
+                        resolve();
+                    },
+                    undefined,
+                    (error) => {
+                        if (miToken !== tokenCarga) return;
+                        console.error("Error al cargar el GLB:", error);
+                        alert("No se pudo cargar la escena .GLB. Revisá que el archivo sea válido.");
+                        reject(error);
+                    }
+                );
+            });
         },
 
         setDatosProyecto(json) {

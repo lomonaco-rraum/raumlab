@@ -209,8 +209,10 @@ function dibujarBarraEscala(ctx, densidadPxPorMetro, anchoPx, altoPx) {
 // `logo`: { canvas, aspecto } ya cargado y recoloreado a negro por
 // cargarLogoRaumlab() en registro.js — un <canvas> es un CanvasImageSource
 // válido para ctx.drawImage(), no hace falta decodificar de nuevo.
+// Exportada: registroPanorama360.js (d) también lleva este mismo crédito
+// de marca en su PNG, sin duplicar la función.
 const ALTO_LOGO_CREDITO_PX_BASE = 16;
-function dibujarCreditoImagen(ctx, anchoPx, altoPx, logo) {
+export function dibujarCreditoImagen(ctx, anchoPx, altoPx, logo) {
     const factor = factorCromoPng(anchoPx, altoPx);
     const margen = 20 * factor;
     const altoLogo = ALTO_LOGO_CREDITO_PX_BASE * factor;

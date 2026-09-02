@@ -124,3 +124,104 @@
     border: 1px solid transparent;
     font-size: 0.78rem;
 }
+
+/* Picker de punto del panorama 360° (d) — planta clickeable dentro de
+   #registro-modal-360, sin marco propio: la planta "flota" sobre el fondo
+   oscuro del modal. */
+#registro-360-canvas-planta {
+    display: block;
+    width: 100%;
+    height: auto;
+    cursor: crosshair;
+    margin-bottom: 16px;
+}
+
+/* ================= Desplegable (calidad del panorama 360°) =============
+   Copiado tal cual de espacio_inm/espacio-inm.css (mismo criterio que
+   .checkbox-row más arriba: no cargar esa hoja entera por esta única
+   regla) — es el patrón de "picker" que usa el resto del sitio en vez de
+   un <select> nativo: el navegador no deja tematizar el fondo/foco de sus
+   opciones desplegadas (queda el resaltado azul del sistema), así que acá
+   es un botón + lista propia en HTML normal, con blur al abrir. */
+.picker {
+    position: relative;
+}
+
+.picker-boton {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    text-align: left;
+    background: none;
+    border: 1px solid var(--border-fine);
+    border-radius: 4px;
+    padding: 8px 10px;
+    font-family: var(--font-geist);
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: var(--text-color);
+    cursor: pointer;
+}
+.picker-boton:hover { border-color: var(--text-color); }
+
+.picker-boton-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+}
+
+.picker-chevron {
+    font-size: 0.7rem;
+    opacity: 0.7;
+    flex-shrink: 0;
+}
+
+.picker-lista {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 50;
+    list-style: none;
+    margin: 0;
+    padding: 6px;
+    background: rgba(6, 9, 16, 0.92);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--surface-border);
+    border-radius: 4px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.picker-lista[hidden] { display: none; }
+
+.picker-opcion {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 7px 8px;
+    border-radius: 3px;
+    font-family: var(--font-geist);
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+.picker-opcion:hover { background: rgba(255, 255, 255, 0.06); }
+
+.picker-opcion.active { font-weight: 500; }
+
+.picker-opcion-detalle {
+    font-family: var(--font-geist);
+    font-size: 0.65rem;
+    font-weight: 300;
+    opacity: 0.55;
+    margin-left: 2px;
+}

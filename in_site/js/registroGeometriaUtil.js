@@ -7,6 +7,8 @@
    (evita un import circular entre ambos).
    ========================================================================== */
 
+import * as THREE from 'three';
+
 // Proyección exacta de un punto del mundo a píxel de pantalla para
 // CUALQUIER cámara (usa matrixWorldInverse + projectionMatrix vía
 // Vector3.project) — no hace falta derivar la fórmula a mano por cada
@@ -29,6 +31,17 @@ export const UMBRAL_PLANO_FINO_M = 0.05;
 
 export function esPlanoFino(tam) {
     return Math.min(tam.x, tam.z) < UMBRAL_PLANO_FINO_M;
+}
+
+// Inverso exacto de proyectarPuntoAPixel() para el picker de punto del
+// panorama 360° (d): la cámara de planta mira derecho hacia abajo en
+// paralelo (ortográfica), así que la profundidad usada en el unproject no
+// afecta el X/Z resultante — cualquier punto a lo largo del rayo vertical
+// tiene el mismo X/Z real.
+export function puntoPlantaDesdePixel(px, py, camera, anchoPx, altoPx) {
+    const ndc = new THREE.Vector3((px / anchoPx) * 2 - 1, -(py / altoPx) * 2 + 1, 0);
+    const mundo = ndc.unproject(camera);
+    return { x: mundo.x, z: mundo.z };
 }
 
 // Tamaños de hoja disponibles en el diálogo de formato (registro.js) —

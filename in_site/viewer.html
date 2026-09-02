@@ -49,9 +49,9 @@
             <nav class="rc-subnav">
                 <a href="editor.html">Proyectos</a>
                 <a href="viewer.html" class="active">Visualizador</a>
+                <a href="registro.html">Registro</a>
                 <a href="coleccion.html">Galería</a>
                 <a href="instrucciones.html">Tutoriales</a>
-                <a href="registro.html">Registro</a>
             </nav>
         </div>
     </div>
@@ -62,9 +62,9 @@
         <ul class="rc-nav-list rc-nav-modes">
             <li class="rc-nav-item"><a class="rc-nav-link" href="editor.html">Proyectos</a></li>
             <li class="rc-nav-item"><a class="rc-nav-link active" href="viewer.html">Visualizador</a></li>
+            <li class="rc-nav-item"><a class="rc-nav-link" href="registro.html">Registro</a></li>
             <li class="rc-nav-item"><a class="rc-nav-link" href="coleccion.html">Galería</a></li>
             <li class="rc-nav-item"><a class="rc-nav-link" href="instrucciones.html">Tutoriales</a></li>
-            <li class="rc-nav-item"><a class="rc-nav-link" href="registro.html">Registro</a></li>
         </ul>
         <ul class="rc-nav-list">
             <li class="rc-nav-item has-sub open" id="recursosItem">
@@ -87,7 +87,14 @@
         <aside class="viewer-sidebar" id="sidebar-left">
 
             <section class="viewer-group" id="salas-lista-section">
-                <h3 class="sidebar-section-title">Cargar Archivos</h3>
+                <h3 class="sidebar-section-title">Cargar Proyecto</h3>
+
+                <label class="viewer-btn-file">
+                    Proyecto (.RML)
+                    <input type="file" id="file-user-rml" accept=".rml" style="display:none;">
+                </label>
+
+                <h3 class="sidebar-section-title" style="margin-top: 24px;">Cargar Archivos</h3>
 
                 <label class="viewer-btn-file">
                     Escena (.GLB)
@@ -99,7 +106,7 @@
                     <input type="file" id="file-user-json" accept=".json" style="display:none;">
                 </label>
 
-                <button id="btn-load-scene" class="viewer-btn-main">Visualizar Escena</button>
+                <button id="btn-load-scene" class="viewer-btn-main" style="margin-top: 10px;">Visualizar Escena</button>
             </section>
 
             <section class="viewer-group hidden" id="sala-ficha-section">
@@ -175,6 +182,7 @@
     </footer>
 
     <script src="../raumlab/raumlab-chrome.js"></script>
+    <script src="vendor/jszip.min.js"></script>
     <script type="module" src="js/viewer.js"></script>
 </body>
 </html>
