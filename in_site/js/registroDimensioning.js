@@ -588,7 +588,7 @@ function dibujarPieAcotado(doc, id, indice, totalPaginas, mmPorMetroReal, logo, 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
     doc.setTextColor(140);
-    const textoCredito = 'Producido en © raumlab';
+    const textoCredito = 'Creado en raumlab.org';
     const anchoTextoCredito = doc.getTextWidth(textoCredito);
     const altoLogo = 5;
     const anchoLogo = logo ? altoLogo * (logo.aspecto || 1) : 0;

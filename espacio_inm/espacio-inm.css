@@ -163,7 +163,7 @@ html, body.rc-body {
   list-style: none;
   margin: 0;
   padding: 6px;
-  background: rgba(6, 9, 16, 0.92);
+  background: rgba(10, 10, 10, 0.92);
   backdrop-filter: blur(10px);
   border: 1px solid var(--surface-border);
   border-radius: 4px;
@@ -238,6 +238,8 @@ html, body.rc-body {
   font-family: var(--font-geist);
   font-size: 0.78rem;
   font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   color: var(--text-color);
   cursor: pointer;
   padding: 9px 16px;
@@ -544,6 +546,12 @@ html, body.rc-body {
   font-size: 0.78rem;
   font-weight: 300;
   color: var(--text-color);
+  cursor: pointer;
+}
+.alpha-toggle-row input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--text-color);
   cursor: pointer;
 }
 

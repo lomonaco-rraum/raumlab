@@ -1,6 +1,7 @@
 // src/js/app.js
 import { calcularHomografia, calcularHomografiaGeometrica, calcularTransformSimilitud } from './geometry.js';
 import { generarDXF } from './dxf.js';
+import { estamparCanvas } from './creditoRaumlab.js';
 
 console.log("RaumLab TransFORM inicializado.");
 
@@ -495,7 +496,7 @@ function crearEstacionFotoplano(file, contenedor, opciones) {
     // Y tener un resultado generado (ver mostrarResultado()/btnOriginal).
     if (opciones.contenedorDescarga) {
         opciones.contenedorDescarga.innerHTML = `
-            <a id="btn-descargar" class="btn-text btn-full" style="display: none; text-decoration: none; margin-bottom: 0.5rem;" download="fotoplano-rectificado.png">⬇ Descargar Fotoplano</a>
+            <a id="btn-descargar" class="btn-text btn-full" style="display: none; text-decoration: none; margin-bottom: 0.5rem;" download="fotoplano-rectificado.png">Descargar Fotoplano</a>
         `;
     }
 
@@ -1245,9 +1246,10 @@ function crearEstacionFotoplano(file, contenedor, opciones) {
         canvasRectificado.height = resultado.outHeight;
         canvasRectificado.getContext('2d').drawImage(resultado.canvas, 0, 0);
 
-        const dataUrl = resultado.canvas.toDataURL('image/png');
-        btnDescargar.href = dataUrl;
         btnDescargar.download = `fotoplano_rectificado_${resultado.gsdMm}mm.png`;
+        estamparCanvas(resultado.canvas).then(canvasEstampado => {
+            btnDescargar.href = canvasEstampado.toDataURL('image/png');
+        });
 
         imgElement.style.display = 'none';
         canvasRectificado.style.display = 'block';
@@ -1958,7 +1960,7 @@ function crearEstacionAdaptativo(file, contenedor, opciones) {
 
     if (opciones.contenedorDescarga) {
         opciones.contenedorDescarga.innerHTML = `
-            <a id="btn-descargar-adaptativo" class="btn-text btn-full" style="display: none; text-decoration: none; margin-bottom: 0.5rem;" download="adaptativo-rectificado.png">⬇ Descargar Adaptativo</a>
+            <a id="btn-descargar-adaptativo" class="btn-text btn-full" style="display: none; text-decoration: none; margin-bottom: 0.5rem;" download="adaptativo-rectificado.png">Descargar Adaptativo</a>
         `;
     }
 
@@ -2453,9 +2455,10 @@ function crearEstacionAdaptativo(file, contenedor, opciones) {
 
             outCtx.putImageData(imgDataDestino, 0, 0);
 
-            const dataUrl = canvasRectificado.toDataURL('image/png');
-            btnDescargar.href = dataUrl;
             btnDescargar.download = `adaptativo_${Math.round(wMm)}x${Math.round(hMm)}mm_${dpi}dpi.png`;
+            estamparCanvas(canvasRectificado).then(canvasEstampado => {
+                btnDescargar.href = canvasEstampado.toDataURL('image/png');
+            });
 
             infoResultado.textContent = `${outWidth} × ${outHeight} px — ${Math.round(wMm)} × ${Math.round(hMm)} mm a ${dpi} dpi.`;
             // Encaja el resultado la primera vez que se muestra.
@@ -2822,7 +2825,7 @@ function mostrarResultadoFotomosaico(rectificadoMosaico) {
         </header>
         <div class="workspace-layout">
             <div class="canvas-area" style="flex-direction: column;">
-                <a id="btn-descargar-mosaico" class="btn-primary" style="margin-bottom: 10px; background: #18181b; text-decoration: none; align-self: flex-end;" download="fotomosaico.png">⬇ Descargar Fotomosaico</a>
+                <a id="btn-descargar-mosaico" class="btn-primary" style="margin-bottom: 10px; background: #18181b; text-decoration: none; align-self: flex-end;" download="fotomosaico.png">Descargar Fotomosaico</a>
                 <div id="mosaico-canvas-wrapper" style="position: relative; display: inline-flex;">
                     <div id="mosaico-canvas-host"></div>
                     <canvas id="capa-cuadricula-mosaico" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; display: none;"></canvas>
@@ -2846,8 +2849,10 @@ function mostrarResultadoFotomosaico(rectificadoMosaico) {
     document.getElementById('mosaico-canvas-host').appendChild(canvasFinal);
 
     const btnDescargarMosaico = document.getElementById('btn-descargar-mosaico');
-    btnDescargarMosaico.href = canvasFinal.toDataURL('image/png');
     btnDescargarMosaico.download = 'fotomosaico.png';
+    estamparCanvas(canvasFinal).then(canvasEstampado => {
+        btnDescargarMosaico.href = canvasEstampado.toDataURL('image/png');
+    });
 
     const capaCuadriculaMosaico = document.getElementById('capa-cuadricula-mosaico');
     const capaMedidasMosaico = document.getElementById('capa-medidas-mosaico');
@@ -2925,7 +2930,7 @@ function crearPanelMedicionYDibujo(rectificado, canvasVisible, capaMedidas, capa
         </label>
         <div class="controles-btn-row">
             <button id="btn-limpiar-medidas" class="btn-text" style="flex: 1;">Limpiar</button>
-            <button id="btn-descargar-cotas" class="btn-text" style="flex: 1.4;">⬇ Imagen con cotas</button>
+            <button id="btn-descargar-cotas" class="btn-text" style="flex: 1.4;">Imagen con cotas</button>
         </div>
 
         <hr class="controles-divider">
@@ -2982,8 +2987,8 @@ function crearPanelMedicionYDibujo(rectificado, canvasVisible, capaMedidas, capa
             </table>
         </div>
         <div class="controles-btn-row" style="margin-bottom: 0;">
-            <button id="btn-descargar-dibujo" class="btn-text" style="flex: 1;">⬇ Imagen</button>
-            <button id="btn-exportar-dxf" class="btn-primary" style="flex: 1;" disabled>⬇ DXF</button>
+            <button id="btn-descargar-dibujo" class="btn-text" style="flex: 1;">Imagen</button>
+            <button id="btn-exportar-dxf" class="btn-primary" style="flex: 1;" disabled>DXF</button>
         </div>
     `;
 
@@ -3163,10 +3168,12 @@ function crearPanelMedicionYDibujo(rectificado, canvasVisible, capaMedidas, capa
         tctx.drawImage(rectificado.canvas, margenPx, margenPx);
         if (conGrid) tctx.drawImage(capaCuadricula, 0, 0);
         tctx.drawImage(capa, margenPx, margenPx);
-        const a = document.createElement('a');
-        a.href = tmp.toDataURL('image/png');
-        a.download = nombreArchivo;
-        a.click();
+        estamparCanvas(tmp).then(canvasEstampado => {
+            const a = document.createElement('a');
+            a.href = canvasEstampado.toDataURL('image/png');
+            a.download = nombreArchivo;
+            a.click();
+        });
     }
 
     // --- Grupo "Consultar medidas" ---

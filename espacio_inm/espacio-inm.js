@@ -1,3 +1,86 @@
+/* ================= Sello de marca (crédito) =================
+   "Creado en raumlab.org" + logo, mismo criterio visual que in_SITE
+   (in_site/js/registroExportViews.js: dibujarCreditoImagen) y trans_FORMA
+   (mono_plano/src/js/creditoRaumlab.js), reimplementado acá porque este
+   archivo es un script plano (sin import/export). Solo se usa en la
+   descarga del panorama equirectangular — no en las caras del cubemap
+   (esas son piezas técnicas para recomponer en otro software, no una
+   imagen que alguien mira, mismo criterio que los .glb de in_site). */
+let logoRaumlabCacheado;
+async function cargarLogoRaumlab() {
+  if (logoRaumlabCacheado !== undefined) return logoRaumlabCacheado;
+  try {
+    const imagen = await new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = '../raumlab/favicontransparente.png';
+    });
+
+    const canvas = document.createElement('canvas');
+    canvas.width = imagen.naturalWidth;
+    canvas.height = imagen.naturalHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(imagen, 0, 0);
+    ctx.globalCompositeOperation = 'source-in';
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    logoRaumlabCacheado = { canvas, aspecto: canvas.width / canvas.height };
+  } catch (error) {
+    console.error('No se pudo cargar el logo de raumlab:', error);
+    logoRaumlabCacheado = null;
+  }
+  return logoRaumlabCacheado;
+}
+
+const ALTO_LOGO_CREDITO_PX_BASE = 16;
+function dibujarCreditoRaumlab(ctx, anchoPx, altoPx, logo) {
+  const factor = Math.max(1, Math.max(anchoPx, altoPx) / 2000);
+  const margen = 20 * factor;
+  const altoLogo = ALTO_LOGO_CREDITO_PX_BASE * factor;
+  const y = altoPx - margen;
+  const texto = 'Creado en raumlab.org';
+
+  ctx.save();
+  ctx.font = `${13 * factor}px sans-serif`;
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = 'rgba(0,0,0,0.85)';
+
+  const anchoTexto = ctx.measureText(texto).width;
+  const anchoLogo = (logo && logo.canvas) ? altoLogo * (logo.aspecto || 1) : 0;
+  const gap = (logo && logo.canvas) ? 6 * factor : 0;
+  let x = (anchoPx - (anchoLogo + gap + anchoTexto)) / 2;
+
+  if (logo && logo.canvas) {
+    ctx.drawImage(logo.canvas, x, y - altoLogo / 2, anchoLogo, altoLogo);
+    x += anchoLogo + gap;
+  }
+  ctx.textAlign = 'left';
+  ctx.fillText(texto, x, y);
+  ctx.restore();
+}
+
+// Decodifica `dataURL`, dibuja el crédito encima y devuelve un nuevo
+// dataURL — no muta la imagen de origen (se sigue usando en el visor 360).
+function estamparCreditoEnDataURL(dataURL) {
+  return new Promise(resolve => {
+    cargarLogoRaumlab().then(logo => {
+      const img = new Image();
+      img.onload = () => {
+        const c = document.createElement('canvas');
+        c.width = img.width;
+        c.height = img.height;
+        const ctx = c.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        dibujarCreditoRaumlab(ctx, c.width, c.height, logo);
+        resolve(c.toDataURL('image/png'));
+      };
+      img.src = dataURL;
+    });
+  });
+}
+
 /* ================= Store de caras del cubemap ================= */
 const CUBE_FACE_IDS = ['px', 'nx', 'py', 'ny', 'pz', 'nz'];
 const faceStore = { px: null, nx: null, py: null, ny: null, pz: null, nz: null };
@@ -676,10 +759,11 @@ document.getElementById('download').onclick = async () => {
   const finalURL = includeAlpha
     ? await compositeWithBackground(rawURL, backgroundURL, 'horizontal')
     : await flattenToWhite(rawURL);
+  const finalURLConCredito = await estamparCreditoEnDataURL(finalURL);
 
   const a = document.createElement('a');
   a.download = (getProjectName() || 'panorama') + '.png';
-  a.href = finalURL;
+  a.href = finalURLConCredito;
   a.click();
 
   setStatus('status', 'PNG descargado ✓');

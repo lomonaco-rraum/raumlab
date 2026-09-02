@@ -217,7 +217,7 @@ export function dibujarCreditoImagen(ctx, anchoPx, altoPx, logo) {
     const margen = 20 * factor;
     const altoLogo = ALTO_LOGO_CREDITO_PX_BASE * factor;
     const y = altoPx - margen;
-    const texto = 'Producido en © raumlab';
+    const texto = 'Creado en raumlab.org';
 
     ctx.save();
     ctx.font = `${13 * factor}px sans-serif`;

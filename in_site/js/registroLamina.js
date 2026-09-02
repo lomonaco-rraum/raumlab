@@ -173,14 +173,14 @@ const AIRE_IMAGEN_TEXTO_MM = 16;
 
 const ALTO_LOGO_MM = 8;
 
-// Marca centrada ("Producido en © raumlab", + logo si se pudo cargar uno —
+// Marca centrada ("Creado en raumlab.org", + logo si se pudo cargar uno —
 // ver cargarLogoRaumlab() en registro.js, que lo trae ya convertido a
 // dataURL porque este módulo no hace fetch de assets por su cuenta) en el
 // pie de TODAS las páginas — portada y piezas por igual. Sin fecha: la
 // lámina no queda fechada, ni en portada ni en el resto de las hojas.
 function dibujarPie(doc, logo) {
     const y = PAGINA.alto - 12;
-    const texto = 'Producido en © raumlab';
+    const texto = 'Creado en raumlab.org';
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
