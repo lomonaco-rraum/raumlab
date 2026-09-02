@@ -118,6 +118,22 @@ function mostrarIntro() {
 
 mostrarIntro();
 
+// Saltar directo a un modo por hash ("#modo=fotomosaico") — lo usa el
+// buscador global (raumlab/raumlab-search.js) para poder linkear a un modo
+// puntual de trans_FORMA desde cualquier página del sitio. Reusa el mismo
+// botón/handler que ya existe en el subnav (botonesModo más arriba) en vez
+// de duplicar la lógica de cambio de modo. Listener de hashchange aparte:
+// si ya se está en esta página, el buscador cambia solo el hash (no hay
+// recarga), así que sin esto no pasaría nada hasta refrescar a mano.
+function aplicarHashModo() {
+    const match = /^#modo=(.+)$/.exec(location.hash);
+    if (!match) return;
+    const boton = document.querySelector('[data-modo="' + match[1] + '"]');
+    if (boton) boton.click();
+}
+aplicarHashModo();
+window.addEventListener('hashchange', aplicarHashModo);
+
 // Pantalla de Tutoriales — lista de modos a la izquierda (.instr-nav) +
 // panel de contenido al centro (.instr-panel), mismo patrón en los 3 módulos
 // de RaumLab que ya tienen esta pantalla (espacio_INM la resuelve con el

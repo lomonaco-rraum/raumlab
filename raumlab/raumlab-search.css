@@ -1,0 +1,137 @@
+/* ==========================================================================
+   raumlab-search.css — buscador global (command palette), inyectado por
+   raumlab-search.js en las 9 páginas del sitio. Solo usa variables que
+   existen igual en las dos "familias" de CSS del sitio (style.css del hub,
+   raumlab-chrome.css de los 3 módulos): --bg-navy, --surface-border,
+   --text-color, --font-geist.
+   ========================================================================== */
+
+.rc-search-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    /* .lang-pill/.rc-lang-pill traen margin-left:auto para quedar pegados
+       al borde derecho de la barra — este botón se inserta ANTES en el DOM
+       (insertAdjacentElement('beforebegin', ...) en raumlab-search.js), así
+       que necesita su propio margin-left:auto para no quedar empujado
+       contra el logo en el otro extremo. */
+    margin-left: auto;
+    margin-right: 8px;
+    background: none;
+    border: none;
+    border-radius: 4px;
+    color: var(--text-color);
+    opacity: 0.8;
+    cursor: pointer;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+.rc-search-toggle:hover {
+    opacity: 1;
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.rc-search-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 600;
+    display: flex;
+    justify-content: center;
+    padding: 12vh 24px 24px;
+    background: rgba(6, 6, 8, 0.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.rc-search-box {
+    width: 100%;
+    max-width: 480px;
+    max-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    background: rgba(20, 20, 20, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--surface-border);
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+}
+
+.rc-search-input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--surface-border);
+    color: var(--text-color);
+    flex-shrink: 0;
+}
+.rc-search-input-row svg { flex-shrink: 0; opacity: 0.6; }
+
+.rc-search-input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text-color);
+    font-family: var(--font-geist);
+    font-size: 0.9rem;
+    font-weight: 300;
+}
+.rc-search-input::placeholder { color: var(--text-color); opacity: 0.4; }
+
+.rc-search-results {
+    list-style: none;
+    margin: 0;
+    padding: 6px;
+    overflow-y: auto;
+}
+
+.rc-search-result {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: var(--font-geist);
+}
+.rc-search-result.active,
+.rc-search-result:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.rc-search-result-titulo {
+    font-size: 0.82rem;
+    font-weight: 300;
+    color: var(--text-color);
+}
+
+.rc-search-result-modulo {
+    font-size: 0.65rem;
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-color);
+    opacity: 0.45;
+    flex-shrink: 0;
+}
+
+.rc-search-empty {
+    padding: 20px 16px;
+    text-align: center;
+    font-family: var(--font-geist);
+    font-size: 0.78rem;
+    font-weight: 300;
+    color: var(--text-color);
+    opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+    .rc-search-overlay { padding: 8vh 16px 16px; }
+    .rc-search-box { max-height: 80vh; }
+}

@@ -1165,6 +1165,22 @@ wireSwitcher('.tab-btn', 'target', '.tab-content', targetId => {
   targetId === 'eq2cm' ? reanudarVisor(viewerEqr) : pausarVisor(viewerEqr);
 });
 
+// Saltar directo a un modo por hash ("#mode=mode-crear") — lo usa el
+// buscador global (raumlab/raumlab-search.js) para linkear a un modo
+// puntual de espacio_INM desde cualquier página del sitio. Reusa el mismo
+// botón/handler ya conectado por wireSwitcher() de acá arriba, en vez de
+// duplicar la lógica de cambio de modo. Listener de hashchange aparte: si
+// ya se está en esta página, el buscador solo cambia el hash (sin recarga),
+// así que sin esto no pasaría nada hasta refrescar a mano.
+function aplicarHashModo() {
+  const match = /^#mode=(.+)$/.exec(location.hash);
+  if (!match) return;
+  const boton = document.querySelector('.mode-btn[data-mode="' + match[1] + '"]');
+  if (boton) boton.click();
+}
+aplicarHashModo();
+window.addEventListener('hashchange', aplicarHashModo);
+
 wireSwitcher('.instr-nav-item', 'instr', '.instr-body');
 
 // Selector "Modo" (6 caras / Mapa de cubos) — lista de botones en vez de

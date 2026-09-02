@@ -27,6 +27,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100;300;400;500;700;800&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="raumlab-search.css">
 </head>
 <body>
 
@@ -316,6 +317,7 @@
 
     </div>
 
+    <script src="raumlab-search.js"></script>
     <script>
         // Header y footer son fijos: medimos su alto real para que el
         // contenido central nunca quede tapado detrás de ninguno.
@@ -353,16 +355,25 @@
         // módulos, y el link "Investigación" del menú, navegan acá con su
         // hash — antes "Recursos" no navegaba a ningún lado, solo desplegaba
         // una lista local. Sin esto, aterrizar con ese hash mostraba igual
-        // el texto curatorial por defecto.
-        if (location.hash === '#recursos') {
-            showRecursos();
-        } else if (location.hash === '#investigacion') {
-            showInvestigacion();
-        } else if (location.hash === '#educacion' || location.hash === '#soporte' || location.hash === '#materiales') {
-            showEducacion();
-        } else if (location.hash === '#contacto') {
-            showContacto();
+        // el texto curatorial por defecto. Función aparte (no solo un
+        // bloque al cargar) + listener de hashchange: el buscador global
+        // (raumlab-search.js) navega poniendo location.href con un hash
+        // nuevo — si ya se está en esta misma página eso NO recarga (es
+        // hash-only), así que sin este listener el cambio de vista no
+        // pasaría nada hasta un refresh manual.
+        function aplicarHash() {
+            if (location.hash === '#recursos') {
+                showRecursos();
+            } else if (location.hash === '#investigacion') {
+                showInvestigacion();
+            } else if (location.hash === '#educacion' || location.hash === '#soporte' || location.hash === '#materiales') {
+                showEducacion();
+            } else if (location.hash === '#contacto') {
+                showContacto();
+            }
         }
+        aplicarHash();
+        window.addEventListener('hashchange', aplicarHash);
 
         const investigacionLink = document.querySelector('.nav-link[href="#investigacion"]');
         if (investigacionLink) investigacionLink.addEventListener('click', showInvestigacion);
