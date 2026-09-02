@@ -366,7 +366,7 @@ body {
 }
 
 .module-row .card-lede {
-    max-width: 560px;
+    max-width: 720px;
     font-size: 0.9rem;
     color: var(--text-color);
     font-weight: 100;
@@ -374,7 +374,7 @@ body {
 }
 
 .module-row .card-detail {
-    max-width: 560px;
+    max-width: 720px;
     font-size: 0.84rem;
     color: var(--text-color);
     font-weight: 100;
@@ -382,7 +382,7 @@ body {
 }
 
 .card-more {
-    max-width: 560px;
+    max-width: 720px;
 }
 
 /* Sin la flechita/triángulo nativo de <summary> — "Ver más" hace de
@@ -403,6 +403,17 @@ body {
 .card-more-label {
     font-size: 0.72rem;
     font-weight: 700;
+}
+
+/* Link en línea dentro de un párrafo de card-detail (ej. "conocer más" de
+   una muestra externa) — mismo peso/tamaño que .card-more-label para que
+   se lea como la misma afordancia, pero es un <a> real en vez de un
+   disclosure triangle. */
+.card-inline-link {
+    color: var(--text-color);
+    font-weight: 700;
+    font-size: 0.72rem;
+    text-decoration: none;
 }
 
 .card-more .card-detail + .card-detail {
