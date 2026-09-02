@@ -33,6 +33,16 @@
     background-color: rgba(255, 255, 255, 0.08);
 }
 
+/* [hidden] antes que .rc-search-overlay (y con !important) — una regla de
+   esta misma hoja con "display: flex" le gana SIEMPRE al [hidden] nativo
+   del navegador (misma especificidad, pero el origen "autor" pisa al
+   origen "user-agent" sin importar el orden), así que sin esto el overlay
+   queda visible permanentemente apenas se inyecta en el DOM, sin importar
+   lo que haga el atributo hidden en JS. */
+.rc-search-overlay[hidden] {
+    display: none !important;
+}
+
 .rc-search-overlay {
     position: fixed;
     inset: 0;
