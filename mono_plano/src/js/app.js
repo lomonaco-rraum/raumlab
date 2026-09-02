@@ -196,6 +196,15 @@ function mostrarInstrucciones() {
                         <li>Generá el fotoplano métrico.</li>
                     </ol>
 
+                    <h3>Formatos de archivo</h3>
+                    <p>
+                        La foto de entrada puede ser cualquier formato de
+                        imagen (JPG, PNG, etc.) y cualquier proporción — no
+                        hay recorte ni ajuste previo, se trabaja con la foto
+                        tal cual se cargó. El fotoplano resultante siempre se
+                        descarga como <code>.png</code>.
+                    </p>
+
                     <h3>Método Geométrico</h3>
                     <p>
                         Alternativa cuando no conocés coordenadas reales de
@@ -215,7 +224,10 @@ function mostrarInstrucciones() {
                         marca puntos, líneas, polígonos y trazos libres
                         eligiendo un color por capa — cada color se exporta
                         como una capa distinta en el DXF, para poder
-                        activarla o desactivarla en AutoCAD.
+                        activarla o desactivarla en AutoCAD. La imagen
+                        anotada se descarga en <code>.png</code>; el dibujo
+                        vectorial, en <code>.dxf</code> (coordenadas en la
+                        escala real definida, no en píxeles).
                     </p>
                 </div>
 
@@ -247,7 +259,9 @@ function mostrarInstrucciones() {
                         marca puntos, líneas, polígonos y trazos libres
                         eligiendo un color por capa — cada color se exporta
                         como una capa distinta en el DXF, para poder
-                        activarla o desactivarla en AutoCAD.
+                        activarla o desactivarla en AutoCAD. La imagen
+                        anotada se descarga en <code>.png</code>; el dibujo
+                        vectorial, en <code>.dxf</code>.
                     </p>
                 </div>
 
@@ -270,6 +284,15 @@ function mostrarInstrucciones() {
                         <li>Elegí la resolución de salida: Baja, Media o Alta.</li>
                         <li>Generá el Adaptativo y descargalo.</li>
                     </ol>
+
+                    <h3>Formatos de archivo</h3>
+                    <p>
+                        La foto de entrada puede ser cualquier formato de
+                        imagen y cualquier proporción. El resultado siempre
+                        se descarga como <code>.png</code>, con el nombre de
+                        archivo indicando el tamaño real en milímetros y la
+                        resolución (dpi) elegida.
+                    </p>
                 </div>
 
             </div>

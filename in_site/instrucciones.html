@@ -113,10 +113,18 @@
                     <li>Agregá las piezas: imágenes o videos (para colgar en la pared) y modelos .obj (para esculturas).</li>
                     <li>Seleccioná cada pieza (clickeándola en la sala o en la lista de miniaturas) y ajustá su posición, rotación y dimensiones reales.</li>
                     <li>Completá la ficha técnica de cada pieza.</li>
-                    <li>Guardá el progreso con <strong>Guardar Proyecto</strong> — genera un archivo <code>.json</code> editable para retomar la edición más adelante.</li>
-                    <li>Cuando la sala esté lista, usá <strong>Exportar</strong> para generar el archivo <code>.glb</code> final (y su <code>.json</code> de fichas técnicas vinculado).</li>
-                    <li>Andá a <strong>Visualizador</strong>, cargá esos dos archivos, y recorré la sala terminada — o compartí los archivos para que otra persona los visualice desde ahí.</li>
+                    <li>Guardá el progreso con <strong>Guardar Proyecto</strong> — genera un archivo <code>.json</code> editable para retomar la edición más adelante (no sirve para visualizar la sala, solo para seguir editándola).</li>
+                    <li>Cuando la sala esté lista, usá <strong>Exportar</strong> para generar el archivo <code>.rml</code> final.</li>
+                    <li>Andá a <strong>Visualizador</strong>, cargá ese archivo, y recorré la sala terminada — o compartí el archivo para que otra persona la visualice desde ahí.</li>
                 </ol>
+
+                <h3>Formatos de archivo aceptados</h3>
+                <ul>
+                    <li><strong>Imágenes</strong> (para colgar en la pared): <code>.jpg</code>/<code>.jpeg</code> o <code>.png</code> únicamente. No hay una proporción obligatoria — cualquier relación de ancho/alto se acepta y se ajusta al tamaño real que le definas a la pieza en la sala (si la proporción de la imagen no coincide con la del rectángulo que definiste, la imagen se deforma para cubrirlo, así que conviene que el rectángulo respete la proporción original de la foto).</li>
+                    <li><strong>Video</strong>: <code>.mp4</code> o <code>.webm</code> únicamente.</li>
+                    <li><strong>Esculturas</strong>: un archivo <code>.obj</code> (obligatorio) y, opcionalmente, su <code>.mtl</code> con los colores/materiales — se seleccionan juntos. No se admiten archivos de textura de imagen aparte (mapas <code>map_Kd</code> del .mtl): si el material del .obj depende de una imagen externa, esa textura no se va a ver, solo el color base.</li>
+                    <li><strong>Proyecto guardado</strong>: <code>.json</code>, generado por "Guardar Proyecto" y leído por el mismo botón de "Cargar Proyecto" en el editor.</li>
+                </ul>
 
                 <h3>Sobre el video</h3>
                 <p>
@@ -128,9 +136,11 @@
                     del formato <code>.glb</code> en sí, no de la aplicación.
                 </p>
                 <p>
-                    Se recomienda comprimir los videos antes de subirlos
-                    (menos de 30&nbsp;MB) — los archivos muy pesados pueden
-                    agotar la memoria del navegador al exportar la sala.
+                    Se recomienda comprimir los videos antes de subirlos —
+                    hasta 30&nbsp;MB no hay problema; entre 30 y 60&nbsp;MB la
+                    app avisa que puede ir más lento o agotar la memoria del
+                    navegador al exportar, pero deja continuar; por encima de
+                    60&nbsp;MB no se admite el archivo.
                 </p>
             </div>
 
@@ -138,10 +148,19 @@
                 <h2>Visualizador</h2>
                 <p>
                     El visor. Acá cargás una sala que ya exportaste desde
-                    Proyectos (un archivo <code>.glb</code>, opcionalmente
-                    junto con su <code>.json</code> de fichas técnicas) para
-                    recorrerla en 3D, ver la información de cada pieza, y
-                    activar la Realidad Aumentada en el celular.
+                    Proyectos para recorrerla en 3D, ver la información de
+                    cada pieza, y activar la Realidad Aumentada en el
+                    celular.
+                </p>
+
+                <h3>Formatos de archivo aceptados</h3>
+                <p>
+                    Lo normal es cargar el archivo único <code>.rml</code>
+                    que genera Exportar (contiene la sala y las fichas
+                    técnicas juntas). También se admite el formato anterior,
+                    de dos archivos sueltos: el <code>.glb</code> de la sala
+                    y, opcionalmente, su <code>.json</code> de fichas
+                    técnicas.
                 </p>
 
                 <h3>Sobre el video</h3>

@@ -536,9 +536,18 @@
 
           <h3>Sobre los formatos</h3>
           <p>
-            Cada cara del cubo tiene que ser cuadrada (1:1), el mapa de cubos
-            en cruz tiene relación 4:3, y el equirectangular 2:1. Una imagen
-            fuera de esa proporción no se acepta.
+            De entrada se acepta cualquier formato de imagen (JPG, PNG,
+            etc.), pero la proporción sí importa: cada cara del cubo tiene
+            que ser cuadrada (1:1), el mapa de cubos en cruz tiene relación
+            4:3, y el equirectangular 2:1. Una imagen fuera de esa proporción
+            no se acepta. El fondo (para transparencias) también admite
+            cualquier formato de imagen, sin restricción de proporción.
+          </p>
+          <p>
+            De salida, el equirectangular armado siempre se descarga como
+            <code>.png</code>. El camino inverso descarga un
+            <code>.zip</code> con las 6 caras, también en <code>.png</code>,
+            nombradas según su orientación.
           </p>
         </div>
 
