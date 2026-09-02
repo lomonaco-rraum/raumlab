@@ -478,7 +478,10 @@ html, body.rc-body {
 .bg-picker-row {
   display: flex;
   gap: 8px;
-  flex-wrap: nowrap;
+  /* wrap, no nowrap: con 5 presets + "Ninguno" + "+" (7 botones de 40px)
+     la fila ya no entra sin cortarse en el ancho del panel lateral — antes
+     eran 5 botones en total (3 presets) y nowrap alcanzaba. */
+  flex-wrap: wrap;
 }
 
 .orient-btn {
