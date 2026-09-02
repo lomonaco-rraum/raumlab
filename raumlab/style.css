@@ -288,7 +288,7 @@ body {
    .main en la ventana, pero sus hijos por defecto quedan pegados a la
    izquierda de esos 1180px si no tienen su propio auto-margin). */
 .home-curatorial {
-    max-width: 760px;
+    max-width: 560px;
     margin: 0 auto;
 }
 
