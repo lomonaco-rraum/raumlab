@@ -410,6 +410,12 @@ document.addEventListener('DOMContentLoaded', () => {
             let puntoPendiente = { x: puntoPanorama.x, z: puntoPanorama.z };
 
             function redibujar() {
+                // clearRect antes del drawImage: si la planta tiene zonas
+                // transparentes (pasa cuando la escena no tiene plano base),
+                // dibujarla encima no alcanza para borrar el punto anterior
+                // — queda pegado por debajo. Con esto siempre se parte de un
+                // canvas vacío, así que nunca puede quedar más de un punto.
+                ctx.clearRect(0, 0, canvas360.width, canvas360.height);
                 ctx.drawImage(imagenPlanta, 0, 0, anchoPx, altoPx);
                 dibujarMarcadorPunto(ctx, camera, puntoPendiente, anchoPx, altoPx);
             }
