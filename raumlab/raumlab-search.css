@@ -10,27 +10,52 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
-    padding: 0;
-    /* .lang-pill/.rc-lang-pill traen margin-left:auto para quedar pegados
-       al borde derecho de la barra — este botón se inserta ANTES en el DOM
-       (insertAdjacentElement('beforebegin', ...) en raumlab-search.js), así
-       que necesita su propio margin-left:auto para no quedar empujado
-       contra el logo en el otro extremo. */
+    /* Mismo padding vertical que .lang-pill/.rc-lang-pill (5px), en vez de
+       una caja fija de 32px — la fila del header alinea por abajo
+       (align-items: flex-end), así que si esta caja es más alta que la de
+       "ES" el ícono queda centrado en una caja más alta y se ve más arriba
+       que el texto. Con el mismo padding, las dos cajas terminan de una
+       altura parecida y sus centros calzan. */
+    padding: 5px 6px;
+    /* .lang-pill/.rc-lang-pill YA tienen margin-left:auto (para pegarse al
+       borde derecho). Este botón se inserta ANTES en el DOM, así que él es
+       quien necesita el margin-left:auto para quedar empujado a la derecha
+       — si los dos lo tienen, Flexbox reparte el espacio libre ENTRE los
+       dos en vez de juntarlos, y el ícono queda flotando lejos de "ES" en
+       vez de pegado. Por eso la regla de abajo cancela el margin-left:auto
+       de lang-pill específicamente cuando viene justo después de este botón. */
     margin-left: auto;
-    margin-right: 8px;
+    margin-right: 2px;
     background: none;
     border: none;
     border-radius: 4px;
+    /* appearance:none + box-shadow:none: sin esto, algunos navegadores le
+       dejan un resto de relieve/sombra nativa de <button> aunque
+       background y border ya estén en "none". */
+    appearance: none;
+    -webkit-appearance: none;
+    box-shadow: none;
     color: var(--text-color);
-    opacity: 0.8;
+    /* Reposo bien apagado (0.55) para que el salto a hover (1, + glow) se
+       note — de 0.8 a 1 era un cambio de opacidad casi imperceptible. */
+    opacity: 0.55;
     cursor: pointer;
-    transition: opacity 0.2s ease, background-color 0.2s ease;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+}
+.rc-search-toggle svg {
+    width: 16px;
+    height: 16px;
 }
 .rc-search-toggle:hover {
+    /* Solo ilumina el ícono (opacity + un resplandor sutil vía filter),
+       sin caja de fondo detrás — pedido explícito: nada de "sombreado",
+       ni en reposo ni en hover. */
     opacity: 1;
-    background-color: rgba(255, 255, 255, 0.08);
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.6));
+}
+.rc-search-toggle + .lang-pill,
+.rc-search-toggle + .rc-lang-pill {
+    margin-left: 0;
 }
 
 /* [hidden] antes que .rc-search-overlay (y con !important) — una regla de

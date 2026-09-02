@@ -27,22 +27,27 @@
         { titulo: 'Materiales didácticos', modulo: 'raumlab', folder: 'raumlab', file: 'index.html', hash: 'materiales' },
         { titulo: 'Contacto', modulo: 'raumlab', folder: 'raumlab', file: 'index.html', hash: 'contacto' },
 
-        { titulo: 'espacio_INM', modulo: 'Módulo', folder: 'espacio_inm', file: 'index.html', palabras: 'panorama 360 cubemap equirectangular realidad aumentada' },
-        { titulo: 'in_SITE', modulo: 'Módulo', folder: 'in_site', file: 'index.html', palabras: 'salas relevamiento museo exposición' },
-        { titulo: 'trans_FORMA', modulo: 'Módulo', folder: 'mono_plano', file: 'index.html', palabras: 'fotoplano rectificación imagen' },
+        // "palabras" sale de los textos que ya escribió la usuaria para cada
+        // módulo (tarjetas de la home, raumlab/index.html) — no vocabulario
+        // inventado acá. "representación" se agrega puntualmente donde ella
+        // definió que aplica: los módulos/modos que GENERAN planos, eq. o
+        // mapa de cubos (trans_FORMA, espacio_INM/Crear) — no in_SITE.
+        { titulo: 'espacio_INM', modulo: 'Módulo', folder: 'espacio_inm', file: 'index.html', palabras: 'panorama 360 cubemap equirectangular realidad aumentada inmersivo fotomontaje entornos representación' },
+        { titulo: 'in_SITE', modulo: 'Módulo', folder: 'in_site', file: 'index.html', palabras: 'salas relevamiento museo exposición curatorial proyectos artísticos educativo escenas virtuales modelos tridimensionales ficha técnica difusión' },
+        { titulo: 'trans_FORMA', modulo: 'Módulo', folder: 'mono_plano', file: 'index.html', palabras: 'fotoplano rectificación imagen relevamiento patrimonio cultural obras bidimensionales deformación geométrica medición fotomosaico representación' },
 
-        { titulo: 'Proyectos', modulo: 'in_SITE', folder: 'in_site', file: 'editor.html', palabras: 'editor salas 3D crear sala' },
+        { titulo: 'Proyectos', modulo: 'in_SITE', folder: 'in_site', file: 'editor.html', palabras: 'editor salas 3D crear sala escenas virtuales modelos tridimensionales' },
         { titulo: 'Visualizador', modulo: 'in_SITE', folder: 'in_site', file: 'viewer.html', palabras: 'visor ver sala' },
-        { titulo: 'Registro', modulo: 'in_SITE', folder: 'in_site', file: 'registro.html', palabras: 'documentación exportar PDF lámina acotados panorama zip' },
-        { titulo: 'Galería', modulo: 'in_SITE', folder: 'in_site', file: 'coleccion.html', palabras: 'colección ejemplos' },
+        { titulo: 'Registro', modulo: 'in_SITE', folder: 'in_site', file: 'registro.html', palabras: 'documentación exportar PDF lámina acotados panorama zip ficha técnica' },
+        { titulo: 'Galería', modulo: 'in_SITE', folder: 'in_site', file: 'coleccion.html', palabras: 'colección ejemplos curatorial' },
         { titulo: 'Tutoriales', modulo: 'in_SITE', folder: 'in_site', file: 'instrucciones.html', palabras: 'ayuda instrucciones' },
 
-        { titulo: 'Fotoplano', modulo: 'trans_FORMA', folder: 'mono_plano', file: 'index.html', hash: 'modo=fotoplano', palabras: 'rectificar imagen analítico geométrico' },
-        { titulo: 'Fotomosaico', modulo: 'trans_FORMA', folder: 'mono_plano', file: 'index.html', hash: 'modo=fotomosaico', palabras: 'unir secciones' },
+        { titulo: 'Fotoplano', modulo: 'trans_FORMA', folder: 'mono_plano', file: 'index.html', hash: 'modo=fotoplano', palabras: 'rectificar imagen analítico geométrico plano representación relevamiento patrimonio' },
+        { titulo: 'Fotomosaico', modulo: 'trans_FORMA', folder: 'mono_plano', file: 'index.html', hash: 'modo=fotomosaico', palabras: 'unir secciones plano representación' },
         { titulo: 'Adaptativo', modulo: 'trans_FORMA', folder: 'mono_plano', file: 'index.html', hash: 'modo=adaptativo', palabras: 'dpi impresión' },
         { titulo: 'Tutoriales', modulo: 'trans_FORMA', folder: 'mono_plano', file: 'index.html', hash: 'modo=tutoriales', palabras: 'ayuda instrucciones' },
 
-        { titulo: 'Crear', modulo: 'espacio_INM', folder: 'espacio_inm', file: 'index.html', hash: 'mode=mode-crear', palabras: 'cubemap equirectangular panorama construir' },
+        { titulo: 'Crear', modulo: 'espacio_INM', folder: 'espacio_inm', file: 'index.html', hash: 'mode=mode-crear', palabras: 'cubemap equirectangular panorama construir representación mapa de cubos' },
         { titulo: 'Visualizar', modulo: 'espacio_INM', folder: 'espacio_inm', file: 'index.html', hash: 'mode=mode-ver', palabras: 'visor ver panorama' },
         { titulo: 'Galería', modulo: 'espacio_INM', folder: 'espacio_inm', file: 'index.html', hash: 'mode=mode-coleccion', palabras: 'colección ejemplos' },
         { titulo: 'Tutoriales', modulo: 'espacio_INM', folder: 'espacio_inm', file: 'index.html', hash: 'mode=mode-ayuda', palabras: 'ayuda instrucciones' },
