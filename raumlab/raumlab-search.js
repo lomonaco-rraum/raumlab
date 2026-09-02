@@ -20,37 +20,40 @@
     // puntualmente para que este buscador pueda saltar directo a un modo
     // sin importar desde qué página se busca.
     const INDICE = [
-        { titulo: 'Inicio', modulo: 'raumlab', folder: 'raumlab', file: 'index.html', palabras: 'home portada raumlab' },
-        { titulo: 'Investigación', modulo: 'raumlab', folder: 'raumlab', file: 'index.html', hash: 'investigacion' },
-        { titulo: 'Educación', modulo: 'raumlab', folder: 'raumlab', file: 'index.html', hash: 'educacion' },
-        { titulo: 'Soporte', modulo: 'raumlab', folder: 'raumlab', file: 'index.html', hash: 'soporte', palabras: 'contacto ayuda solicitar' },
-        { titulo: 'Materiales didácticos', modulo: 'raumlab', folder: 'raumlab', file: 'index.html', hash: 'materiales' },
-        { titulo: 'Contacto', modulo: 'raumlab', folder: 'raumlab', file: 'index.html', hash: 'contacto' },
+        { titulo: 'Inicio', modulo: 'raumlab', folder: 'raumlab', file: 'index.html', palabras: 'home portada raumlab', descripcion: 'Portada del sitio y presentación general de RaumLab.' },
+        { titulo: 'Investigación', modulo: 'raumlab', folder: 'raumlab', file: 'index.html', hash: 'investigacion', descripcion: 'Línea de investigación transdisciplinar del laboratorio.' },
+        { titulo: 'Educación', modulo: 'raumlab', folder: 'raumlab', file: 'index.html', hash: 'educacion', descripcion: 'Instrucción y capacitación para instituciones educativas y artísticas.' },
+        { titulo: 'Soporte', modulo: 'raumlab', folder: 'raumlab', file: 'index.html', hash: 'soporte', palabras: 'contacto ayuda solicitar', descripcion: 'Solicitar colaboración o asesoría para un proyecto.' },
+        { titulo: 'Materiales didácticos', modulo: 'raumlab', folder: 'raumlab', file: 'index.html', hash: 'materiales', descripcion: 'Recursos de RaumLab para uso educativo.' },
+        { titulo: 'Contacto', modulo: 'raumlab', folder: 'raumlab', file: 'index.html', hash: 'contacto', descripcion: 'Formas de comunicarse con RaumLab.' },
 
         // "palabras" sale de los textos que ya escribió la usuaria para cada
         // módulo (tarjetas de la home, raumlab/index.html) — no vocabulario
         // inventado acá. "representación" se agrega puntualmente donde ella
         // definió que aplica: los módulos/modos que GENERAN planos, eq. o
         // mapa de cubos (trans_FORMA, espacio_INM/Crear) — no in_SITE.
-        { titulo: 'espacio_INM', modulo: 'Módulo', folder: 'espacio_inm', file: 'index.html', palabras: 'panorama 360 cubemap equirectangular realidad aumentada inmersivo fotomontaje entornos representación' },
-        { titulo: 'in_SITE', modulo: 'Módulo', folder: 'in_site', file: 'index.html', palabras: 'salas relevamiento museo exposición curatorial proyectos artísticos educativo escenas virtuales modelos tridimensionales ficha técnica difusión' },
-        { titulo: 'trans_FORMA', modulo: 'Módulo', folder: 'mono_plano', file: 'index.html', palabras: 'fotoplano rectificación imagen relevamiento patrimonio cultural obras bidimensionales deformación geométrica medición fotomosaico representación' },
+        // "descripcion": un renglón que explica QUÉ SE HACE ahí — se
+        // muestra en el resultado, chico y fino, no participa de la
+        // búsqueda (solo título/módulo/palabras se indexan).
+        { titulo: 'espacio_INM', modulo: 'Módulo', folder: 'espacio_inm', file: 'index.html', palabras: 'panorama 360 cubemap equirectangular realidad aumentada inmersivo fotomontaje entornos representación', descripcion: 'Creación y visualización de imágenes inmersivas: panoramas 360° y realidad aumentada.' },
+        { titulo: 'in_SITE', modulo: 'Módulo', folder: 'in_site', file: 'index.html', palabras: 'salas relevamiento museo exposición curatorial proyectos artísticos educativo escenas virtuales modelos tridimensionales ficha técnica difusión', descripcion: 'Creación de proyectos curatoriales: escenas virtuales con imágenes, video y modelos 3D.' },
+        { titulo: 'trans_FORMA', modulo: 'Módulo', folder: 'mono_plano', file: 'index.html', palabras: 'fotoplano rectificación imagen relevamiento patrimonio cultural obras bidimensionales deformación geométrica medición fotomosaico representación', descripcion: 'Rectificación de imágenes: fotoplanos y fotomosaicos del relevamiento patrimonial.' },
 
-        { titulo: 'Proyectos', modulo: 'in_SITE', folder: 'in_site', file: 'editor.html', palabras: 'editor salas 3D crear sala escenas virtuales modelos tridimensionales' },
-        { titulo: 'Visualizador', modulo: 'in_SITE', folder: 'in_site', file: 'viewer.html', palabras: 'visor ver sala' },
-        { titulo: 'Registro', modulo: 'in_SITE', folder: 'in_site', file: 'registro.html', palabras: 'documentación exportar PDF lámina acotados panorama zip ficha técnica' },
-        { titulo: 'Galería', modulo: 'in_SITE', folder: 'in_site', file: 'coleccion.html', palabras: 'colección ejemplos curatorial' },
-        { titulo: 'Tutoriales', modulo: 'in_SITE', folder: 'in_site', file: 'instrucciones.html', palabras: 'ayuda instrucciones' },
+        { titulo: 'Proyectos', modulo: 'in_SITE', folder: 'in_site', file: 'editor.html', palabras: 'editor salas 3D crear sala escenas virtuales modelos tridimensionales', descripcion: 'Diseñar una escena virtual a partir de imágenes, videos y modelos 3D.' },
+        { titulo: 'Visualizador', modulo: 'in_SITE', folder: 'in_site', file: 'viewer.html', palabras: 'visor ver sala', descripcion: 'Ver una sala ya creada, con experiencia inmersiva en RA.' },
+        { titulo: 'Registro', modulo: 'in_SITE', folder: 'in_site', file: 'registro.html', palabras: 'documentación exportar PDF lámina acotados panorama zip ficha técnica', descripcion: 'Documentación exportable del proyecto: PDF, láminas acotadas, panorama.' },
+        { titulo: 'Galería', modulo: 'in_SITE', folder: 'in_site', file: 'coleccion.html', palabras: 'colección ejemplos curatorial', descripcion: 'Ejemplos de proyectos curatoriales ya realizados.' },
+        { titulo: 'Tutoriales', modulo: 'in_SITE', folder: 'in_site', file: 'instrucciones.html', palabras: 'ayuda instrucciones', descripcion: 'Guía de uso del módulo.' },
 
-        { titulo: 'Fotoplano', modulo: 'trans_FORMA', folder: 'mono_plano', file: 'index.html', hash: 'modo=fotoplano', palabras: 'rectificar imagen analítico geométrico plano representación relevamiento patrimonio' },
-        { titulo: 'Fotomosaico', modulo: 'trans_FORMA', folder: 'mono_plano', file: 'index.html', hash: 'modo=fotomosaico', palabras: 'unir secciones plano representación' },
-        { titulo: 'Adaptativo', modulo: 'trans_FORMA', folder: 'mono_plano', file: 'index.html', hash: 'modo=adaptativo', palabras: 'dpi impresión' },
-        { titulo: 'Tutoriales', modulo: 'trans_FORMA', folder: 'mono_plano', file: 'index.html', hash: 'modo=tutoriales', palabras: 'ayuda instrucciones' },
+        { titulo: 'Fotoplano', modulo: 'trans_FORMA', folder: 'mono_plano', file: 'index.html', hash: 'modo=fotoplano', palabras: 'rectificar imagen analítico geométrico plano representación relevamiento patrimonio', descripcion: 'Corrige la deformación geométrica de una imagen y genera un plano rectificado.' },
+        { titulo: 'Fotomosaico', modulo: 'trans_FORMA', folder: 'mono_plano', file: 'index.html', hash: 'modo=fotomosaico', palabras: 'unir secciones plano representación', descripcion: 'Une varias secciones rectificadas en un solo plano.' },
+        { titulo: 'Adaptativo', modulo: 'trans_FORMA', folder: 'mono_plano', file: 'index.html', hash: 'modo=adaptativo', palabras: 'dpi impresión', descripcion: 'Genera el fotoplano ajustado a un tamaño y resolución de impresión (DPI).' },
+        { titulo: 'Tutoriales', modulo: 'trans_FORMA', folder: 'mono_plano', file: 'index.html', hash: 'modo=tutoriales', palabras: 'ayuda instrucciones', descripcion: 'Guía de uso del módulo.' },
 
-        { titulo: 'Crear', modulo: 'espacio_INM', folder: 'espacio_inm', file: 'index.html', hash: 'mode=mode-crear', palabras: 'cubemap equirectangular panorama construir representación mapa de cubos' },
-        { titulo: 'Visualizar', modulo: 'espacio_INM', folder: 'espacio_inm', file: 'index.html', hash: 'mode=mode-ver', palabras: 'visor ver panorama' },
-        { titulo: 'Galería', modulo: 'espacio_INM', folder: 'espacio_inm', file: 'index.html', hash: 'mode=mode-coleccion', palabras: 'colección ejemplos' },
-        { titulo: 'Tutoriales', modulo: 'espacio_INM', folder: 'espacio_inm', file: 'index.html', hash: 'mode=mode-ayuda', palabras: 'ayuda instrucciones' },
+        { titulo: 'Crear', modulo: 'espacio_INM', folder: 'espacio_inm', file: 'index.html', hash: 'mode=mode-crear', palabras: 'cubemap equirectangular panorama construir representación mapa de cubos', descripcion: 'Construye una proyección equirectangular a partir de un mapa de cubos, o al revés.' },
+        { titulo: 'Visualizar', modulo: 'espacio_INM', folder: 'espacio_inm', file: 'index.html', hash: 'mode=mode-ver', palabras: 'visor ver panorama', descripcion: 'Ver un panorama ya creado en el visor inmersivo.' },
+        { titulo: 'Galería', modulo: 'espacio_INM', folder: 'espacio_inm', file: 'index.html', hash: 'mode=mode-coleccion', palabras: 'colección ejemplos', descripcion: 'Ejemplos de panoramas ya realizados.' },
+        { titulo: 'Tutoriales', modulo: 'espacio_INM', folder: 'espacio_inm', file: 'index.html', hash: 'mode=mode-ayuda', palabras: 'ayuda instrucciones', descripcion: 'Guía de uso del módulo.' },
     ];
 
     const CARPETAS = ['raumlab', 'in_site', 'mono_plano', 'espacio_inm'];
@@ -131,7 +134,12 @@
             resultados.forEach((item, i) => {
                 const li = document.createElement('li');
                 li.className = 'rc-search-result' + (i === 0 ? ' active' : '');
-                li.innerHTML = '<span class="rc-search-result-titulo">' + item.titulo + '</span><span class="rc-search-result-modulo">' + item.modulo + '</span>';
+                li.innerHTML =
+                    '<span class="rc-search-result-texto">' +
+                    '<span class="rc-search-result-titulo">' + item.titulo + '</span>' +
+                    (item.descripcion ? '<span class="rc-search-result-descripcion">' + item.descripcion + '</span>' : '') +
+                    '</span>' +
+                    '<span class="rc-search-result-modulo">' + item.modulo + '</span>';
                 li.addEventListener('click', () => ir(item));
                 lista.appendChild(li);
             });

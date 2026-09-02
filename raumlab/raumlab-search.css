@@ -127,7 +127,10 @@
 
 .rc-search-result {
     display: flex;
-    align-items: center;
+    /* flex-start, no center: con la descripción el bloque de texto pasa a
+       ser de dos líneas, y el chip de módulo tiene que quedar arriba (a la
+       altura del título), no centrado en la altura total del ítem. */
+    align-items: flex-start;
     justify-content: space-between;
     gap: 12px;
     padding: 10px 12px;
@@ -140,10 +143,26 @@
     background-color: rgba(255, 255, 255, 0.08);
 }
 
+.rc-search-result-texto {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
 .rc-search-result-titulo {
     font-size: 0.82rem;
     font-weight: 300;
     color: var(--text-color);
+}
+
+/* Chica y fina — un renglón de contexto, no compite con el título. */
+.rc-search-result-descripcion {
+    font-size: 0.68rem;
+    font-weight: 200;
+    line-height: 1.35;
+    color: var(--text-color);
+    opacity: 0.55;
 }
 
 .rc-search-result-modulo {
