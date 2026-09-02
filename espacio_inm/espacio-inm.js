@@ -510,11 +510,12 @@ IDS_CONTENEDOR_VISOR.forEach(id => {
 
 /* ================= Fondo (equirectangular) ================= */
 const BACKGROUND_PRESETS = {
-  bosque: 'fondos/bosque.jpg',
-  desierto: 'fondos/desierto.jpg',
-  campo: 'fondos/campo.jpg',
-  ruina: 'fondos/ruina.jpg',
-  garage: 'fondos/garage-abandonado.jpg'
+  entorno1: 'fondos/entorno1.jpg', // Interior
+  entorno2: 'fondos/entorno2.jpg', // Bosque
+  entorno3: 'fondos/entorno3.jpg', // Desierto
+  entorno4: 'fondos/entorno4.jpg', // Campo
+  entorno5: 'fondos/entorno5.jpg', // Ruina
+  entorno6: 'fondos/entorno6.jpg'  // Garage abandonado
 };
 
 // Arma un selector de fondo (Ninguno / presets / subida propia) dentro de `container`,
