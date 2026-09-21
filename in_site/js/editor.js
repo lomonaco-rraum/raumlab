@@ -873,12 +873,15 @@ function setupInspectorInputs() {
             selectedObject.scale[eje] = escalaNueva;
         }
 
-        // En móvil no se reescribe el campo que se está tipeando (eje) —
-        // eso era lo que cortaba la escritura de decimales a mitad de
-        // tecla ("1.5" se convertía en "1.00" apenas se tipeaba el "1").
-        // Los otros dos ejes sí se actualizan (necesario con proporción
-        // bloqueada). Desktop sigue igual: reescribe los 3 siempre.
-        actualizarInputsDimension(window.rcIsMobile && window.rcIsMobile() ? eje : undefined);
+        // No se reescribe el campo que se está tipeando (eje) — eso era lo
+        // que cortaba la escritura a mitad de tecla ("1.5" se convertía en
+        // "1.00" apenas se tipeaba el "1", o en un input nativo type=number
+        // el cursor se reseteaba y solo dejaba subir de a 1 unidad con las
+        // flechitas). Los otros dos ejes sí se actualizan (necesario con
+        // proporción bloqueada). Antes esto solo se hacía en móvil; el mismo
+        // problema afectaba a desktop (bug reportado: "no puedo ingresar el
+        // valor que quiero, solo sube de a 1cm").
+        actualizarInputsDimension(eje);
     };
 
     inputDimX.addEventListener('input', () => aplicarDimension('x'));
