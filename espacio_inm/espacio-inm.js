@@ -1036,6 +1036,23 @@ function wireARToggle(enterBtnId, exitBtnId, statusId, getViewer, containerId) {
       const v = getViewer();
       cameraPanorama = new PANOLENS.CameraPanorama({ video: { facingMode: 'environment' }, audio: false });
       v.add(cameraPanorama);
+      // BUG real del canal alfa en RA: `Viewer.add()` (leído en el código
+      // fuente de panolens@0.12.1, panolens.min.js) solo activa un panorama
+      // recién agregado automáticamente si el visor todavía no tiene ninguno
+      // activo (`this.panorama || this.setPanorama(a)`). Acá siempre ya hay
+      // uno activo — el equirectangular subido —, así que esa rama nunca se
+      // ejecuta: cameraPanorama queda agregado a la escena pero nunca se le
+      // dispara 'enter', y por eso ni arranca la cámara real (el listener
+      // que llama a getUserMedia está colgado del evento 'enter') ni su
+      // opacidad pasa de 0 a 1 (el fade-in también depende de 'enter'/'load').
+      // Resultado: la esfera de cámara queda invisible y sin stream para
+      // siempre, y donde el equirectangular subido es transparente se ve el
+      // clear color blanco del renderer en vez de la cámara real — "tapaba
+      // la cámara, quedaba por debajo". Fix: disparar manualmente el mismo
+      // onEnter() que Panolens usaría si éste fuera el primer panorama, sin
+      // pasar por setPanorama() (eso desactivaría el equirectangular subido,
+      // que tiene que seguir siendo el panorama activo en primer plano).
+      cameraPanorama.onEnter();
       v.enableControl(PANOLENS.CONTROLS.DEVICEORIENTATION);
 
       const viewerContainer = document.getElementById(containerId);
