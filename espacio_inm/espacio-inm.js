@@ -1036,23 +1036,34 @@ function wireARToggle(enterBtnId, exitBtnId, statusId, getViewer, containerId) {
       const v = getViewer();
       cameraPanorama = new PANOLENS.CameraPanorama({ video: { facingMode: 'environment' }, audio: false });
       v.add(cameraPanorama);
-      // BUG real del canal alfa en RA: `Viewer.add()` (leído en el código
-      // fuente de panolens@0.12.1, panolens.min.js) solo activa un panorama
-      // recién agregado automáticamente si el visor todavía no tiene ninguno
-      // activo (`this.panorama || this.setPanorama(a)`). Acá siempre ya hay
-      // uno activo — el equirectangular subido —, así que esa rama nunca se
-      // ejecuta: cameraPanorama queda agregado a la escena pero nunca se le
-      // dispara 'enter', y por eso ni arranca la cámara real (el listener
-      // que llama a getUserMedia está colgado del evento 'enter') ni su
-      // opacidad pasa de 0 a 1 (el fade-in también depende de 'enter'/'load').
-      // Resultado: la esfera de cámara queda invisible y sin stream para
-      // siempre, y donde el equirectangular subido es transparente se ve el
-      // clear color blanco del renderer en vez de la cámara real — "tapaba
-      // la cámara, quedaba por debajo". Fix: disparar manualmente el mismo
-      // onEnter() que Panolens usaría si éste fuera el primer panorama, sin
-      // pasar por setPanorama() (eso desactivaría el equirectangular subido,
-      // que tiene que seguir siendo el panorama activo en primer plano).
-      cameraPanorama.onEnter();
+      // BUG real del canal alfa en RA (leído en el código fuente de
+      // panolens@0.12.1, panolens.min.js): `Viewer.add()` solo activa un
+      // panorama recién agregado automáticamente si el visor todavía no
+      // tiene ninguno activo (`this.panorama || this.setPanorama(a)`). Acá
+      // siempre ya hay uno activo — el equirectangular subido —, así que esa
+      // rama nunca corre para cameraPanorama: nunca se le dispara 'enter', y
+      // el listener que arranca la cámara real (getUserMedia) cuelga
+      // justamente de ese evento — por eso ni se pedía permiso de cámara.
+      //
+      // Primer intento (revertido): llamar a cameraPanorama.onEnter()
+      // completo. Eso sí disparaba 'enter' (pedía permiso — confirmado
+      // probando en celular), pero TAMBIÉN corría el fade-in de opacidad de
+      // CameraPanorama.Panorama.fadeIn(), pensado para ImagePanorama/
+      // VideoPanorama. CameraPanorama es distinto: no pinta la cámara en el
+      // material de su propia esfera — la esfera es solo un objeto vacío
+      // para raycasting. La imagen real de cámara la pone Panolens en
+      // `scene.background` (ver Media.setMediaStream() en panolens.min.js:
+      // `this.scene.background = this.createVideoTexture()`). Al hacer
+      // opaca la esfera de cameraPanorama (opacity 0→1, sin textura propia,
+      // color por defecto blanco de MeshBasicMaterial), quedaba una esfera
+      // blanca sólida tapando literalmente el scene.background con la
+      // cámara real de atrás — por eso pedía permiso pero seguía en blanco.
+      //
+      // Fix correcto: disparar SOLO el evento 'enter' (así arranca la
+      // cámara vía el listener de CameraPanorama), sin pasar por el
+      // onEnter()/fadeIn() completo de Panorama — la esfera de cameraPanorama
+      // se queda como está pensada, sin opacidad propia.
+      cameraPanorama.dispatchEvent({ type: 'enter' });
       v.enableControl(PANOLENS.CONTROLS.DEVICEORIENTATION);
 
       const viewerContainer = document.getElementById(containerId);
@@ -1084,6 +1095,13 @@ function wireARToggle(enterBtnId, exitBtnId, statusId, getViewer, containerId) {
       if (typeof cameraPanorama.stop === 'function') cameraPanorama.stop();
       cameraPanorama = null;
     }
+    // Media.setMediaStream() (panolens.min.js) deja la textura de video de
+    // la cámara puesta en viewer.scene.background — .stop() para las pistas
+    // de la cámara pero no la saca de ahí. Sin esto, al salir de RA el fondo
+    // de la escena queda con el último frame de cámara (o negro) pegado por
+    // encima del blanco normal del visor, tapando cualquier panorama que se
+    // vea después.
+    if (v.scene) v.scene.background = null;
     v.enableControl(PANOLENS.CONTROLS.ORBIT);
 
     window.removeEventListener('resize', ajustarTamanioFullscreen);
