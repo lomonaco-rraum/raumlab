@@ -382,15 +382,11 @@ html, body.rc-body {
 #sheet-source .cube-diagram-cell.face-front .file-btn {
   width: 44px;
   height: 44px;
-  font-size: 1.5rem;
-  border: 1px solid var(--border-fine);
-  border-radius: 4px;
+  font-size: 2.4rem;
+  border: none;
 }
 #sheet-source .cube-diagram-cell.face-front span {
-  position: static;
-  text-align: center;
-  font-size: 0.62rem;
-  opacity: 0.8;
+  display: none;
 }
 
 /* Fuera del flujo a propósito: si sumara alto real, "6 caras" y "Mapa de
@@ -556,6 +552,44 @@ html, body.rc-body {
   height: 15px;
   accent-color: var(--text-color);
   cursor: pointer;
+}
+
+/* ================= Ficha de pieza (Galería) — mismo criterio tipográfico
+   que .cedula-titulo/.cedula-metadatos/.cedula-descripcion en in_SITE
+   (in_site/css/viewer.css), redefinido acá porque cada módulo tiene su
+   propia hoja de estilos. */
+.coleccion-ficha {
+  margin-bottom: 20px;
+}
+.cedula-titulo {
+  font-family: var(--font-geist);
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--text-color);
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+.cedula-metadatos {
+  font-family: var(--font-geist);
+  font-size: 0.8rem;
+  font-weight: 300;
+  color: var(--text-color);
+  margin-bottom: 2px;
+}
+.cedula-tecnica {
+  font-family: var(--font-geist);
+  font-size: 0.7rem;
+  font-weight: 300;
+  color: var(--text-color);
+  opacity: 0.7;
+  margin-bottom: 14px;
+}
+.cedula-descripcion {
+  font-family: var(--font-geist);
+  font-size: 0.85rem;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--text-color);
 }
 
 /* ================= RA ================= */

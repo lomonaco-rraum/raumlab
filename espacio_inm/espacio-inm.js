@@ -1133,7 +1133,22 @@ wireARToggle('ar-enter-coleccion', 'ar-exit-coleccion', 'status-ar-coleccion', (
 // falta tocar más código. Tiene su propio visor (sin fondo, son ejemplos ya
 // cerrados) para no saltar a la pestaña Visualizador.
 const COLLECTION_EXAMPLES = [
-  { title: 'Caja vacía de Oteiza', eq: 'coleccion/oteiza/equirectangular.png' }
+  {
+    title: 'Oteiza desde adentro',
+    eq: 'coleccion/oteiza/equirectangular.png',
+    autor: 'Paula Lomonaco',
+    anio: '2025',
+    tecnica: 'Dibujo digital',
+    descripcion: 'Surge del estudio de las piezas escultóricas del artista Jorge Oteiza. Inspiradas en las Cajas vacías y las Cajas Metafísicas, se buscó pensar el espacio y su representación desde el interior.'
+  },
+  {
+    title: 'en-el-espacio',
+    eq: 'coleccion/en-el-espacio/equirectangular.png',
+    autor: 'Paula Lomonaco',
+    anio: '2026',
+    tecnica: 'Estilógrafo sobre papel',
+    descripcion: 'Persigue la idea de romper con el presupuesto de bidimensionalidad del plano de dibujo, al mismo tiempo que se pregunta por la corporeidad del aire.'
+  }
 ];
 
 // Tarjeta tipográfica clickeable entera — mismo componente que .pieza-card
@@ -1151,6 +1166,13 @@ COLLECTION_EXAMPLES.forEach(example => {
     panoramaColeccion = new PANOLENS.ImagePanorama(example.eq);
     viewerColeccion.add(panoramaColeccion);
     viewerColeccion.setPanorama(panoramaColeccion);
+
+    document.getElementById('coleccion-ficha').hidden = false;
+    document.getElementById('coleccion-ficha-titulo').textContent = example.title;
+    const autorAnio = [example.autor, example.anio ? `(${example.anio})` : null].filter(Boolean).join(' ');
+    document.getElementById('coleccion-ficha-metadatos').textContent = autorAnio;
+    document.getElementById('coleccion-ficha-tecnica').textContent = example.tecnica || '';
+    document.getElementById('coleccion-ficha-descripcion').textContent = example.descripcion || '';
   });
   document.getElementById('collection-grid').appendChild(card);
 });

@@ -469,8 +469,15 @@
       </div>
     </div>
 
-    <!-- Columna derecha: RA (sin fondo, son ejemplos ya cerrados) -->
+    <!-- Columna derecha: ficha de la pieza elegida + RA (sin fondo, son
+         ejemplos ya cerrados) -->
     <div class="rail-derecho">
+      <div id="coleccion-ficha" class="coleccion-ficha" hidden>
+        <h3 class="cedula-titulo" id="coleccion-ficha-titulo"></h3>
+        <p class="cedula-metadatos" id="coleccion-ficha-metadatos"></p>
+        <p class="cedula-tecnica" id="coleccion-ficha-tecnica"></p>
+        <p class="cedula-descripcion" id="coleccion-ficha-descripcion"></p>
+      </div>
       <div class="ar-toggle-row">
         <button type="button" id="ar-enter-coleccion" class="btn-text btn-full">Ver en RA</button>
         <button type="button" id="ar-exit-coleccion" class="btn-text btn-full" style="display:none;" aria-label="Salir de RA">✕</button>
