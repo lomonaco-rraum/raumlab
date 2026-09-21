@@ -79,6 +79,53 @@ function crearCamaraParaMiniatura(node) {
         : crearCamaraOrbitalEscultura(centro, tamano);
 }
 
+// Vista general de la muestra completa para la portada — la usuaria pidió
+// que sea la MISMA vista que "Vista actual" (registroExportViews.js,
+// exportarVistaActual): la cámara orbital tal cual la dejó posicionada en el
+// visor, no una cámara automática. Así el encuadre lo elige ella navegando
+// antes de exportar la lámina, en vez de un ángulo fijo que nunca le
+// acierta a todas las salas por igual. Mismo criterio de resolución (escala
+// el tamaño en pantalla del contenedor a un lado máximo en píxeles) — a
+// diferencia de esa función, acá se compone sobre fondo blanco (no alfa),
+// consistente con el resto de la lámina impresa.
+function renderizarVistaGeneralSala(motor) {
+    const escenaCargada = motor.obtenerEscenaCargada();
+    if (!escenaCargada) return null;
+
+    const renderer = motor.obtenerRenderer();
+    const scene = motor.obtenerEscena();
+    const camera = motor.obtenerCamaraActual();
+    const contenedor = renderer.domElement.parentElement;
+    const anchoBase = contenedor.clientWidth;
+    const altoBase = contenedor.clientHeight;
+    const ladoMaximoPx = 1600;
+    const factor = ladoMaximoPx / Math.max(anchoBase, altoBase);
+    const anchoPx = Math.max(1, Math.round(anchoBase * factor));
+    const altoPx = Math.max(1, Math.round(altoBase * factor));
+
+    const colorClearOriginal = new THREE.Color();
+    renderer.getClearColor(colorClearOriginal);
+    const alphaClearOriginal = renderer.getClearAlpha();
+    const fondoOriginal = scene.background;
+
+    scene.background = new THREE.Color(0xFFFFFF);
+    renderer.setClearColor(0xFFFFFF, 1);
+    renderer.setSize(anchoPx, altoPx, false);
+    renderer.render(scene, camera);
+
+    const canvasSalida = document.createElement('canvas');
+    canvasSalida.width = anchoPx;
+    canvasSalida.height = altoPx;
+    canvasSalida.getContext('2d').drawImage(renderer.domElement, 0, 0, anchoPx, altoPx);
+    const dataURL = canvasSalida.toDataURL('image/png');
+
+    scene.background = fondoOriginal;
+    renderer.setClearColor(colorClearOriginal, alphaClearOriginal);
+    renderer.setSize(anchoBase, altoBase, false);
+
+    return { dataURL, aspecto: anchoPx / altoPx };
+}
+
 // Un Map<id, node> por proyecto (una sola pasada de traverse) en vez de
 // buscar el nodo de cada pieza por separado — detectarPiso() usa el mismo
 // criterio de traverse() porque el grupo exportado deja piso/piezas como
@@ -219,7 +266,7 @@ function escribirParrafoConSalto(doc, texto, x, yInicial, opciones = {}) {
     return y;
 }
 
-function dibujarPortada(doc, datosProyecto, totalPiezas, logo) {
+function dibujarPortada(doc, datosProyecto, totalPiezas, logo, vistaGeneral) {
     const titulo = (datosProyecto && datosProyecto.nombre_sala) || 'Sin título';
     const artista = (datosProyecto && datosProyecto.artista_colectivo) || '';
     const anio = (datosProyecto && datosProyecto.anio_exposicion) || '';
@@ -228,25 +275,38 @@ function dibujarPortada(doc, datosProyecto, totalPiezas, logo) {
 
     let y = 45;
     doc.setFont('helvetica', 'bolditalic');
-    doc.setFontSize(24);
+    doc.setFontSize(19);
     const lineasTitulo = doc.splitTextToSize(titulo, PAGINA.anchoUtil);
-    lineasTitulo.forEach((linea) => { doc.text(linea, MARGEN_MM, y); y += 11; });
+    lineasTitulo.forEach((linea) => { doc.text(linea, MARGEN_MM, y); y += 9; });
 
     if (subtitulo) {
-        y += 4;
+        y += 3;
         doc.setFont('helvetica', 'normal');
-        doc.setFontSize(12);
+        doc.setFontSize(10);
         doc.setTextColor(110);
         doc.text(subtitulo, MARGEN_MM, y);
         doc.setTextColor(0);
-        y += 14;
+        y += 12;
     } else {
-        y += 10;
+        y += 8;
+    }
+
+    if (vistaGeneral) {
+        const altoMaxImg = 85;
+        let anchoImg = PAGINA.anchoUtil;
+        let altoImg = anchoImg / vistaGeneral.aspecto;
+        if (altoImg > altoMaxImg) {
+            altoImg = altoMaxImg;
+            anchoImg = altoImg * vistaGeneral.aspecto;
+        }
+        const xImg = MARGEN_MM + (PAGINA.anchoUtil - anchoImg) / 2;
+        doc.addImage(vistaGeneral.dataURL, 'PNG', xImg, y, anchoImg, altoImg);
+        y += altoImg + 10;
     }
 
     if (texto) {
         doc.setFont('helvetica', 'normal');
-        escribirParrafoConSalto(doc, texto, MARGEN_MM, y, { tamanioFuente: 11, interlineado: 6 });
+        escribirParrafoConSalto(doc, texto, MARGEN_MM, y, { tamanioFuente: 9, interlineado: 5 });
     }
 
     dibujarPie(doc, logo);
@@ -273,34 +333,34 @@ function dibujarPaginaPieza(doc, obra, dataURLMiniatura, nombreSala, indice, tot
     let y = PAGINA.mitad + AIRE_IMAGEN_TEXTO_MM;
 
     doc.setFont('helvetica', 'bolditalic');
-    doc.setFontSize(14);
+    doc.setFontSize(12);
     doc.text(obra.titulo || 'Sin título', MARGEN_MM, y);
-    y += 8;
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(11);
-    doc.text(obra.artista || 'Artista Desconocido', MARGEN_MM, y);
     y += 7;
 
-    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9.5);
+    doc.text(obra.artista || 'Artista Desconocido', MARGEN_MM, y);
+    y += 6;
+
+    doc.setFontSize(8);
     doc.setTextColor(110);
     [obra.anio, obra.tecnica, obra.dimensiones].forEach((linea) => {
         doc.text(String(linea), MARGEN_MM, y);
-        y += 5;
+        y += 4.5;
     });
     doc.setTextColor(0);
-    y += 4;
+    y += 3;
 
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
+    doc.setFontSize(9);
     const descripcion = obra.descripcion || 'Esta obra no cuenta con un texto curatorial registrado.';
-    y = escribirParrafoConSalto(doc, descripcion, MARGEN_MM, y, { tamanioFuente: 10, interlineado: 5.5 });
+    y = escribirParrafoConSalto(doc, descripcion, MARGEN_MM, y, { tamanioFuente: 9, interlineado: 5 });
 
     if (obra.instalacion) {
-        y += 4;
-        doc.setFontSize(9);
+        y += 3;
+        doc.setFontSize(8);
         doc.setTextColor(110);
-        y = escribirParrafoConSalto(doc, `Traslado y montaje: ${obra.instalacion}`, MARGEN_MM, y, { tamanioFuente: 9, interlineado: 5 });
+        y = escribirParrafoConSalto(doc, `Traslado y montaje: ${obra.instalacion}`, MARGEN_MM, y, { tamanioFuente: 8, interlineado: 4.5 });
         doc.setTextColor(0);
     }
 
@@ -330,7 +390,8 @@ export function exportarLaminaPDF(motor, logo = null, formato = null) {
     const obras = motor.obtenerObrasProcesadas();
     const nombreSala = (datosProyecto && datosProyecto.nombre_sala) || '';
 
-    dibujarPortada(doc, datosProyecto, obras.length, logo);
+    const vistaGeneral = renderizarVistaGeneralSala(motor);
+    dibujarPortada(doc, datosProyecto, obras.length, logo, vistaGeneral);
 
     if (obras.length > 0) {
         const escenaCargada = motor.obtenerEscenaCargada();
