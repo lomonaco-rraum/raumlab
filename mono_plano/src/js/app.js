@@ -2,10 +2,20 @@
 import { calcularHomografia, calcularHomografiaGeometrica, calcularTransformSimilitud } from './geometry.js';
 import { generarDXF } from './dxf.js';
 import { estamparCanvas } from './creditoRaumlab.js';
+import { empaquetarTRF, desempaquetarTRF } from './trfArchivo.js';
 
 console.log("RaumLab TransFORM inicializado.");
 
 const inicioScreen = document.getElementById('inicio-screen');
+
+// Usado en cualquier lugar que arme HTML a partir de texto escrito por la
+// usuaria (nombre de archivo, categoría de comentario, etc.) antes de
+// meterlo en un innerHTML — evita que ese texto se interprete como markup.
+function escaparHtml(texto) {
+    const d = document.createElement('div');
+    d.textContent = texto;
+    return d.innerHTML;
+}
 
 // =====================================================================
 // PANEL DE DIÁLOGO GLOBAL (reemplaza alert()/confirm())
@@ -189,6 +199,7 @@ function mostrarInstrucciones() {
 
                     <h3>Método Analítico, paso a paso</h3>
                     <ol>
+                        <li>Tocá "Crear proyecto" y poné un nombre (y, si querés, una ubicación) — identifica después el fotoplano descargado, el <code>.trf</code> y el informe.</li>
                         <li>Cargá una imagen.</li>
                         <li>Elegí el método <strong>Analítico</strong> y marcá al menos 4 puntos de control sobre puntos reconocibles de la imagen.</li>
                         <li>Cargá las coordenadas reales (X, Y) de cada punto y confirmá con "Confirmar valores reales".</li>
@@ -220,14 +231,44 @@ function mostrarInstrucciones() {
                         Disponible sobre el resultado rectificado.
                         "Consultar medidas" anota coordenadas, distancias y
                         superficies directo sobre la imagen, y permite
-                        descargar la imagen con esas anotaciones. "Dibujar"
-                        marca puntos, líneas, polígonos y trazos libres
-                        eligiendo un color por capa — cada color se exporta
-                        como una capa distinta en el DXF, para poder
-                        activarla o desactivarla en AutoCAD. La imagen
+                        descargar la imagen con esas anotaciones.
+                    </p>
+                    <p>
+                        "Dibujar" marca puntos, polilíneas, polígonos y
+                        trazos libres sobre <strong>capas propias</strong>:
+                        creás cada capa con "Crear capa +", eligiendo un
+                        color (grilla tipo AutoCAD) y un nombre — cualquier
+                        figura que dibujes queda asociada a la capa activa
+                        en ese momento. Editar después el nombre o el color
+                        de una capa actualiza sola todo lo que ya dibujaste
+                        con ella. Cada herramienta queda lista para trazar
+                        varias figuras seguidas (tocá el mismo botón de
+                        nuevo, o Esc, para salir del modo). La imagen
                         anotada se descarga en <code>.png</code>; el dibujo
                         vectorial, en <code>.dxf</code> (coordenadas en la
-                        escala real definida, no en píxeles).
+                        escala real definida, no en píxeles) — cada capa
+                        sale con el nombre que le diste, para poder
+                        activarla o desactivarla en AutoCAD.
+                    </p>
+                    <p>
+                        "Comentarios" marca un punto numerado sobre la
+                        imagen (categoría + descripción) sin mostrar el
+                        texto ahí — el texto completo sale solo en el
+                        informe. "Descargar informe (PDF)" pide fecha de
+                        diagnóstico y autor, y qué incluir (imagen, dibujos,
+                        comentarios) — pensado como ficha de una visita de
+                        diagnóstico, no solo una exportación.
+                    </p>
+
+                    <h3>Guardar y retomar el proyecto</h3>
+                    <p>
+                        Una vez que hay un resultado rectificado, "Guardar
+                        Proyecto (<code>.trf</code>)" descarga un solo
+                        archivo con la imagen original, la rectificada, y
+                        todo lo editable (capas, dibujos, comentarios). Se
+                        vuelve a abrir desde la pestaña "Proyecto" →
+                        "Cargar Proyecto (.trf)", y se sigue editando
+                        exactamente donde quedó.
                     </p>
                 </div>
 
@@ -242,10 +283,11 @@ function mostrarInstrucciones() {
 
                     <h3>Paso a paso</h3>
                     <ol>
+                        <li>Tocá "Crear proyecto" y poné un nombre (y, si querés, una ubicación).</li>
                         <li>Cargá la primera imagen — se rectifica igual que en Fotoplano (Analítico o Geométrico).</li>
-                        <li>Con el "+" de la columna de miniaturas, agregá las siguientes fotos del mismo objeto y rectificá cada una.</li>
+                        <li>Con el "+" debajo de la lista de imágenes, agregá las siguientes fotos del mismo objeto y rectificá cada una — la lista muestra el estado de cada una (✓ cuando ya está rectificada).</li>
                         <li>Con 2 o más imágenes en estado "Lista", apretá <strong>Fusionar</strong>.</li>
-                        <li>En cada par, marcá al menos 3 puntos homólogos — el mismo punto real, visible en las dos imágenes.</li>
+                        <li>En cada par, marcá al menos 3 puntos homólogos — el mismo punto real, visible en las dos imágenes. Rueda del mouse para acercar sobre cada imagen y marcar con precisión.</li>
                         <li>Si el desajuste entre ambas rectificaciones supera la tolerancia, la app pregunta cuál usar como referencia.</li>
                         <li>El resultado combinado se sigue fusionando con las imágenes que falten en la cola.</li>
                     </ol>
@@ -255,13 +297,43 @@ function mostrarInstrucciones() {
                         Disponible sobre cualquier resultado rectificado.
                         "Consultar medidas" anota coordenadas, distancias y
                         superficies directo sobre la imagen, y permite
-                        descargar la imagen con esas anotaciones. "Dibujar"
-                        marca puntos, líneas, polígonos y trazos libres
-                        eligiendo un color por capa — cada color se exporta
-                        como una capa distinta en el DXF, para poder
-                        activarla o desactivarla en AutoCAD. La imagen
+                        descargar la imagen con esas anotaciones.
+                    </p>
+                    <p>
+                        "Dibujar" marca puntos, polilíneas, polígonos y
+                        trazos libres sobre <strong>capas propias</strong>:
+                        creás cada capa con "Crear capa +", eligiendo un
+                        color (grilla tipo AutoCAD) y un nombre — cualquier
+                        figura que dibujes queda asociada a la capa activa
+                        en ese momento. Editar después el nombre o el color
+                        de una capa actualiza sola todo lo que ya dibujaste
+                        con ella. Cada herramienta queda lista para trazar
+                        varias figuras seguidas (tocá el mismo botón de
+                        nuevo, o Esc, para salir del modo). La imagen
                         anotada se descarga en <code>.png</code>; el dibujo
-                        vectorial, en <code>.dxf</code>.
+                        vectorial, en <code>.dxf</code> — cada capa sale con
+                        el nombre que le diste, para poder activarla o
+                        desactivarla en AutoCAD.
+                    </p>
+                    <p>
+                        "Comentarios" marca un punto numerado sobre la
+                        imagen (categoría + descripción) sin mostrar el
+                        texto ahí — el texto completo sale solo en el
+                        informe. "Descargar informe (PDF)" pide fecha de
+                        diagnóstico y autor, y qué incluir (imagen, dibujos,
+                        comentarios) — pensado como ficha de una visita de
+                        diagnóstico, no solo una exportación.
+                    </p>
+
+                    <h3>Guardar y retomar el proyecto</h3>
+                    <p>
+                        Una vez que hay un resultado (una imagen rectificada
+                        o un fotomosaico ya fusionado), "Guardar Proyecto
+                        (<code>.trf</code>)" descarga un solo archivo con la
+                        imagen, y todo lo editable (capas, dibujos,
+                        comentarios). Se vuelve a abrir desde la pestaña
+                        "Proyecto" → "Cargar Proyecto (.trf)", y se sigue
+                        editando exactamente donde quedó.
                     </p>
                 </div>
 
@@ -1267,7 +1339,13 @@ function crearEstacionFotoplano(file, contenedor, opciones) {
             canvasClon.height = outHeight;
             canvasClon.getContext('2d').drawImage(canvasRectificado, 0, 0);
 
-            const resultado = { canvas: canvasClon, H, xMin, yMax, pxPorMetro, gsdMm, outWidth, outHeight, nombreArchivo: file.name };
+            // opciones.nombreProyecto (pedido una sola vez al cargar la
+            // primera imagen, ver pedirNombreProyecto/agregarImagen en
+            // mostrarWorkspace) es el nombre que después nombra todas las
+            // descargas — fotoplano, .trf, PDF de comentarios. Si no vino
+            // (por ejemplo, llamado desde algún flujo viejo sin ese paso),
+            // se cae al nombre del archivo subido, como era antes.
+            const resultado = { canvas: canvasClon, H, xMin, yMax, pxPorMetro, gsdMm, outWidth, outHeight, nombreArchivo: opciones.nombreProyecto || file.name, ubicacion: opciones.ubicacionProyecto || '' };
             mostrarResultado(resultado);
 
             if (opciones.onCompletar) opciones.onCompletar(resultado);
@@ -1285,7 +1363,8 @@ function crearEstacionFotoplano(file, contenedor, opciones) {
         canvasRectificado.height = resultado.outHeight;
         canvasRectificado.getContext('2d').drawImage(resultado.canvas, 0, 0);
 
-        btnDescargar.download = `fotoplano_rectificado_${resultado.gsdMm}mm.png`;
+        const nombreBaseDescarga = (resultado.nombreArchivo || 'fotoplano').replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9._-]+/g, '_');
+        btnDescargar.download = `${nombreBaseDescarga}_${resultado.gsdMm}mm.png`;
         estamparCanvas(resultado.canvas).then(canvasEstampado => {
             btnDescargar.href = canvasEstampado.toDataURL('image/png');
         });
@@ -1310,7 +1389,7 @@ function crearEstacionFotoplano(file, contenedor, opciones) {
         // fotoplano a su propio zoom (ver zoomRectificado) en vez de heredar
         // el tamaño en el que había quedado la imagen original.
         iniciarTamanioRectificado();
-        crearPanelMedicionYDibujo(resultado, canvasRectificado, capaMedidas, capaDibujo, capaCuadricula, moduloMedicion);
+        crearPanelMedicionYDibujo(resultado, canvasRectificado, capaMedidas, capaDibujo, capaCuadricula, moduloMedicion, file, resultado.dibujosGuardados, resultado.comentariosGuardados, resultado.capasGuardadas);
     }
 
     if (opciones.resultadoPrevio) {
@@ -1519,6 +1598,143 @@ function dibujarCuadriculaMetrica(canvas, xMin, yMax, pxPorMetro, imagenBase, ca
     }
 }
 
+// Pide el nombre del proyecto (y la ubicación, texto libre) una sola vez,
+// al cargar la primera imagen (ver agregarImagen en mostrarWorkspace) — el
+// nombre nombra después todas las descargas (fotoplano, .trf, PDF de
+// comentarios); la ubicación queda fija para todo el proyecto y se muestra
+// en el informe. Mismo patrón visual (.modal-overlay/.modal-box) que el
+// resto de los modales de este módulo. Sin botón "Cancelar" para el
+// nombre: hace falta uno para seguir, pero el campo arranca precargado con
+// el nombre del archivo subido (sin extensión) y Enter confirma, así que
+// aceptar el default es un solo toque. La ubicación sí queda opcional
+// (puede quedar vacía).
+let modalNombreProyectoOverlay = null;
+function pedirNombreProyecto(sugerido) {
+    return new Promise((resolve) => {
+        if (!modalNombreProyectoOverlay) {
+            modalNombreProyectoOverlay = document.createElement('div');
+            modalNombreProyectoOverlay.className = 'modal-overlay';
+            modalNombreProyectoOverlay.innerHTML = `
+                <div class="modal-box">
+                    <h3>Nombre del proyecto</h3>
+                    <div class="input-row">
+                        <label for="nombre-proyecto-modal">Nombre</label>
+                        <input type="text" id="nombre-proyecto-modal">
+                    </div>
+                    <div class="input-row" style="margin-top: 10px;">
+                        <label for="ubicacion-proyecto-modal">Ubicación</label>
+                        <input type="text" id="ubicacion-proyecto-modal">
+                    </div>
+                    <div class="modal-actions controles-btn-row">
+                        <button type="button" class="btn-primary btn-full" id="btn-nombre-proyecto-confirmar">Continuar</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modalNombreProyectoOverlay);
+        }
+        modalNombreProyectoOverlay.style.display = 'flex';
+        const input = modalNombreProyectoOverlay.querySelector('#nombre-proyecto-modal');
+        const inputUbicacion = modalNombreProyectoOverlay.querySelector('#ubicacion-proyecto-modal');
+        const valorSugerido = (sugerido || 'proyecto').replace(/\.[^.]+$/, '');
+        input.value = valorSugerido;
+        inputUbicacion.value = '';
+        input.focus();
+        input.select();
+
+        const confirmar = () => {
+            modalNombreProyectoOverlay.style.display = 'none';
+            resolve({
+                nombre: input.value.trim() || valorSugerido,
+                ubicacion: inputUbicacion.value.trim()
+            });
+        };
+        modalNombreProyectoOverlay.querySelector('#btn-nombre-proyecto-confirmar').onclick = confirmar;
+        input.onkeydown = (e) => { if (e.key === 'Enter') confirmar(); };
+        inputUbicacion.onkeydown = (e) => { if (e.key === 'Enter') confirmar(); };
+    });
+}
+
+// Recorta un canvas a su contenido no transparente — mismo helper que
+// recortarAlContenidoOpaco() en in_site/js/registro.js (no exportado desde
+// ahí, así que se duplica acá; es chico).
+function recortarAlContenidoOpaco(canvas) {
+    const ctx = canvas.getContext('2d');
+    const { data, width, height } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    let minX = width, minY = height, maxX = -1, maxY = -1;
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            if (data[(y * width + x) * 4 + 3] > 10) {
+                if (x < minX) minX = x;
+                if (x > maxX) maxX = x;
+                if (y < minY) minY = y;
+                if (y > maxY) maxY = y;
+            }
+        }
+    }
+    if (maxX < minX || maxY < minY) return canvas;
+    const recortado = document.createElement('canvas');
+    recortado.width = maxX - minX + 1;
+    recortado.height = maxY - minY + 1;
+    recortado.getContext('2d').drawImage(canvas, minX, minY, recortado.width, recortado.height, 0, 0, recortado.width, recortado.height);
+    return recortado;
+}
+
+// Logo de raumlab para el pie de los PDF — mismo criterio que
+// cargarLogoRaumlab() en in_site/js/registro.js: el ícono del header es
+// claro (pensado para el fondo oscuro del header), se recolorea a negro
+// para poder leerse en una hoja blanca, y se recorta al contenido real
+// (el PNG trae margen transparente alrededor). Se cachea: el PDF se puede
+// generar varias veces en la misma sesión sin recargar el archivo.
+let logoRaumlabCacheado;
+async function cargarLogoRaumlab() {
+    if (logoRaumlabCacheado !== undefined) return logoRaumlabCacheado;
+    try {
+        const imagen = await new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = '../raumlab/favicontransparente.png';
+        });
+        const canvasCompleto = document.createElement('canvas');
+        canvasCompleto.width = imagen.naturalWidth;
+        canvasCompleto.height = imagen.naturalHeight;
+        const ctxCompleto = canvasCompleto.getContext('2d');
+        ctxCompleto.drawImage(imagen, 0, 0);
+        ctxCompleto.globalCompositeOperation = 'source-in';
+        ctxCompleto.fillStyle = '#000000';
+        ctxCompleto.fillRect(0, 0, canvasCompleto.width, canvasCompleto.height);
+
+        const canvas = recortarAlContenidoOpaco(canvasCompleto);
+        logoRaumlabCacheado = { dataURL: canvas.toDataURL('image/png'), aspecto: canvas.width / canvas.height };
+    } catch (error) {
+        console.error('No se pudo cargar el logo de raumlab:', error);
+        logoRaumlabCacheado = null;
+    }
+    return logoRaumlabCacheado;
+}
+
+// Logo + "Creado en raumlab.org" como un solo bloque centrado, pegado al
+// pie de la página — mismo criterio de dibujarPieAcotado() en
+// in_site/js/registroDimensioning.js.
+function dibujarPiePDF(doc, logo, anchoPagina, altoPagina) {
+    const yPie = altoPagina - 12;
+    doc.setFont(undefined, 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(140);
+    const textoCredito = 'Creado en raumlab.org';
+    const anchoTexto = doc.getTextWidth(textoCredito);
+    const altoLogo = 5;
+    const anchoLogo = logo ? altoLogo * (logo.aspecto || 1) : 0;
+    const gap = logo ? 2 : 0;
+    let x = (anchoPagina - (anchoLogo + gap + anchoTexto)) / 2;
+    if (logo) {
+        doc.addImage(logo.dataURL, 'PNG', x, yPie - altoLogo + 1.5, anchoLogo, altoLogo);
+        x += anchoLogo + gap;
+    }
+    doc.text(textoCredito, x, yPie);
+    doc.setTextColor(0);
+}
+
 // =====================================================================
 // WORKSPACE (Fotoplano y Fotomosaico comparten el mismo armazón: panel
 // izquierdo de miniaturas, centro con la estación de rectificación activa,
@@ -1540,13 +1756,95 @@ function mostrarWorkspace(modo) {
     let idImagenActiva = null;
     let idCounter = 0;
     let tabActiva = 'crear';
+    // Se piden una sola vez, al cargar la primera imagen del proyecto (ver
+    // agregarImagen) — nombreProyecto nombra después el fotoplano
+    // descargado, el .trf y el PDF de comentarios (ver
+    // opciones.nombreProyecto en crearEstacionFotoplano); ubicacionProyecto
+    // queda fija para todo el proyecto y sale en el informe.
+    let nombreProyecto = null;
+    let ubicacionProyecto = '';
 
-    function agregarImagen(file) {
+    async function agregarImagen(file) {
+        if (imagenesProyecto.length === 0 && !nombreProyecto) {
+            const datos = await pedirNombreProyecto(file.name);
+            nombreProyecto = datos.nombre;
+            ubicacionProyecto = datos.ubicacion;
+        }
         const id = idCounter++;
         imagenesProyecto.push({
             id, file, nombreArchivo: file.name,
             thumbnailUrl: URL.createObjectURL(file),
             estado: 'pendiente', resultado: null
+        });
+        return id;
+    }
+
+    // Carga un .trf (ver trfArchivo.js): reconstruye el `resultado` ya
+    // rectificado (mismo objeto que arma crearEstacionFotoplano al terminar
+    // de rectificar) y lo agrega como imagen 'lista' — así renderImagenActiva()
+    // la muestra directo vía resultadoPrevio, sin pasar de nuevo por todo el
+    // proceso de rectificación.
+    async function agregarImagenDesdeTRF(archivoTRF) {
+        const { datosProyecto, rectificadaBlob, originalBlob, originalNombre } = await desempaquetarTRF(archivoTRF);
+        // El .trf ya trae su propio nombre/ubicación — no hace falta volver
+        // a preguntarlos (a diferencia de cargar una imagen nueva).
+        if (datosProyecto.nombreArchivo) nombreProyecto = datosProyecto.nombreArchivo;
+        if (datosProyecto.ubicacion) ubicacionProyecto = datosProyecto.ubicacion;
+
+        const imgRectificada = await new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = () => reject(new Error('No se pudo leer la imagen rectificada del .trf'));
+            img.src = URL.createObjectURL(rectificadaBlob);
+        });
+        const canvas = document.createElement('canvas');
+        canvas.width = datosProyecto.outWidth;
+        canvas.height = datosProyecto.outHeight;
+        canvas.getContext('2d').drawImage(imgRectificada, 0, 0);
+
+        // Sin imagen original en el .trf (proyecto de Fotomosaico, ver
+        // crearPanelMedicionYDibujo): se usa la rectificada como reemplazo,
+        // así el toggle "Imagen Original" de crearEstacionFotoplano tiene
+        // algo que mostrar en vez de romperse — no es la foto real, pero es
+        // el mejor sustituto disponible.
+        const fileOriginal = originalBlob
+            ? new File([originalBlob], originalNombre || (datosProyecto.nombreArchivo || 'original'), { type: originalBlob.type })
+            : new File([rectificadaBlob], datosProyecto.nombreArchivo || 'proyecto.png', { type: 'image/png' });
+
+        // Las capas se guardan como lista propia (datosProyecto.capas) y
+        // cada dibujo con su propia copia inline de la capa (JSON no
+        // preserva identidad de objetos) — acá se "re-vincula" cada dibujo
+        // a la MISMA instancia de capa (por id), así que después de cargar
+        // el .trf, editar una capa sigue actualizando sola a todas las
+        // figuras que la usan — igual que en una sesión recién creada
+        // (ver capas/colorActivo en crearPanelMedicionYDibujo).
+        const capasCargadas = datosProyecto.capas || [];
+        const dibujosCargados = (datosProyecto.dibujos || []).map(ent => ({
+            ...ent,
+            color: capasCargadas.find(c => c.id === (ent.color && ent.color.id)) || ent.color
+        }));
+
+        const resultado = {
+            canvas,
+            H: datosProyecto.H,
+            xMin: datosProyecto.xMin,
+            yMax: datosProyecto.yMax,
+            pxPorMetro: datosProyecto.pxPorMetro,
+            gsdMm: datosProyecto.gsdMm,
+            outWidth: datosProyecto.outWidth,
+            outHeight: datosProyecto.outHeight,
+            nombreArchivo: datosProyecto.nombreArchivo || fileOriginal.name,
+            ubicacion: datosProyecto.ubicacion || '',
+            dibujosGuardados: dibujosCargados,
+            comentariosGuardados: datosProyecto.comentarios || [],
+            capasGuardadas: capasCargadas
+        };
+
+        const id = idCounter++;
+        imagenesProyecto.push({
+            id, file: fileOriginal, nombreArchivo: resultado.nombreArchivo,
+            thumbnailUrl: URL.createObjectURL(fileOriginal),
+            estado: 'lista', resultado
         });
         return id;
     }
@@ -1560,6 +1858,10 @@ function mostrarWorkspace(modo) {
         // la columna de miniaturas — tener las dos formas a la vez era el
         // botón duplicado que se pidió sacar.
         const puedeCargarImagen = imagenesProyecto.length === 0;
+        // Hasta no crear el proyecto (nombre + ubicación) no hay nada para
+        // cargar — antes el nombre se pedía recién al elegir el archivo, sin
+        // ningún paso explícito de "crear proyecto" antes.
+        const proyectoCreado = !!nombreProyecto;
 
         inicioScreen.innerHTML = `
             <p class="workspace-mobile-notice">Fotoplano y Fotomosaico están pensados para pantallas de escritorio — abrí trans_FORMA desde una computadora para usarlos.</p>
@@ -1575,13 +1877,16 @@ function mostrarWorkspace(modo) {
                         </div>
                         <div class="panel-content">
                             <div class="method-section ${tabActiva === 'crear' ? 'active' : ''}" id="tab-crear">
-                                ${puedeCargarImagen ? `
+                                ${!proyectoCreado ? `
+                                    <button id="btn-crear-proyecto" class="btn-text btn-full">Crear proyecto</button>
+                                ` : puedeCargarImagen ? `
                                     <button id="btn-cargar-imagen" class="btn-text btn-full">Cargar Imagen</button>
                                     <input type="file" id="file-input" accept="image/*" hidden>
                                 ` : ''}
                             </div>
                             <div class="method-section ${tabActiva === 'proyecto' ? 'active' : ''}" id="tab-proyecto">
-                                <button id="btn-cargar-archivo" class="btn-text btn-full" title="Próximamente (.mpl)">Cargar Archivo</button>
+                                <button id="btn-cargar-archivo" class="btn-text btn-full">Cargar Proyecto (.trf)</button>
+                                <input type="file" id="file-input-trf" accept=".trf" hidden>
                             </div>
                         </div>
                     </div>
@@ -1614,7 +1919,7 @@ function mostrarWorkspace(modo) {
         if (!puedeCargarImagen && tabActiva === 'crear') {
             mostrarMensaje(
                 modo === 'fotomosaico'
-                    ? 'Para agregar otra imagen, usá el "+" debajo del desplegable de la izquierda.'
+                    ? 'Para agregar otra imagen, usá el "+" debajo de la lista de la izquierda.'
                     : 'Ya cargaste una imagen para este fotoplano. Usá "Cerrar Proyecto" para empezar de nuevo.',
                 'info'
             );
@@ -1627,20 +1932,42 @@ function mostrarWorkspace(modo) {
             });
         });
 
-        document.getElementById('btn-cargar-archivo').addEventListener('click', () => {
-            mostrarMensaje('Abrir proyecto (.mpl) todavía no está disponible — es una función planeada para más adelante.', 'info');
-        });
+        const fileInputTRF = document.getElementById('file-input-trf');
+        if (fileInputTRF) {
+            document.getElementById('btn-cargar-archivo').addEventListener('click', () => fileInputTRF.click());
+            fileInputTRF.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                try {
+                    idImagenActiva = await agregarImagenDesdeTRF(file);
+                    renderWorkspace();
+                } catch (error) {
+                    console.error('Error al cargar el .trf:', error);
+                    mostrarMensaje('No se pudo cargar el proyecto. ¿Es un archivo .trf válido? Revisá la consola para más detalles.', 'error');
+                }
+            });
+        }
 
         const btnCerrarProyecto = document.getElementById('btn-cerrar-proyecto');
         if (btnCerrarProyecto) btnCerrarProyecto.addEventListener('click', () => location.reload());
 
+        const btnCrearProyecto = document.getElementById('btn-crear-proyecto');
+        if (btnCrearProyecto) {
+            btnCrearProyecto.addEventListener('click', async () => {
+                const datos = await pedirNombreProyecto();
+                nombreProyecto = datos.nombre;
+                ubicacionProyecto = datos.ubicacion;
+                renderWorkspace();
+            });
+        }
+
         const fileInput = document.getElementById('file-input');
         if (fileInput) {
             document.getElementById('btn-cargar-imagen').addEventListener('click', () => fileInput.click());
-            fileInput.addEventListener('change', (e) => {
+            fileInput.addEventListener('change', async (e) => {
                 const file = e.target.files[0];
                 if (file) {
-                    idImagenActiva = agregarImagen(file);
+                    idImagenActiva = await agregarImagen(file);
                     renderWorkspace();
                 }
             });
@@ -1653,36 +1980,30 @@ function mostrarWorkspace(modo) {
     function renderMiniaturas() {
         const rail = document.getElementById('miniaturas-rail');
         const listas = imagenesProyecto.filter(i => i.estado === 'lista');
-        // Fotoplano nunca muestra miniatura (una sola imagen — ya se ve en
+        // Fotoplano nunca muestra esta lista (una sola imagen — ya se ve en
         // el centro, repetirla en la izquierda no aporta). En Fotomosaico,
-        // en vez de una fila de tarjetas, un desplegable con los nombres —
-        // ahorra espacio y evita que el zoom quede superpuesto con algo.
-        const mostrarSelector = modo === 'fotomosaico' && imagenesProyecto.length > 0;
+        // lista siempre visible (no desplegable) con el estado de cada
+        // imagen — mismo criterio visual que la tabla de puntos homólogos.
+        const mostrarTabla = modo === 'fotomosaico' && imagenesProyecto.length > 0;
         // El "+" de agregar solo tiene sentido en Fotomosaico y solo a
         // partir de la segunda imagen — la primera ya se carga con el
         // botón "Cargar Imagen" del tab Crear (evita el botón duplicado).
         const puedeAgregarMas = modo === 'fotomosaico' && imagenesProyecto.length > 0;
 
-        const imgActiva = imagenesProyecto.find(i => i.id === idImagenActiva);
-
         rail.innerHTML = `
-            ${mostrarSelector ? `
-                <!-- HTML propio, no <select> nativo: el navegador no deja
-                     tematizar el fondo/acento de la lista abierta (quedaba
-                     con foco azul y fondo blanco opaco, ilegible). -->
-                <div class="capa-selector" id="imagen-selector">
-                    <button type="button" class="capa-selector-boton" id="imagen-selector-boton" aria-haspopup="listbox" aria-expanded="false">
-                        <span id="imagen-selector-label">${imgActiva ? `${imgActiva.nombreArchivo} — ${imgActiva.estado === 'lista' ? 'Lista' : 'Pendiente'}` : 'Elegir imagen'}</span>
-                    </button>
-                    <ul class="capa-selector-lista" id="imagen-selector-lista" role="listbox" hidden>
-                        ${imagenesProyecto.map(img => `
-                            <li role="option">
-                                <button type="button" class="capa-selector-opcion ${img.id === idImagenActiva ? 'activa' : ''}" data-id="${img.id}">
-                                    ${img.nombreArchivo} — ${img.estado === 'lista' ? 'Lista' : 'Pendiente'}
-                                </button>
-                            </li>
-                        `).join('')}
-                    </ul>
+            ${mostrarTabla ? `
+                <div class="controles-table-wrap">
+                    <table class="controles-table">
+                        <thead><tr><th>Imagen</th><th style="width: 24px;"></th></tr></thead>
+                        <tbody id="cuerpo-tabla-imagenes">
+                            ${imagenesProyecto.map(img => `
+                                <tr class="fila-imagen ${img.id === idImagenActiva ? 'activa' : ''}" data-id="${img.id}" title="${img.estado === 'lista' ? 'Rectificada' : 'Pendiente de rectificar'}">
+                                    <td>${escaparHtml(img.nombreArchivo)}</td>
+                                    <td>${img.estado === 'lista' ? '✓' : ''}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
                 </div>
             ` : ''}
             ${puedeAgregarMas ? `
@@ -1692,37 +2013,21 @@ function mostrarWorkspace(modo) {
             ${modo === 'fotomosaico' && listas.length >= 2 ? `<button id="btn-fusionar" class="btn-text btn-full">Fusionar (${listas.length})</button>` : ''}
         `;
 
-        const imagenSelector = document.getElementById('imagen-selector');
-        if (imagenSelector) {
-            const imagenSelectorBoton = document.getElementById('imagen-selector-boton');
-            const imagenSelectorLista = document.getElementById('imagen-selector-lista');
-            imagenSelectorBoton.addEventListener('click', () => {
-                const abierta = !imagenSelectorLista.hidden;
-                imagenSelectorLista.hidden = abierta;
-                imagenSelectorBoton.setAttribute('aria-expanded', String(!abierta));
+        rail.querySelectorAll('.fila-imagen').forEach((fila) => {
+            fila.addEventListener('click', () => {
+                idImagenActiva = parseInt(fila.dataset.id);
+                renderMiniaturas();
+                renderImagenActiva();
             });
-            document.addEventListener('click', (e) => {
-                if (!imagenSelector.contains(e.target)) {
-                    imagenSelectorLista.hidden = true;
-                    imagenSelectorBoton.setAttribute('aria-expanded', 'false');
-                }
-            });
-            imagenSelectorLista.querySelectorAll('.capa-selector-opcion').forEach((btn) => {
-                btn.addEventListener('click', () => {
-                    idImagenActiva = parseInt(btn.dataset.id);
-                    renderMiniaturas();
-                    renderImagenActiva();
-                });
-            });
-        }
+        });
 
         const fileInputAgregar = document.getElementById('file-input-agregar');
         if (fileInputAgregar) {
             document.getElementById('btn-agregar-imagen').addEventListener('click', () => fileInputAgregar.click());
-            fileInputAgregar.addEventListener('change', (e) => {
+            fileInputAgregar.addEventListener('change', async (e) => {
                 const file = e.target.files[0];
                 if (file) {
-                    idImagenActiva = agregarImagen(file);
+                    idImagenActiva = await agregarImagen(file);
                     renderWorkspace();
                 }
             });
@@ -1751,6 +2056,8 @@ function mostrarWorkspace(modo) {
                 sinHeader: true,
                 contenedorControles,
                 contenedorDescarga,
+                nombreProyecto,
+                ubicacionProyecto,
                 onCompletar: (resultado) => {
                     img.resultado = resultado;
                     img.estado = 'lista';
@@ -1762,6 +2069,12 @@ function mostrarWorkspace(modo) {
 
     function fusionarSiguiente(resultadoAcumulado, restantes) {
         if (restantes.length === 0) {
+            // El resultado fusionado no trae nombre propio de ningún lado
+            // de la cadena de fusión — se le pone acá el nombre de proyecto
+            // pedido al cargar la primera imagen, así el .trf/PDF de
+            // comentarios de Fotomosaico se llaman igual que en Fotoplano.
+            resultadoAcumulado.nombreArchivo = nombreProyecto;
+            resultadoAcumulado.ubicacion = ubicacionProyecto;
             mostrarResultadoFotomosaico(resultadoAcumulado);
             return;
         }
@@ -2604,6 +2917,89 @@ function mostrarPantallaPuntosHomologos(resultadoA, resultadoB, onFusionado) {
     canvasB.height = resultadoB.canvas.height;
     canvasB.getContext('2d').drawImage(resultadoB.canvas, 0, 0);
 
+    // Zoom independiente por imagen (rueda del mouse) — sin esto, marcar un
+    // punto homólogo preciso en una foto grande y reducida a como entra en
+    // la mitad de pantalla era casi imposible. `.canvas-homologo-mitad` ya
+    // tenía overflow:auto (para el caso de imágenes muy grandes), así que
+    // alcanza con escalar el wrapper — el navegador arma solo la barra de
+    // scroll para recorrer la imagen ampliada. coordsCanvas() de abajo sigue
+    // funcionando igual sin tocarlo: ya calcula a partir del rect renderizado
+    // en pantalla (canvasEl.getBoundingClientRect()), que ya refleja el zoom.
+    // Mismo criterio que el zoom del canvas central de Fotoplano (ver
+    // aplicarEscala()/fijarTamanioActivo() más arriba en este archivo):
+    // cambia el tamaño REAL del canvas y su wrapper (no transform:scale,
+    // que solo puede centrarse en un punto fijo) y ajusta el scroll del
+    // contenedor para que el punto bajo el cursor quede fijo en pantalla —
+    // así el zoom "sigue" al mouse en vez de quedar siempre centrado.
+    function wireZoomHomologo(mitad, wrapper, canvasEl) {
+        const ESCALA_MAX = 8;
+        let escalaAjustada = 0;
+        let escala = 0;
+
+        // maxWidth/maxHeight (ver .canvas-homologo-wrapper canvas en
+        // styles.css) son para el tamaño SIN zoom — una vez que este
+        // control toma el tamaño a mano, tienen que dejar de recortarlo o
+        // acercar más allá del ajuste inicial no tendría efecto visual.
+        canvasEl.style.maxWidth = 'none';
+        canvasEl.style.maxHeight = 'none';
+
+        function medirAjustada() {
+            const contRect = mitad.getBoundingClientRect();
+            const maxW = Math.max(50, contRect.width - 24);
+            const maxH = Math.max(50, contRect.height - 24);
+            escalaAjustada = Math.min(maxW / canvasEl.width, maxH / canvasEl.height, 1);
+        }
+
+        function aplicarTamanio() {
+            const w = canvasEl.width * escala;
+            const h = canvasEl.height * escala;
+            canvasEl.style.width = w + 'px';
+            canvasEl.style.height = h + 'px';
+            wrapper.style.width = w + 'px';
+            wrapper.style.height = h + 'px';
+        }
+
+        // cursorClientX/Y: punto bajo el cursor en coordenadas de viewport,
+        // se mantiene fijo en pantalla al acercar/alejar — null = sin
+        // recentrado (ajuste inicial).
+        function aplicarEscala(nuevaEscala, cursorClientX, cursorClientY) {
+            escala = Math.min(ESCALA_MAX, Math.max(escalaAjustada, nuevaEscala));
+            if (cursorClientX == null) { aplicarTamanio(); return; }
+
+            const contRect = mitad.getBoundingClientRect();
+            const rectAntes = wrapper.getBoundingClientRect();
+            const fx = rectAntes.width > 0 ? (cursorClientX - rectAntes.left) / rectAntes.width : 0.5;
+            const fy = rectAntes.height > 0 ? (cursorClientY - rectAntes.top) / rectAntes.height : 0.5;
+
+            aplicarTamanio();
+
+            const w = canvasEl.width * escala;
+            const h = canvasEl.height * escala;
+            mitad.scrollLeft += fx * w - (cursorClientX - contRect.left) - mitad.scrollLeft;
+            mitad.scrollTop += fy * h - (cursorClientY - contRect.top) - mitad.scrollTop;
+        }
+
+        medirAjustada();
+        escala = escalaAjustada;
+        aplicarTamanio();
+
+        mitad.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
+            aplicarEscala(escala * factor, e.clientX, e.clientY);
+        }, { passive: false });
+
+        window.addEventListener('resize', () => {
+            const estabaEnMinimo = escala <= escalaAjustada + 0.0001;
+            medirAjustada();
+            if (estabaEnMinimo) { escala = escalaAjustada; aplicarTamanio(); }
+        });
+    }
+    const wrapperA = canvasA.parentElement;
+    const wrapperB = canvasB.parentElement;
+    wireZoomHomologo(wrapperA.parentElement, wrapperA, canvasA);
+    wireZoomHomologo(wrapperB.parentElement, wrapperB, canvasB);
+
     function coordsCanvas(e, canvasEl) {
         const rect = canvasEl.getBoundingClientRect();
         const scaleX = canvasEl.width / rect.width;
@@ -2828,13 +3224,22 @@ function componerFotomosaico(resultadoA, resultadoB, transform, principal) {
             const xRefPx = Math.round((Xreal - ref.xMin) * pxPorMetro);
             const yRefPx = Math.round((ref.yMax - Yreal) * pxPorMetro);
 
+            // "Dentro del rectángulo del canvas" no es lo mismo que "hay foto
+            // real ahí" — ref (o sec) puede venir de una fusión anterior, que
+            // ya trae esquinas transparentes (alpha 0) donde no hay imagen.
+            // Antes esto se ignoraba y se forzaba alpha 255 solo por caer
+            // dentro del rectángulo — pintaba esas esquinas de negro opaco
+            // (R/G/B en 0 de createImageData) en vez de dejarlas transparentes,
+            // tapando la otra imagen en vez de dejarla asomar por debajo.
             if (xRefPx >= 0 && xRefPx < ref.canvas.width && yRefPx >= 0 && yRefPx < ref.canvas.height) {
                 const idxRef = (yRefPx * ref.canvas.width + xRefPx) * 4;
-                outData.data[idxOut] = dataRef.data[idxRef];
-                outData.data[idxOut + 1] = dataRef.data[idxRef + 1];
-                outData.data[idxOut + 2] = dataRef.data[idxRef + 2];
-                outData.data[idxOut + 3] = 255;
-                continue;
+                if (dataRef.data[idxRef + 3] > 0) {
+                    outData.data[idxOut] = dataRef.data[idxRef];
+                    outData.data[idxOut + 1] = dataRef.data[idxRef + 1];
+                    outData.data[idxOut + 2] = dataRef.data[idxRef + 2];
+                    outData.data[idxOut + 3] = 255;
+                    continue;
+                }
             }
 
             const secReal = mapearRefASec(Xreal, Yreal);
@@ -2843,10 +3248,12 @@ function componerFotomosaico(resultadoA, resultadoB, transform, principal) {
 
             if (xSecPx >= 0 && xSecPx < sec.canvas.width && ySecPx >= 0 && ySecPx < sec.canvas.height) {
                 const idxSec = (ySecPx * sec.canvas.width + xSecPx) * 4;
-                outData.data[idxOut] = dataSec.data[idxSec];
-                outData.data[idxOut + 1] = dataSec.data[idxSec + 1];
-                outData.data[idxOut + 2] = dataSec.data[idxSec + 2];
-                outData.data[idxOut + 3] = 255;
+                if (dataSec.data[idxSec + 3] > 0) {
+                    outData.data[idxOut] = dataSec.data[idxSec];
+                    outData.data[idxOut + 1] = dataSec.data[idxSec + 1];
+                    outData.data[idxOut + 2] = dataSec.data[idxSec + 2];
+                    outData.data[idxOut + 3] = 255;
+                }
             }
         }
     }
@@ -2902,14 +3309,40 @@ function mostrarResultadoFotomosaico(rectificadoMosaico) {
     capaDibujoMosaico.height = canvasFinal.height;
 
     const moduloMedicionMosaico = document.getElementById('modulo-medicion-mosaico');
-    crearPanelMedicionYDibujo(rectificadoMosaico, canvasFinal, capaMedidasMosaico, capaDibujoMosaico, capaCuadriculaMosaico, moduloMedicionMosaico);
+    // null en vez de un File: el fotomosaico es la fusión de varias fotos,
+    // no hay una sola "imagen original" que guardar en el .trf — ver nota en
+    // crearPanelMedicionYDibujo.
+    crearPanelMedicionYDibujo(rectificadoMosaico, canvasFinal, capaMedidasMosaico, capaDibujoMosaico, capaCuadriculaMosaico, moduloMedicionMosaico, null, rectificadoMosaico.dibujosGuardados, rectificadoMosaico.comentariosGuardados, rectificadoMosaico.capasGuardadas);
 }
 
 // =====================================================================
 // PANEL REUTILIZABLE: CONSULTAR MEDIDAS (cotas sobre la imagen) + DIBUJAR
 // (con exportación a imagen y DXF). Usado sobre el Fotoplano y el Fotomosaico.
 // =====================================================================
-function crearPanelMedicionYDibujo(rectificado, canvasVisible, capaMedidas, capaDibujo, capaCuadricula, contenedorPanel) {
+// fileOriginal: File subido por el usuario, para poder empaquetarlo en el
+// .trf junto con la rectificada — en Fotomosaico no hay un único "original"
+// (es la fusión de varias fotos) así que llega null desde ahí; el .trf
+// resultante queda sin imagen original propia (ver empaquetarProyectoTRF).
+// dibujosGuardados: array de figuras ya dibujadas, cuando este panel se
+// arma a partir de un .trf cargado en vez de una rectificación recién hecha
+// (ver crearPanelMedicionYDibujo(rectificado.dibujosGuardados, ...) en los
+// dos call sites, mostrarResultado y mostrarResultadoFotomosaico).
+// Grilla de colores para el modal "Nueva capa"/"Editar capa" — los 7
+// primeros colores REALES del Índice de Color de AutoCAD (ACI 1-7), en RGB
+// puro — a diferencia de la versión anterior (una paleta más suave, sin
+// relación con el ACI real), estos números y colores tienen que coincidir
+// exactamente con AutoCAD para que el DXF sirva ahí de verdad.
+const PALETA_GRID_COLORES = [
+    { hex: '#ff0000', aci: 1 }, // Rojo
+    { hex: '#ffff00', aci: 2 }, // Amarillo
+    { hex: '#00ff00', aci: 3 }, // Verde
+    { hex: '#00ffff', aci: 4 }, // Cian
+    { hex: '#0000ff', aci: 5 }, // Azul
+    { hex: '#ff00ff', aci: 6 }, // Magenta
+    { hex: '#000000', aci: 7 }  // Negro
+];
+
+function crearPanelMedicionYDibujo(rectificado, canvasVisible, capaMedidas, capaDibujo, capaCuadricula, contenedorPanel, fileOriginal, dibujosGuardados, comentariosGuardados, capasGuardadas) {
     const ctxMedidas = capaMedidas.getContext('2d');
     const ctxDibujo = capaDibujo.getContext('2d');
     // Las capas están al 100% de resolución real de la imagen (no al tamaño
@@ -2921,29 +3354,32 @@ function crearPanelMedicionYDibujo(rectificado, canvasVisible, capaMedidas, capa
     capaCuadricula.height = canvasVisible.height;
     dibujarCuadriculaMetrica(capaCuadricula, rectificado.xMin, rectificado.yMax, rectificado.pxPorMetro, rectificado.canvas, canvasVisible);
 
-    let dibujos = [];
+    let dibujos = dibujosGuardados ? dibujosGuardados.slice() : [];
+    let comentarios = comentariosGuardados ? comentariosGuardados.slice() : [];
     let modoActivo = null; // 'medida:xy' | 'medida:lineal' | 'medida:superficie' | 'dibujo:punto' | 'dibujo:linea' | 'dibujo:poligono' | 'dibujo:libre'
+    // Solo las herramientas de "Dibujar" quedan en modo continuo (trazar
+    // varias figuras seguidas sin volver a tocar el botón) — "Consultar
+    // medidas" sigue como antes, una consulta por click de herramienta.
+    let modoContinuo = false;
     let puntosPendientes = [];
     let capturandoLibre = false;
     let trazoLibre = [];
 
     const COLOR_MEDIDA = '#f2efe9';
 
-    // Paleta fija de colores ACI (AutoCAD Color Index): DXF R12 usa color
-    // indexado, no RGB libre. Cada color se exporta como su propia capa.
-    // etiqueta: como se muestra en "Capa N (etiqueta)" — en minúscula, no
-    // siempre igual al nombre interno (nombre queda igual que ya se usaba
-    // para la capa del DXF, para no renombrarla de golpe).
-    const PALETA_COLORES = [
-        { nombre: 'ROJO', etiqueta: 'rojo', aci: 1, hex: '#e11d1d' },
-        { nombre: 'AMARILLO', etiqueta: 'amarillo', aci: 2, hex: '#eab308' },
-        { nombre: 'VERDE', etiqueta: 'verde', aci: 3, hex: '#16a34a' },
-        { nombre: 'CIAN', etiqueta: 'cyan', aci: 4, hex: '#06b6d4' },
-        { nombre: 'AZUL', etiqueta: 'azul', aci: 5, hex: '#2563eb' },
-        { nombre: 'MAGENTA', etiqueta: 'magenta', aci: 6, hex: '#d946ef' },
-        { nombre: 'NEGRO', etiqueta: 'negro', aci: 7, hex: '#18181b' }
-    ];
-    let colorActivo = PALETA_COLORES[0];
+    // Capas de usuario (nombre + color propios, ver pedirDatosCapa más
+    // abajo) — reemplaza la paleta fija de 7 colores de antes. Arranca
+    // vacío: hay que crear al menos una capa antes de poder dibujar (ver
+    // gateo en setModoDibujo). `color` de cada dibujo pasa a ser una
+    // REFERENCIA directa al objeto capa correspondiente (no una copia) —
+    // así, editar el nombre/color de una capa ya creada actualiza sola
+    // cualquier figura ya dibujada con ella, sin tener que tocar `dibujos`.
+    // Esa referencia compartida no sobrevive un guardado/cargado de .trf
+    // (JSON no preserva identidad de objetos) — ahí se re-vincula a mano
+    // por `id` al cargar (ver agregarImagenDesdeTRF).
+    let capas = capasGuardadas ? capasGuardadas.slice() : [];
+    let capaIdCounter = capas.reduce((max, c) => Math.max(max, c.id || 0), 0) + 1;
+    let colorActivo = capas[0] || null;
 
     contenedorPanel.innerHTML = `
         <h3 class="controles-heading">Consultar medidas <button type="button" class="controles-help-btn" id="ayuda-medidas" title="Ayuda">?</button></h3>
@@ -2961,15 +3397,12 @@ function crearPanelMedicionYDibujo(rectificado, canvasVisible, capaMedidas, capa
                 <span class="visually-hidden">Superficie</span>
             </button>
         </div>
-        <div id="estado-medida" class="controles-hint-box">
-            Elegí una herramienta para consultar.
-        </div>
         <label class="controles-checkbox-row">
             <input type="checkbox" id="chk-cuadricula"> Mostrar cuadrícula métrica de referencia
         </label>
         <div class="controles-btn-row">
-            <button id="btn-limpiar-medidas" class="btn-text" style="flex: 1;">Limpiar</button>
-            <button id="btn-descargar-cotas" class="btn-text" style="flex: 1.4;">Imagen con cotas</button>
+            <button id="btn-limpiar-medidas" class="btn-text" style="flex: 0.7;">Limpiar</button>
+            <button id="btn-descargar-cotas" class="btn-text" style="flex: 1.6; white-space: nowrap;">Imagen con cotas</button>
         </div>
 
         <hr class="controles-divider">
@@ -2977,22 +3410,15 @@ function crearPanelMedicionYDibujo(rectificado, canvasVisible, capaMedidas, capa
         <h3 class="controles-heading">Dibujar <button type="button" class="controles-help-btn" id="ayuda-dibujar" title="Ayuda">?</button></h3>
         <!-- Desplegable propio (no <select> nativo): el navegador no deja
              tematizar el fondo/color de la lista abierta de un <select>, y
-             ahí es donde se leía mal — acá el menú es HTML normal. -->
+             ahí es donde se leía mal — acá el menú es HTML normal. Contenido
+             armado por renderizarSelectorCapas() más abajo — las capas son
+             de usuario (nombre + color propios), no una paleta fija. -->
         <div class="capa-selector" id="capa-selector">
             <button type="button" class="capa-selector-boton" id="capa-selector-boton" aria-haspopup="listbox" aria-expanded="false">
-                <span class="capa-selector-swatch" style="background: ${colorActivo.hex};"></span>
-                <span id="capa-selector-label">Capa ${PALETA_COLORES.indexOf(colorActivo) + 1}</span>
+                <span class="capa-selector-swatch" id="capa-selector-swatch-boton" style="background: none;"></span>
+                <span id="capa-selector-label">Crear capa +</span>
             </button>
-            <ul class="capa-selector-lista" id="capa-selector-lista" role="listbox" hidden>
-                ${PALETA_COLORES.map((c, i) => `
-                    <li role="option">
-                        <button type="button" class="capa-selector-opcion ${c.nombre === colorActivo.nombre ? 'activa' : ''}" data-nombre="${c.nombre}" title="${c.etiqueta}">
-                            <span class="capa-selector-swatch" style="background: ${c.hex};"></span>
-                            Capa ${i + 1}
-                        </button>
-                    </li>
-                `).join('')}
-            </ul>
+            <ul class="capa-selector-lista" id="capa-selector-lista" role="listbox" hidden></ul>
         </div>
         <div class="controles-btn-row">
             <button id="btn-dibujar-punto" class="controles-icon-btn" title="Punto">
@@ -3012,9 +3438,6 @@ function crearPanelMedicionYDibujo(rectificado, canvasVisible, capaMedidas, capa
                 <span class="visually-hidden">Forma libre</span>
             </button>
         </div>
-        <div id="estado-dibujo" class="controles-hint-box">
-            Elegí una herramienta para empezar.
-        </div>
         <div class="controles-table-wrap">
             <table class="controles-table">
                 <thead>
@@ -3029,6 +3452,34 @@ function crearPanelMedicionYDibujo(rectificado, canvasVisible, capaMedidas, capa
             <button id="btn-descargar-dibujo" class="btn-text" style="flex: 1;">Imagen</button>
             <button id="btn-exportar-dxf" class="btn-primary" style="flex: 1;" disabled>DXF</button>
         </div>
+
+        <hr class="controles-divider">
+
+        <!-- Comentarios: no son medidas ni figuras exportables a DXF — solo
+             marcan un punto con un número en la imagen; el texto en sí solo
+             va al PDF de retroalimentación, nunca a la imagen (ver
+             btn-insertar-comentario más abajo). -->
+        <h3 class="controles-heading">Comentarios <button type="button" class="controles-help-btn" id="ayuda-comentarios" title="Ayuda">?</button></h3>
+        <button id="btn-insertar-comentario" class="btn-text btn-full" title="Insertar comentario">Insertar</button>
+        <div class="controles-table-wrap">
+            <table class="controles-table">
+                <thead>
+                    <tr>
+                        <th style="width: 24px; text-align: left;">#</th><th style="text-align: left;">Categoría</th><th style="width: 24px;"></th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpo-tabla-comentarios" style="max-height: 140px;"><tr><td colspan="3" class="controles-table-empty">Sin comentarios</td></tr></tbody>
+            </table>
+        </div>
+        <button id="btn-descargar-informe" class="btn-text btn-full" disabled>Descargar informe (PDF)</button>
+
+        <hr class="controles-divider">
+
+        <!-- Solo puede guardarse un proyecto editable (.trf) una vez que hay
+             un fotoplano/fotomosaico ya rectificado — este panel entero solo
+             se monta en ese momento, así que no hace falta ninguna condición
+             extra acá. -->
+        <button id="btn-guardar-proyecto-trf" class="btn-text btn-full">Guardar Proyecto (.trf)</button>
     `;
 
     contenedorPanel.querySelector('#ayuda-medidas').addEventListener('click', () => {
@@ -3041,7 +3492,6 @@ function crearPanelMedicionYDibujo(rectificado, canvasVisible, capaMedidas, capa
     const btnMedirXY = contenedorPanel.querySelector('#btn-medir-xy');
     const btnMedirLineal = contenedorPanel.querySelector('#btn-medir-lineal');
     const btnMedirSuperficie = contenedorPanel.querySelector('#btn-medir-superficie');
-    const estadoMedida = contenedorPanel.querySelector('#estado-medida');
     const btnLimpiarMedidas = contenedorPanel.querySelector('#btn-limpiar-medidas');
     const btnDescargarCotas = contenedorPanel.querySelector('#btn-descargar-cotas');
     const chkCuadricula = contenedorPanel.querySelector('#chk-cuadricula');
@@ -3053,7 +3503,7 @@ function crearPanelMedicionYDibujo(rectificado, canvasVisible, capaMedidas, capa
     const capaSelectorBoton = contenedorPanel.querySelector('#capa-selector-boton');
     const capaSelectorLista = contenedorPanel.querySelector('#capa-selector-lista');
     const capaSelectorLabel = contenedorPanel.querySelector('#capa-selector-label');
-    const capaSelectorSwatchBoton = capaSelectorBoton.querySelector('.capa-selector-swatch');
+    const capaSelectorSwatchBoton = contenedorPanel.querySelector('#capa-selector-swatch-boton');
 
     capaSelectorBoton.addEventListener('click', () => {
         const abierta = !capaSelectorLista.hidden;
@@ -3066,23 +3516,164 @@ function crearPanelMedicionYDibujo(rectificado, canvasVisible, capaMedidas, capa
             capaSelectorBoton.setAttribute('aria-expanded', 'false');
         }
     });
-    capaSelectorLista.querySelectorAll('.capa-selector-opcion').forEach((btn, i) => {
-        btn.addEventListener('click', () => {
-            colorActivo = PALETA_COLORES.find(c => c.nombre === btn.dataset.nombre);
-            capaSelectorLabel.textContent = `Capa ${i + 1}`;
-            capaSelectorSwatchBoton.style.background = colorActivo.hex;
-            capaSelectorLista.querySelectorAll('.capa-selector-opcion').forEach(b => b.classList.remove('activa'));
-            btn.classList.add('activa');
-            capaSelectorLista.hidden = true;
-            capaSelectorBoton.setAttribute('aria-expanded', 'false');
+
+    // Modal compartido para crear una capa nueva y para editar una ya
+    // existente (mismo formulario) — capaExistente null/undefined = crear.
+    // Devuelve { accion: 'guardar', hex, nombre } | { accion: 'eliminar' } |
+    // null (canceló).
+    let modalCapaOverlay = null;
+    function pedirDatosCapa(capaExistente) {
+        return new Promise((resolve) => {
+            if (!modalCapaOverlay) {
+                modalCapaOverlay = document.createElement('div');
+                modalCapaOverlay.className = 'modal-overlay';
+                document.body.appendChild(modalCapaOverlay);
+            }
+            const esEdicion = !!capaExistente;
+            modalCapaOverlay.innerHTML = `
+                <div class="modal-box">
+                    <h3>${esEdicion ? 'Editar capa' : 'Nueva capa'}</h3>
+                    <div class="capa-color-grid" id="capa-color-grid">
+                        ${PALETA_GRID_COLORES.map(c => `
+                            <button type="button" class="capa-color-swatch" data-hex="${c.hex}" data-aci="${c.aci}" style="background: ${c.hex};" title="${c.hex}"></button>
+                        `).join('')}
+                    </div>
+                    <div class="input-row">
+                        <label for="nombre-capa-modal">Nombre</label>
+                        <input type="text" id="nombre-capa-modal">
+                    </div>
+                    <div class="modal-actions controles-btn-row">
+                        ${esEdicion ? '<button type="button" class="btn-text" id="btn-capa-eliminar" style="flex: 1;">Eliminar</button>' : ''}
+                        <button type="button" class="btn-text" id="btn-capa-cancelar" style="flex: 1;">Cancelar</button>
+                        <button type="button" class="btn-primary" id="btn-capa-guardar" style="flex: 1;">Guardar</button>
+                    </div>
+                </div>
+            `;
+            modalCapaOverlay.style.display = 'flex';
+
+            const grid = modalCapaOverlay.querySelector('#capa-color-grid');
+            const inputNombre = modalCapaOverlay.querySelector('#nombre-capa-modal');
+            let hexElegido = capaExistente ? capaExistente.hex : PALETA_GRID_COLORES[0].hex;
+            let aciElegido = capaExistente ? capaExistente.aci : PALETA_GRID_COLORES[0].aci;
+            const marcarSeleccion = () => {
+                grid.querySelectorAll('.capa-color-swatch').forEach(sw => {
+                    sw.classList.toggle('seleccionado', sw.dataset.hex === hexElegido);
+                });
+            };
+            grid.querySelectorAll('.capa-color-swatch').forEach(sw => {
+                sw.addEventListener('click', () => {
+                    hexElegido = sw.dataset.hex;
+                    aciElegido = parseInt(sw.dataset.aci);
+                    marcarSeleccion();
+                });
+            });
+            marcarSeleccion();
+            inputNombre.value = capaExistente ? capaExistente.nombre : '';
+            inputNombre.focus();
+            if (capaExistente) inputNombre.select();
+
+            const cerrar = (valor) => {
+                modalCapaOverlay.style.display = 'none';
+                resolve(valor);
+            };
+            modalCapaOverlay.querySelector('#btn-capa-cancelar').onclick = () => cerrar(null);
+            modalCapaOverlay.querySelector('#btn-capa-guardar').onclick = () => {
+                const nombre = inputNombre.value.trim();
+                if (!nombre) { mostrarMensaje('La capa necesita un nombre.', 'advertencia'); return; }
+                cerrar({ accion: 'guardar', hex: hexElegido, aci: aciElegido, nombre });
+            };
+            const btnEliminar = modalCapaOverlay.querySelector('#btn-capa-eliminar');
+            if (btnEliminar) btnEliminar.onclick = () => cerrar({ accion: 'eliminar' });
+            modalCapaOverlay.onclick = (e) => { if (e.target === modalCapaOverlay) cerrar(null); };
         });
-    });
+    }
+
+    // Reconstruye la lista desplegable de capas + el botón que muestra la
+    // activa — se llama después de crear/editar/borrar/seleccionar una capa,
+    // y una vez al armar el panel (por si viene con capas ya cargadas de un
+    // .trf). "capaActiva" es el mismo objeto que colorActivo (ver arriba).
+    function renderizarSelectorCapas() {
+        if (colorActivo) {
+            capaSelectorSwatchBoton.style.background = colorActivo.hex;
+            capaSelectorLabel.textContent = colorActivo.nombre;
+        } else {
+            capaSelectorSwatchBoton.style.background = 'none';
+            capaSelectorLabel.textContent = 'Crear capa +';
+        }
+
+        capaSelectorLista.innerHTML = `
+            ${capas.map(c => `
+                <li class="capa-fila" role="option">
+                    <button type="button" class="capa-selector-opcion ${colorActivo === c ? 'activa' : ''}" data-id="${c.id}">
+                        <span class="capa-selector-swatch" style="background: ${c.hex};"></span>
+                        <span>${escaparHtml(c.nombre)}</span>
+                    </button>
+                    <button type="button" class="btn-eliminar-entidad" data-id="${c.id}" data-accion="editar" title="Editar capa">✎</button>
+                </li>
+            `).join('')}
+            <li><button type="button" class="capa-nueva-btn" id="btn-capa-nueva">+ Nueva capa</button></li>
+        `;
+
+        capaSelectorLista.querySelectorAll('.capa-selector-opcion').forEach(btn => {
+            btn.addEventListener('click', () => {
+                colorActivo = capas.find(c => c.id === parseInt(btn.dataset.id)) || null;
+                capaSelectorLista.hidden = true;
+                capaSelectorBoton.setAttribute('aria-expanded', 'false');
+                renderizarSelectorCapas();
+            });
+        });
+        capaSelectorLista.querySelectorAll('[data-accion="editar"]').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const capa = capas.find(c => c.id === parseInt(btn.dataset.id));
+                if (!capa) return;
+                const resultado = await pedirDatosCapa(capa);
+                if (!resultado) return;
+                if (resultado.accion === 'eliminar') {
+                    if (dibujos.some(ent => ent.color === capa)) {
+                        mostrarMensaje('Esta capa tiene figuras dibujadas — no se puede borrar mientras se usen.', 'advertencia');
+                        return;
+                    }
+                    capas = capas.filter(c => c !== capa);
+                    if (colorActivo === capa) {
+                        colorActivo = capas[0] || null;
+                        // Sin capa activa no hay a qué color asignar lo que se
+                        // siga dibujando — si justo se estaba dibujando con la
+                        // capa borrada, se corta la herramienta acá.
+                        if (!colorActivo && modoActivo && modoActivo.startsWith('dibujo:')) cancelarModoDibujo();
+                    }
+                } else {
+                    // Muta el objeto existente (no lo reemplaza) — así las
+                    // figuras que ya lo usan (misma referencia, ver arriba)
+                    // se actualizan solas, sin recorrer `dibujos`.
+                    capa.hex = resultado.hex;
+                    capa.aci = resultado.aci;
+                    capa.nombre = resultado.nombre;
+                    redibujarSoloCapaDibujo();
+                }
+                renderizarSelectorCapas();
+            });
+        });
+        const btnCapaNueva = capaSelectorLista.querySelector('#btn-capa-nueva');
+        if (btnCapaNueva) {
+            btnCapaNueva.addEventListener('click', async () => {
+                const resultado = await pedirDatosCapa(null);
+                if (!resultado || resultado.accion !== 'guardar') return;
+                const nuevaCapa = { id: capaIdCounter++, hex: resultado.hex, aci: resultado.aci, nombre: resultado.nombre };
+                capas.push(nuevaCapa);
+                colorActivo = nuevaCapa;
+                capaSelectorLista.hidden = true;
+                capaSelectorBoton.setAttribute('aria-expanded', 'false');
+                renderizarSelectorCapas();
+            });
+        }
+    }
+    renderizarSelectorCapas();
 
     const btnPunto = contenedorPanel.querySelector('#btn-dibujar-punto');
     const btnLinea = contenedorPanel.querySelector('#btn-dibujar-linea');
     const btnPoligono = contenedorPanel.querySelector('#btn-dibujar-poligono');
     const btnLibre = contenedorPanel.querySelector('#btn-dibujar-libre');
-    const estadoDibujo = contenedorPanel.querySelector('#estado-dibujo');
     const cuerpoTablaDibujo = contenedorPanel.querySelector('#cuerpo-tabla-dibujo');
     const btnDescargarDibujo = contenedorPanel.querySelector('#btn-descargar-dibujo');
     const btnExportarDXF = contenedorPanel.querySelector('#btn-exportar-dxf');
@@ -3169,6 +3760,30 @@ function crearPanelMedicionYDibujo(rectificado, canvasVisible, capaMedidas, capa
         }
     }
 
+    // Círculo numerado — nunca el texto del comentario, que solo va al PDF.
+    // Relleno blanco sólido + borde y número negros (en vez del tono claro
+    // que usan las medidas): necesita leerse igual de bien sobre cualquier
+    // parte de la foto, clara u oscura — un trazo semitransparente se perdía
+    // contra fondos claros.
+    function dibujarComentarioEn(ctx, P, numero) {
+        const { x, y } = realAPixel(P);
+        const r = 9 * factorEscala;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 1.5 * factorEscala;
+        ctx.stroke();
+        ctx.save();
+        ctx.font = `600 ${11 * factorEscala}px sans-serif`;
+        ctx.fillStyle = '#000000';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(String(numero), x, y + 0.5 * factorEscala);
+        ctx.restore();
+    }
+
     function calcularAreaPoligono(puntos) {
         let area = 0;
         for (let i = 0; i < puntos.length; i++) {
@@ -3216,12 +3831,16 @@ function crearPanelMedicionYDibujo(rectificado, canvasVisible, capaMedidas, capa
     }
 
     // --- Grupo "Consultar medidas" ---
+    // Sin caja de estado propia — instrucciones y resultados salen por el
+    // cuadro de diálogo compartido (abajo a la izquierda), igual que el
+    // resto de la app.
     function actualizarEstadoMedida(mensaje) {
-        estadoMedida.textContent = mensaje || 'Elegí una herramienta para consultar.';
+        if (mensaje) mostrarMensaje(mensaje, 'info');
     }
 
     function setModoMedida(modo) {
         modoActivo = modo;
+        modoContinuo = false;
         puntosPendientes = [];
         const mensajes = {
             'medida:xy': 'Click en la imagen para consultar sus coordenadas.',
@@ -3237,7 +3856,6 @@ function crearPanelMedicionYDibujo(rectificado, canvasVisible, capaMedidas, capa
 
     btnLimpiarMedidas.addEventListener('click', () => {
         ctxMedidas.clearRect(0, 0, capaMedidas.width, capaMedidas.height);
-        actualizarEstadoMedida(null);
     });
 
     btnDescargarCotas.addEventListener('click', () => descargarComposicion(capaMedidas, 'fotoplano_con_cotas.png', true));
@@ -3250,7 +3868,7 @@ function crearPanelMedicionYDibujo(rectificado, canvasVisible, capaMedidas, capa
             cuerpoTablaDibujo.innerHTML = dibujos.map((ent, i) => {
                 let metrica = '';
                 if (ent.tipo === 'punto') metrica = `(${ent.puntos[0].X.toFixed(2)}, ${ent.puntos[0].Y.toFixed(2)}) m`;
-                else if (ent.tipo === 'linea') metrica = `${Math.hypot(ent.puntos[1].X - ent.puntos[0].X, ent.puntos[1].Y - ent.puntos[0].Y).toFixed(3)} m`;
+                else if (ent.tipo === 'linea') metrica = `${calcularLongitudPolilinea(ent.puntos).toFixed(3)} m`;
                 else if (ent.tipo === 'poligono') metrica = `${calcularAreaPoligono(ent.puntos).toFixed(3)} m²`;
                 else if (ent.tipo === 'libre') metrica = `${calcularLongitudPolilinea(ent.puntos).toFixed(3)} m (trazo)`;
                 return `<tr><td>${i + 1}</td><td><span style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: ${ent.color.hex}; margin-right: 4px;"></span>${ent.tipo}</td><td>${metrica}</td><td><button data-index="${i}" class="btn-eliminar-entidad">✕</button></td></tr>`;
@@ -3271,12 +3889,23 @@ function crearPanelMedicionYDibujo(rectificado, canvasVisible, capaMedidas, capa
         dibujos.forEach(ent => {
             const color = ent.color.hex;
             if (ent.tipo === 'punto') dibujarPuntoEn(ctxDibujo, ent.puntos[0], color, null);
-            else if (ent.tipo === 'linea') dibujarLineaEn(ctxDibujo, ent.puntos[0], ent.puntos[1], color, null);
+            else if (ent.tipo === 'linea') dibujarPolilineaEn(ctxDibujo, ent.puntos, color, false, null);
             else if (ent.tipo === 'poligono') dibujarPolilineaEn(ctxDibujo, ent.puntos, color, true, null);
             else if (ent.tipo === 'libre') dibujarPolilineaEn(ctxDibujo, ent.puntos, color, false, null);
         });
+        // Los comentarios se pintan como un número en un círculo — nunca el
+        // texto en sí (eso queda solo en el PDF de retroalimentación, ver
+        // btn-descargar-informe más abajo).
+        comentarios.forEach(c => dibujarComentarioEn(ctxDibujo, c.punto, c.numero));
         if (capturandoLibre && trazoLibre.length >= 2) {
             dibujarPolilineaEn(ctxDibujo, trazoLibre, colorActivo.hex, false, null);
+        }
+        // Polilínea de "Línea" en progreso (ver manejarClick): se pinta acá
+        // como preview en vivo — recién se confirma como figura en `dibujos`
+        // al salir del modo (confirmarPolilineaPendiente).
+        if (modoActivo === 'dibujo:linea' && puntosPendientes.length >= 1) {
+            if (puntosPendientes.length >= 2) dibujarPolilineaEn(ctxDibujo, puntosPendientes, colorActivo.hex, false, null);
+            else dibujarPuntoEn(ctxDibujo, puntosPendientes[0], colorActivo.hex, null);
         }
     }
 
@@ -3289,30 +3918,435 @@ function crearPanelMedicionYDibujo(rectificado, canvasVisible, capaMedidas, capa
         actualizarTablaDibujo();
     }
 
+    const MENSAJES_DIBUJO = {
+        'dibujo:punto': 'Click en la imagen para agregar un punto.',
+        'dibujo:linea': 'Click en cada punto de la línea — Esc para terminar.',
+        'dibujo:poligono': 'Click en los vértices y presioná Enter para cerrar (mínimo 3).',
+        'dibujo:libre': 'Mantené apretado el botón del mouse y arrastrá para dibujar.'
+    };
+
+    // Se llama al terminar UNA figura (punto agregado, línea de 2 puntos,
+    // polígono cerrado con Enter, trazo libre soltado). En modo continuo
+    // (siempre para "Dibujar" — ver modoContinuo) deja la misma herramienta
+    // lista para la próxima figura en vez de apagarla; para salir hace falta
+    // Escape o volver a tocar el botón de la herramienta activa (ver
+    // toggleModoDibujo/cancelarModoDibujo).
     function volverAModoInicialDibujo() {
-        modoActivo = null;
         puntosPendientes = [];
-        estadoDibujo.textContent = 'Elegí una herramienta para empezar.';
+        if (modoContinuo && modoActivo) {
+            mostrarMensaje(MENSAJES_DIBUJO[modoActivo], 'info');
+        } else {
+            modoActivo = null;
+        }
+    }
+
+    const BOTONES_DIBUJO = {
+        'dibujo:punto': btnPunto,
+        'dibujo:linea': btnLinea,
+        'dibujo:poligono': btnPoligono,
+        'dibujo:libre': btnLibre
+    };
+    // .controles-icon-btn.activo ya existía en el CSS pero no se usaba desde
+    // ningún lado — con el modo continuo (la herramienta queda prendida
+    // entre figuras) hace falta mostrar cuál está activa, así que se conecta acá.
+    function marcarBotonDibujoActivo(modo) {
+        Object.entries(BOTONES_DIBUJO).forEach(([m, btn]) => btn.classList.toggle('activo', m === modo));
+    }
+
+    // "Línea" arma una polilínea abierta click a click (ver manejarClick) en
+    // vez de cerrarse sola cada 2 puntos — como no hay un click final que la
+    // complete, hace falta confirmarla como figura de `dibujos` en cualquier
+    // punto donde el modo se corte (Escape, toggle, cambiar de herramienta o
+    // pasar a "Insertar comentario"), o se pierde. Sin efecto si no hay una
+    // polilínea de al menos 2 puntos en progreso.
+    function confirmarPolilineaPendiente() {
+        if (modoActivo === 'dibujo:linea' && puntosPendientes.length >= 2) {
+            dibujos.push({ tipo: 'linea', puntos: puntosPendientes.map(pt => ({ X: pt.X, Y: pt.Y })), color: colorActivo });
+        }
+    }
+
+    // Cancela la herramienta de dibujo activa — confirma primero cualquier
+    // polilínea de "Línea" en progreso (ver arriba); para el resto de las
+    // herramientas no hay nada que confirmar, solo se limpia la marca a
+    // mitad de trazo (puntos de un polígono sin cerrar) ya pintada en la capa.
+    function cancelarModoDibujo() {
+        confirmarPolilineaPendiente();
+        modoActivo = null;
+        modoContinuo = false;
+        puntosPendientes = [];
+        capturandoLibre = false;
+        trazoLibre = [];
+        marcarBotonDibujoActivo(null);
+        redibujarCapaDibujo();
     }
 
     function setModoDibujo(modo) {
+        confirmarPolilineaPendiente();
         modoActivo = modo;
+        modoContinuo = true;
         puntosPendientes = [];
-        const mensajes = {
-            'dibujo:punto': 'Click en la imagen para agregar un punto.',
-            'dibujo:linea': 'Click en los dos extremos de la línea.',
-            'dibujo:poligono': 'Click en los vértices y presioná Enter para cerrar (mínimo 3).',
-            'dibujo:libre': 'Mantené apretado el botón del mouse y arrastrá para dibujar.'
-        };
-        estadoDibujo.textContent = mensajes[modo];
+        mostrarMensaje(MENSAJES_DIBUJO[modo], 'info');
+        marcarBotonDibujoActivo(modo);
+        // Mutuamente excluyente con "Insertar comentario" — btnInsertarComentario
+        // se declara más abajo en este mismo scope, pero setModoDibujo() solo
+        // se invoca desde clicks (después de que todo el setup ya corrió), así
+        // que para entonces ya existe.
+        btnInsertarComentario.classList.remove('activo');
+        redibujarCapaDibujo();
     }
 
-    btnPunto.addEventListener('click', () => setModoDibujo('dibujo:punto'));
-    btnLinea.addEventListener('click', () => setModoDibujo('dibujo:linea'));
-    btnPoligono.addEventListener('click', () => setModoDibujo('dibujo:poligono'));
-    btnLibre.addEventListener('click', () => setModoDibujo('dibujo:libre'));
+    // Tocar la herramienta ya activa la apaga (toggle) — la otra forma de
+    // salir del modo continuo es Escape (ver manejarKeydown). Sin ninguna
+    // capa creada no hay a qué color asignarle la figura — se avisa y no
+    // se activa la herramienta, en vez de dibujar con un color implícito.
+    function toggleModoDibujo(modo) {
+        if (!colorActivo) {
+            mostrarMensaje('Antes de dibujar, tocá "Crear capa +".', 'advertencia');
+            return;
+        }
+        if (modoActivo === modo) cancelarModoDibujo();
+        else setModoDibujo(modo);
+    }
+
+    btnPunto.addEventListener('click', () => toggleModoDibujo('dibujo:punto'));
+    btnLinea.addEventListener('click', () => toggleModoDibujo('dibujo:linea'));
+    btnPoligono.addEventListener('click', () => toggleModoDibujo('dibujo:poligono'));
+    btnLibre.addEventListener('click', () => toggleModoDibujo('dibujo:libre'));
 
     btnDescargarDibujo.addEventListener('click', () => descargarComposicion(capaDibujo, 'fotoplano_con_dibujo.png'));
+
+    // --- Grupo "Comentarios" ---
+    const btnInsertarComentario = contenedorPanel.querySelector('#btn-insertar-comentario');
+    const cuerpoTablaComentarios = contenedorPanel.querySelector('#cuerpo-tabla-comentarios');
+    const btnDescargarInforme = contenedorPanel.querySelector('#btn-descargar-informe');
+
+    function renumerarComentarios() {
+        comentarios.forEach((c, i) => { c.numero = i + 1; });
+    }
+
+    function actualizarTablaComentarios() {
+        if (comentarios.length === 0) {
+            cuerpoTablaComentarios.innerHTML = `<tr><td colspan="3" class="controles-table-empty">Sin comentarios</td></tr>`;
+        } else {
+            // Solo la categoría en la lista — la descripción puede ser larga
+            // y no tiene sentido acá (ver PDF para el texto completo).
+            cuerpoTablaComentarios.innerHTML = comentarios.map((c, i) => {
+                return `<tr><td style="text-align: left;">${c.numero}</td><td style="text-align: left;" title="${escaparHtml(c.categoria)}">${escaparHtml(c.categoria)}</td><td><button data-index="${i}" class="btn-eliminar-entidad btn-eliminar-comentario">✕</button></td></tr>`;
+            }).join('');
+            // .btn-eliminar-entidad: mismo estilo que la cruz de la tabla de
+            // Dibujar (antes esta cruz no tenía ningún CSS propio, se veía
+            // con el estilo default del navegador). .btn-eliminar-comentario
+            // se mantiene como selector aparte, no para estilo — evita
+            // enganchar por error los handlers de borrado de las dos tablas.
+            contenedorPanel.querySelectorAll('.btn-eliminar-comentario').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    comentarios.splice(parseInt(e.target.getAttribute('data-index')), 1);
+                    renumerarComentarios();
+                    redibujarSoloCapaDibujo();
+                    actualizarTablaComentarios();
+                });
+            });
+        }
+        btnDescargarInforme.disabled = comentarios.length === 0;
+    }
+
+    // Ventana emergente para tipear categoría + descripción — mismo patrón
+    // visual (.modal-overlay/.modal-box) que el aviso "solo en PC" de
+    // mostrarIntro() acá mismo y el modal de "Solicitar soporte" de la
+    // landing de raumlab. Se crea una sola vez y se reusa (mostrar/ocultar),
+    // no una por comentario.
+    let modalComentarioOverlay = null;
+    function pedirDatosComentario() {
+        return new Promise((resolve) => {
+            if (!modalComentarioOverlay) {
+                modalComentarioOverlay = document.createElement('div');
+                modalComentarioOverlay.className = 'modal-overlay';
+                modalComentarioOverlay.innerHTML = `
+                    <div class="modal-box">
+                        <h3>Nuevo comentario</h3>
+                        <div class="input-row">
+                            <label for="categoria-comentario-modal">Categoría</label>
+                            <input type="text" id="categoria-comentario-modal">
+                        </div>
+                        <div class="input-row" style="margin-top: 10px;">
+                            <label for="descripcion-comentario-modal">Descripción</label>
+                            <textarea id="descripcion-comentario-modal" rows="4"></textarea>
+                        </div>
+                        <div class="modal-actions controles-btn-row">
+                            <button type="button" class="btn-text" id="btn-comentario-cancelar" style="flex: 1;">Cancelar</button>
+                            <button type="button" class="btn-primary" id="btn-comentario-guardar" style="flex: 1;">Guardar</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modalComentarioOverlay);
+            }
+            modalComentarioOverlay.style.display = 'flex';
+            const inputCategoria = modalComentarioOverlay.querySelector('#categoria-comentario-modal');
+            const textareaDescripcion = modalComentarioOverlay.querySelector('#descripcion-comentario-modal');
+            inputCategoria.value = '';
+            textareaDescripcion.value = '';
+            inputCategoria.focus();
+
+            const cerrar = (valor) => {
+                modalComentarioOverlay.style.display = 'none';
+                resolve(valor);
+            };
+            modalComentarioOverlay.querySelector('#btn-comentario-cancelar').onclick = () => cerrar(null);
+            modalComentarioOverlay.querySelector('#btn-comentario-guardar').onclick = () => {
+                const categoria = inputCategoria.value.trim();
+                const descripcion = textareaDescripcion.value.trim();
+                if (!categoria && !descripcion) { cerrar(null); return; }
+                cerrar({ categoria: categoria || 'Sin categoría', descripcion });
+            };
+            modalComentarioOverlay.onclick = (e) => { if (e.target === modalComentarioOverlay) cerrar(null); };
+        });
+    }
+
+    function cancelarModoComentario() {
+        if (modoActivo === 'comentario:insertar') modoActivo = null;
+        btnInsertarComentario.classList.remove('activo');
+    }
+
+    // Mismo criterio de toggle + continuo que "Dibujar": tocar el botón ya
+    // activo lo apaga; si no, se prende y queda armado para el próximo click
+    // (no hace falta volver a tocarlo entre un comentario y el siguiente) —
+    // Escape también lo apaga (ver manejarKeydown). Ya no hay una caja de
+    // estado propia de esta sección — el aviso de qué hacer sale por el
+    // mismo cuadro de diálogo (abajo a la izquierda) que usa el resto de la
+    // app, no una caja fija solo para Comentarios.
+    btnInsertarComentario.addEventListener('click', () => {
+        if (modoActivo === 'comentario:insertar') {
+            cancelarModoComentario();
+        } else {
+            cancelarModoDibujo();
+            modoActivo = 'comentario:insertar';
+            btnInsertarComentario.classList.add('activo');
+            mostrarMensaje('Click en la imagen para ubicar el comentario — Esc para terminar.', 'info');
+        }
+    });
+
+    contenedorPanel.querySelector('#ayuda-comentarios').addEventListener('click', () => {
+        mostrarMensaje('El comentario marca un punto numerado en la imagen — el texto no se ve ahí, solo en el informe PDF que se descarga con "Descargar informe".', 'info');
+    });
+
+    // Ventana previa a "Descargar informe" — pensada como ficha de
+    // historial de preservación: qué se incluye (imagen/comentarios/
+    // dibujos, cada uno independiente) + fecha de diagnóstico + autor, así
+    // cada PDF generado queda identificado como un registro de una fecha y
+    // una persona puntual, no un volcado genérico.
+    let modalInformeOverlay = null;
+    function pedirOpcionesInforme() {
+        return new Promise((resolve) => {
+            if (!modalInformeOverlay) {
+                modalInformeOverlay = document.createElement('div');
+                modalInformeOverlay.className = 'modal-overlay';
+                modalInformeOverlay.innerHTML = `
+                    <div class="modal-box">
+                        <h3>Descargar informe</h3>
+                        <label class="controles-checkbox-row"><input type="checkbox" id="informe-check-imagen" checked> Imagen</label>
+                        <label class="controles-checkbox-row"><input type="checkbox" id="informe-check-dibujos" checked> Dibujos</label>
+                        <label class="controles-checkbox-row"><input type="checkbox" id="informe-check-comentarios" checked> Comentarios</label>
+                        <div class="input-row" style="margin-top: 12px;">
+                            <label for="informe-fecha">Fecha de diagnóstico</label>
+                            <input type="date" id="informe-fecha">
+                        </div>
+                        <div class="input-row" style="margin-top: 10px;">
+                            <label for="informe-autor">Autor</label>
+                            <input type="text" id="informe-autor" placeholder="Nombre y apellido">
+                        </div>
+                        <div class="modal-actions controles-btn-row">
+                            <button type="button" class="btn-text" id="btn-informe-cancelar" style="flex: 1;">Cancelar</button>
+                            <button type="button" class="btn-primary" id="btn-informe-generar" style="flex: 1;">Generar</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modalInformeOverlay);
+            }
+            modalInformeOverlay.style.display = 'flex';
+            const checkImagen = modalInformeOverlay.querySelector('#informe-check-imagen');
+            const checkDibujos = modalInformeOverlay.querySelector('#informe-check-dibujos');
+            const checkComentarios = modalInformeOverlay.querySelector('#informe-check-comentarios');
+            const inputFecha = modalInformeOverlay.querySelector('#informe-fecha');
+            const inputAutor = modalInformeOverlay.querySelector('#informe-autor');
+            // "Dibujos" solo tiene sentido si "Imagen" está tildado (es una
+            // capa DE la imagen, no algo que se liste aparte) — se deshabilita
+            // en vez de ocultarse, para que quede claro por qué no se puede tocar.
+            const sincronizarDibujos = () => { checkDibujos.disabled = !checkImagen.checked; };
+            checkImagen.checked = true;
+            checkDibujos.checked = true;
+            checkComentarios.checked = true;
+            sincronizarDibujos();
+            checkImagen.onchange = sincronizarDibujos;
+            inputFecha.value = new Date().toISOString().slice(0, 10);
+            inputAutor.value = '';
+            inputAutor.focus();
+
+            const cerrar = (valor) => {
+                modalInformeOverlay.style.display = 'none';
+                resolve(valor);
+            };
+            modalInformeOverlay.querySelector('#btn-informe-cancelar').onclick = () => cerrar(null);
+            modalInformeOverlay.querySelector('#btn-informe-generar').onclick = () => {
+                cerrar({
+                    incluirImagen: checkImagen.checked,
+                    incluirDibujos: checkImagen.checked && checkDibujos.checked,
+                    incluirComentarios: checkComentarios.checked,
+                    fecha: inputFecha.value,
+                    autor: inputAutor.value.trim()
+                });
+            };
+            modalInformeOverlay.onclick = (e) => { if (e.target === modalInformeOverlay) cerrar(null); };
+        });
+    }
+
+    // Compone en un canvas nuevo la imagen rectificada + (opcionalmente)
+    // las figuras de "Dibujar" y/o las marcas de "Comentarios" — reusa las
+    // mismas funciones de dibujo que la capa en pantalla (dibujarPuntoEn,
+    // dibujarPolilineaEn, dibujarComentarioEn), así que se ve exactamente
+    // igual, pero en un canvas aparte que no toca lo que está en edición.
+    function generarImagenParaInforme(incluirDibujos, incluirComentarios) {
+        const c = document.createElement('canvas');
+        c.width = rectificado.outWidth;
+        c.height = rectificado.outHeight;
+        const ctx = c.getContext('2d');
+        ctx.drawImage(rectificado.canvas, 0, 0);
+        if (incluirDibujos) {
+            dibujos.forEach(ent => {
+                const color = ent.color.hex;
+                if (ent.tipo === 'punto') dibujarPuntoEn(ctx, ent.puntos[0], color, null);
+                else if (ent.tipo === 'linea') dibujarPolilineaEn(ctx, ent.puntos, color, false, null);
+                else if (ent.tipo === 'poligono') dibujarPolilineaEn(ctx, ent.puntos, color, true, null);
+                else if (ent.tipo === 'libre') dibujarPolilineaEn(ctx, ent.puntos, color, false, null);
+            });
+        }
+        if (incluirComentarios) {
+            comentarios.forEach(cm => dibujarComentarioEn(ctx, cm.punto, cm.numero));
+        }
+        return c;
+    }
+
+    btnDescargarInforme.addEventListener('click', async () => {
+        const opciones = await pedirOpcionesInforme();
+        if (!opciones) return;
+
+        btnDescargarInforme.disabled = true;
+        const textoOriginalBoton = btnDescargarInforme.textContent;
+        btnDescargarInforme.textContent = 'Generando...';
+        try {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+            const anchoPagina = doc.internal.pageSize.getWidth();
+            const altoPagina = doc.internal.pageSize.getHeight();
+            const margen = 18;
+            const anchoUtil = anchoPagina - margen * 2;
+            const limiteY = altoPagina - 25; // deja lugar al pie fijo (logo + crédito)
+            let y = margen;
+
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'normal');
+            doc.text('Ficha de informe', margen, y);
+            y += 8;
+
+            doc.setFontSize(14);
+            doc.text(rectificado.nombreArchivo || 'Proyecto sin nombre', margen, y);
+            y += 10;
+
+            doc.setFontSize(10);
+            if (rectificado.ubicacion) { doc.text(`Ubicación: ${rectificado.ubicacion}`, margen, y); y += 6; }
+            if (opciones.fecha) { doc.text(`Fecha de diagnóstico: ${opciones.fecha}`, margen, y); y += 6; }
+            if (opciones.autor) { doc.text(`Autor: ${opciones.autor}`, margen, y); y += 6; }
+            y += 2;
+            doc.setDrawColor(180);
+            doc.line(margen, y, margen + anchoUtil, y);
+            y += 10;
+
+            if (opciones.incluirImagen) {
+                // Sin estamparCanvas() acá — esta imagen ya va dentro de una
+                // hoja con el logo/crédito de raumlab en el pie (dibujarPiePDF
+                // más abajo); duplicarlo también sobre la foto quedaba con
+                // dos logos a la vez.
+                const canvasInforme = generarImagenParaInforme(opciones.incluirDibujos, opciones.incluirComentarios);
+                const dataURL = canvasInforme.toDataURL('image/png');
+                let anchoImg = anchoUtil;
+                let altoImg = anchoImg * (canvasInforme.height / canvasInforme.width);
+                const altoMaxImg = limiteY - y;
+                if (altoImg > altoMaxImg) {
+                    altoImg = altoMaxImg;
+                    anchoImg = altoImg * (canvasInforme.width / canvasInforme.height);
+                }
+                if (y + altoImg > limiteY) { doc.addPage(); y = margen; }
+                doc.addImage(dataURL, 'PNG', margen + (anchoUtil - anchoImg) / 2, y, anchoImg, altoImg);
+                y += altoImg + 10;
+
+                // Referencias: un cuadrito de color + el nombre de cada capa
+                // que realmente tenga alguna figura dibujada (no todas las
+                // que existan en el proyecto, se usen o no acá).
+                if (opciones.incluirDibujos) {
+                    const capasUsadas = [...new Set(dibujos.map(ent => ent.color))];
+                    if (capasUsadas.length > 0) {
+                        doc.setFontSize(9);
+                        doc.setFont(undefined, 'normal');
+                        const ladoCuadro = 3.5;
+                        capasUsadas.forEach(capa => {
+                            const lineaAlto = 6;
+                            if (y + lineaAlto > limiteY) { doc.addPage(); y = margen; }
+                            // setFillColor(hexString) depende de la versión de
+                            // jsPDF — se pasa RGB numérico para que ande seguro
+                            // en cualquiera.
+                            const hex = capa.hex.replace('#', '');
+                            const r = parseInt(hex.substring(0, 2), 16);
+                            const g = parseInt(hex.substring(2, 4), 16);
+                            const b = parseInt(hex.substring(4, 6), 16);
+                            doc.setFillColor(r, g, b);
+                            doc.rect(margen, y - ladoCuadro, ladoCuadro, ladoCuadro, 'F');
+                            doc.setDrawColor(180);
+                            doc.rect(margen, y - ladoCuadro, ladoCuadro, ladoCuadro);
+                            doc.text(capa.nombre, margen + ladoCuadro + 3, y);
+                            y += lineaAlto;
+                        });
+                        y += 4;
+                    }
+                }
+            }
+
+            if (opciones.incluirComentarios && comentarios.length > 0) {
+                doc.setFontSize(11);
+                comentarios.forEach((c) => {
+                    const tituloLineas = doc.splitTextToSize(`${c.numero} — ${c.categoria}`, anchoUtil);
+                    const descLineas = c.descripcion ? doc.splitTextToSize(c.descripcion, anchoUtil) : [];
+                    const alturaBloque = (tituloLineas.length + descLineas.length) * 6 + 5;
+                    if (y + alturaBloque > limiteY) { doc.addPage(); y = margen; }
+
+                    doc.setFont(undefined, 'bold');
+                    doc.text(tituloLineas, margen, y);
+                    y += tituloLineas.length * 6;
+
+                    if (descLineas.length > 0) {
+                        doc.setFont(undefined, 'normal');
+                        doc.text(descLineas, margen, y);
+                        y += descLineas.length * 6;
+                    }
+                    y += 5;
+                });
+                doc.setFont(undefined, 'normal');
+            }
+
+            const logo = await cargarLogoRaumlab();
+            const totalPaginas = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= totalPaginas; i++) {
+                doc.setPage(i);
+                dibujarPiePDF(doc, logo, anchoPagina, altoPagina);
+            }
+
+            doc.save((rectificado.nombreArchivo || 'proyecto').replace(/\.[^.]+$/, '') + '_informe.pdf');
+        } catch (error) {
+            console.error('Error al generar el informe PDF:', error);
+            mostrarMensaje('No se pudo generar el informe. Revisá la consola para más detalles.', 'error');
+        } finally {
+            btnDescargarInforme.disabled = comentarios.length === 0;
+            btnDescargarInforme.textContent = textoOriginalBoton;
+        }
+    });
 
     btnExportarDXF.addEventListener('click', () => {
         const dxfTexto = generarDXF(dibujos);
@@ -3323,6 +4357,47 @@ function crearPanelMedicionYDibujo(rectificado, canvasVisible, capaMedidas, capa
         a.download = 'medicion.dxf';
         a.click();
         URL.revokeObjectURL(url);
+    });
+
+    const btnGuardarProyectoTRF = contenedorPanel.querySelector('#btn-guardar-proyecto-trf');
+    btnGuardarProyectoTRF.addEventListener('click', async () => {
+        btnGuardarProyectoTRF.disabled = true;
+        btnGuardarProyectoTRF.textContent = 'Guardando...';
+        try {
+            const datosProyecto = {
+                version: 1,
+                nombreArchivo: rectificado.nombreArchivo || null,
+                ubicacion: rectificado.ubicacion || '',
+                H: rectificado.H,
+                xMin: rectificado.xMin,
+                yMax: rectificado.yMax,
+                pxPorMetro: rectificado.pxPorMetro,
+                gsdMm: rectificado.gsdMm,
+                outWidth: rectificado.outWidth,
+                outHeight: rectificado.outHeight,
+                dibujos,
+                comentarios,
+                capas
+            };
+            const rectificadaBlob = await new Promise(resolve => rectificado.canvas.toBlob(resolve, 'image/png'));
+            const trfBlob = await empaquetarTRF(datosProyecto, rectificadaBlob, fileOriginal);
+
+            const nombreBase = (rectificado.nombreArchivo || 'proyecto')
+                .replace(/\.[^.]+$/, '')
+                .replace(/[^a-zA-Z0-9._-]+/g, '_');
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(trfBlob);
+            a.download = `${nombreBase || 'proyecto'}.trf`;
+            a.click();
+            URL.revokeObjectURL(a.href);
+            mostrarMensaje('Proyecto guardado (.trf) ✓', 'exito');
+        } catch (error) {
+            console.error('Error al guardar el proyecto .trf:', error);
+            mostrarMensaje('No se pudo guardar el proyecto. Revisá la consola para más detalles.', 'error');
+        } finally {
+            btnGuardarProyectoTRF.disabled = false;
+            btnGuardarProyectoTRF.textContent = 'Guardar Proyecto (.trf)';
+        }
     });
 
     // --- Captura de clics/mouse compartida entre ambos grupos ---
@@ -3361,20 +4436,34 @@ function crearPanelMedicionYDibujo(rectificado, canvasVisible, capaMedidas, capa
             redibujarCapaDibujo();
             volverAModoInicialDibujo();
         } else if (modoActivo === 'dibujo:linea') {
+            // Polilínea: cada click agrega un punto conectado al anterior —
+            // no hay un "cierre" a los 2 clicks como antes. La figura recién
+            // se confirma en `dibujos` al salir del modo (toggle/Escape/
+            // cambiar de herramienta), ver confirmarPolilineaPendiente().
             puntosPendientes.push(p);
-            dibujarPuntoEn(ctxDibujo, p, colorActivo.hex, null);
-            if (puntosPendientes.length === 2) {
-                dibujos.push({ tipo: 'linea', puntos: puntosPendientes.map(pt => ({ X: pt.X, Y: pt.Y })), color: colorActivo });
-                redibujarCapaDibujo();
-                volverAModoInicialDibujo();
-            }
+            redibujarSoloCapaDibujo();
         } else if (modoActivo === 'dibujo:poligono') {
             puntosPendientes.push(p);
             dibujarPuntoEn(ctxDibujo, p, colorActivo.hex, null);
+        } else if (modoActivo === 'comentario:insertar') {
+            // No se cambia modoActivo antes del await: si el usuario cancela
+            // el modal, la herramienta sigue armada tal cual estaba.
+            pedirDatosComentario().then(datos => {
+                if (datos) {
+                    comentarios.push({ numero: comentarios.length + 1, punto: { X: p.X, Y: p.Y }, categoria: datos.categoria, descripcion: datos.descripcion });
+                    redibujarSoloCapaDibujo();
+                    actualizarTablaComentarios();
+                }
+            });
         }
     };
 
     const manejarKeydown = (e) => {
+        if (e.key === 'Escape') {
+            if (modoActivo && modoActivo.startsWith('dibujo:')) cancelarModoDibujo();
+            else if (modoActivo === 'comentario:insertar') cancelarModoComentario();
+            return;
+        }
         if (e.key !== 'Enter') return;
         if (modoActivo === 'medida:superficie') {
             if (puntosPendientes.length < 3) {
@@ -3437,5 +4526,11 @@ function crearPanelMedicionYDibujo(rectificado, canvasVisible, capaMedidas, capa
     canvasVisible._medicionMouseUpHandler = manejarMouseUp;
     canvasVisible._medicionKeyHandler = manejarKeydown;
 
-    actualizarTablaDibujo();
+    // redibujarCapaDibujo() en vez de solo actualizarTablaDibujo(): si este
+    // panel se armó a partir de un .trf cargado, `dibujos` ya viene con
+    // figuras (dibujosGuardados) que hay que pintar en la capa, no solo
+    // listar en la tabla. redibujarSoloCapaDibujo() ya pinta también los
+    // comentarios restaurados (comentariosGuardados) — falta la tabla.
+    redibujarCapaDibujo();
+    actualizarTablaComentarios();
 }

@@ -36,7 +36,11 @@ export function generarDXF(entidades) {
         if (entidad.tipo === 'punto') {
             lineas.push(...entidadPunto(entidad.puntos[0], capa));
         } else if (entidad.tipo === 'linea') {
-            lineas.push(...entidadLinea(entidad.puntos[0], entidad.puntos[1], capa));
+            // Antes siempre eran exactamente 2 puntos (entidadLinea, una
+            // sola LINE); ahora "Línea" puede armar una polilínea abierta de
+            // N puntos conectados (ver app.js, herramienta continua) —
+            // entidadPolilinea ya cubre el caso de 2 puntos igual.
+            lineas.push(...entidadPolilinea(entidad.puntos, false, capa));
         } else if (entidad.tipo === 'poligono') {
             lineas.push(...entidadPolilinea(entidad.puntos, true, capa));
         } else if (entidad.tipo === 'libre') {
@@ -50,14 +54,6 @@ export function generarDXF(entidades) {
 
 function entidadPunto(p, capa) {
     return ['0', 'POINT', '8', capa, '10', String(p.X), '20', String(p.Y), '30', '0.0'];
-}
-
-function entidadLinea(p1, p2, capa) {
-    return [
-        '0', 'LINE', '8', capa,
-        '10', String(p1.X), '20', String(p1.Y), '30', '0.0',
-        '11', String(p2.X), '21', String(p2.Y), '31', '0.0'
-    ];
 }
 
 // Polilínea "clásica" (POLYLINE/VERTEX/SEQEND) — compatible con R12.

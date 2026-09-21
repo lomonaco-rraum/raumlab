@@ -161,6 +161,14 @@ body {
     background-color: rgba(255, 255, 255, 0.07);
 }
 
+/* Mismo criterio que .controles-icon-btn.activo — "Insertar" (Comentarios)
+   usa btn-text, no controles-icon-btn (ya no lleva ícono), pero necesita el
+   mismo estado visual de "herramienta prendida". */
+.btn-text.activo {
+    border-color: var(--text-color);
+    background-color: rgba(255, 255, 255, 0.07);
+}
+
 .btn-text:disabled,
 .btn-text[aria-disabled="true"] {
     opacity: 0.45;
@@ -685,6 +693,17 @@ body {
    filas de pestañas (Crear/Proyecto, Imagen Original/Fotoplano,
    Analítico/Geométrico) arrancan a la misma altura — antes esta seguía
    con el padding:1rem viejo, mucho más alto que el de la columna central. */
+/* El padding:1.5rem genérico de .panel-content (regla vieja, sin
+   reskinear, más arriba) angostaba los botones de acá adentro (Cargar
+   Imagen/Cargar Proyecto) respecto a #area-descarga y .miniaturas-rail,
+   que son hermanos sueltos de .panel-crear-proyecto sin ese padding — se
+   veían dos anchos distintos en la misma columna. Sacarlo así los tres
+   quedan al mismo ancho, coherente con el criterio "sin cajas" del resto
+   del reskin. */
+.panel-crear-proyecto .panel-content {
+    padding: 0;
+}
+
 .panel-crear-proyecto .tab-btn,
 .rail-derecho .tab-btn {
     padding: 2px 0;
@@ -789,16 +808,6 @@ body {
     margin-bottom: 10px;
 }
 
-.controles-hint-box {
-    font-size: 0.72rem;
-    font-weight: 300;
-    line-height: 1.5;
-    color: var(--text-color);
-    border: 1px solid var(--border-fine);
-    border-radius: 4px;
-    padding: 8px 10px;
-    margin-bottom: 12px;
-}
 
 .controles-table-wrap {
     border: 1px solid var(--border-fine);
@@ -848,11 +857,29 @@ body {
     text-align: left;
 }
 
+/* Fila clickeable (lista de imágenes de Fotomosaico, reemplaza el
+   desplegable de antes — siempre visible, como una planilla). */
+.fila-imagen {
+    cursor: pointer;
+}
+.fila-imagen:hover {
+    background: rgba(255, 255, 255, 0.07);
+}
+.fila-imagen.activa td:first-child {
+    font-weight: 500;
+}
+
 .controles-table th,
 .controles-table td {
     padding: 6px 8px;
     font-weight: 300;
     white-space: nowrap;
+    /* table-layout:fixed reserva el ancho de columna, pero sin esto un
+       texto largo sin espacios (ej. un comentario tipeado corrido) lo
+       desborda igual, superponiéndose visualmente con la columna de al
+       lado (el botón de eliminar). Con esto se corta y se oculta. */
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .controles-table th {
@@ -1188,6 +1215,57 @@ input[type="number"] {
     color: var(--text-color);
 }
 
+/* Campos del modal "Nuevo comentario" (categoría/descripción) — mismo
+   patrón que .input-row/.modal-box input,textarea en raumlab/style.css
+   (formulario "Solicitar soporte"), copiado acá porque mono_plano tiene su
+   propia hoja de estilos, no comparte la de raumlab/. */
+.input-row {
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.input-row label {
+    font-family: var(--font-geist);
+    font-size: 0.7rem;
+    color: var(--text-color);
+    font-weight: 100;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.modal-box input[type="text"],
+.modal-box input[type="date"],
+.modal-box textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 1px solid var(--surface-border);
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-family: var(--font-geist);
+    color: var(--text-color);
+    background-color: transparent;
+}
+.modal-box textarea {
+    resize: vertical;
+}
+.modal-box input[type="text"]:focus,
+.modal-box input[type="date"]:focus,
+.modal-box textarea:focus {
+    border-color: var(--text-color);
+    outline: none;
+}
+/* input[type="date"] con fondo oscuro: el ícono nativo del calendario
+   queda negro sobre negro sin esto — color-scheme lo pasa a la variante clara. */
+.modal-box input[type="date"] {
+    color-scheme: dark;
+}
+.modal-box input::placeholder,
+.modal-box textarea::placeholder {
+    color: var(--text-color);
+    opacity: 0.5;
+}
+
 .modal-actions {
     margin-top: 18px;
 }
@@ -1300,6 +1378,72 @@ input[type="number"] {
     font-weight: 500;
 }
 
+/* Fila de una capa de usuario (Dibujar → capas con nombre/color propios):
+   el botón de selección ocupa el resto del ancho, editar/borrar quedan
+   como botones chicos aparte — mismo tamaño que .btn-eliminar-entidad,
+   no anidados dentro del botón de selección (un <button> no puede
+   contener otro <button> válidamente). */
+.capa-fila {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.capa-fila .capa-selector-opcion {
+    flex: 1;
+    min-width: 0;
+}
+.capa-fila .capa-selector-opcion span:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+/* Mismo estilo de borde que .capa-selector-opcion — el punteado no es el
+   criterio de énfasis de esta página (eso se marca con peso de fuente,
+   nunca con un tipo de borde distinto). */
+.capa-nueva-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    background: none;
+    border: 1px solid var(--border-fine);
+    border-radius: 3px;
+    color: var(--text-color);
+    font-family: var(--font-geist);
+    font-weight: 300;
+    font-size: 0.78rem;
+    text-align: left;
+    cursor: pointer;
+    margin-top: 4px;
+}
+.capa-nueva-btn:hover {
+    border-color: var(--text-color);
+    background: rgba(255, 255, 255, 0.07);
+}
+
+/* Grilla de colores del modal "Nueva capa"/"Editar capa" — misma idea que
+   el selector de color de AutoCAD (Índice de Color), sin ser fiel a los
+   256 colores/números ACI reales: es una grilla curada, bien distinguible,
+   solo para que cada capa tenga un color propio reconocible. */
+.capa-color-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin: 10px 0;
+}
+.capa-color-swatch {
+    aspect-ratio: 1;
+    border-radius: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    cursor: pointer;
+    padding: 0;
+}
+.capa-color-swatch.seleccionado {
+    outline: 2px solid var(--text-color);
+    outline-offset: 1px;
+}
+
 /* Pantalla de Puntos Homólogos (Fotomosaico) — columna central con las dos
    imágenes a fusionar lado a lado, en vez de la única imagen del resto del
    módulo. Mismo criterio sin fondo/borde propio en el contenedor. */
@@ -1315,8 +1459,6 @@ input[type="number"] {
     flex: 1;
     min-width: 0;
     display: flex;
-    justify-content: center;
-    align-items: center;
     overflow: auto;
     scrollbar-width: none;
 }
@@ -1324,9 +1466,16 @@ input[type="number"] {
     display: none;
 }
 
+/* .canvas-homologo-wrapper se centra con margin:auto (no justify-content/
+   align-items en .canvas-homologo-mitad) — mismo motivo que #image-wrapper
+   más arriba en este archivo: centrar por justify-content con overflow:auto
+   deja la mitad del contenido que se sale fuera de alcance del scroll, así
+   que el zoom con la rueda siempre terminaba centrándose solo en vez de
+   seguir al cursor. */
 .canvas-homologo-wrapper {
     position: relative;
     display: inline-block;
+    margin: auto;
     cursor: crosshair;
 }
 
