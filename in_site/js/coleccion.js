@@ -10,8 +10,9 @@ import { crearMotorVisor } from './motorVisor.js';
 // Para sumar una pieza nueva a la colección: agregar el .glb (y opcionalmente
 // el .json de fichas técnicas, mismo nombre) a /projects, y una entrada acá.
 const COLECCION = [
-    { id: 'muestra_antologica', nombre: 'Exposición Antológica', anio: '2026', glb: 'projects/muestra_antologica.glb' },
-    { id: 'gestus', nombre: 'Gestus', anio: '2026', glb: 'projects/gestus.glb' }
+    { id: 'gestus', nombre: 'Gestus', anio: '2026', glb: 'projects/gestus.glb' },
+    { id: 'trazo_en_el_aire', nombre: 'Trazo en el aire', anio: '2026', glb: 'projects/trazo_en_el_aire.glb' },
+    { id: 'dibujo_en_un_prisma_de_aire', nombre: 'Dibujo en un prisma de aire', anio: '2026', glb: 'projects/dibujo_en_un_prisma_de_aire.glb' }
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
