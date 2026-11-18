@@ -74,3 +74,14 @@ No es nuevo de hoy, pero sigue sin resolver: elegir dónde hostear
 raumlab.org — GitHub Pages, según lo último hablado (da HTTPS automático,
 necesario para que funcione RA en celular). La usuaria dijo que lo hace
 "cuando termine la página".
+
+## 6. in_SITE Galería: vista previa del link por pieza (agregado 2026-11-18)
+
+Cada pieza de la Galería ya tiene su link propio
+(`coleccion.html?pieza=<id>`, ej. `?pieza=trazo_en_el_aire`). Pendiente:
+cuando ese link se comparte (WhatsApp, redes), la vista previa muestra el
+título general de la página y no el de la pieza, porque esas apps no
+ejecutan el JavaScript que elige la pieza. Para resolverlo habría que tener
+una página HTML chica por pieza, con sus propias etiquetas de vista previa
+(título, descripción, imagen), que redirija a la Galería con la pieza
+abierta. La usuaria lo dejó para más adelante.
