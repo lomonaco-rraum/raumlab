@@ -37,6 +37,9 @@ document.addEventListener('DOMContentLoaded', () => {
         salaFichaVolverBtn: document.getElementById('btn-volver-salas'),
         onVolverASalas: () => {
             document.querySelectorAll('.pieza-card').forEach(t => t.classList.remove('active'));
+            const url = new URL(window.location.href);
+            url.searchParams.delete('pieza');
+            history.replaceState(null, '', url);
         },
         salaPlaceholder: document.getElementById('sala-placeholder'),
         salaDatosReales: document.getElementById('sala-datos-reales'),
@@ -74,7 +77,22 @@ document.addEventListener('DOMContentLoaded', () => {
             <span class="pieza-card-anio">${pieza.anio}</span>
         `;
 
-        tarjeta.addEventListener('click', () => seleccionarPieza(pieza, tarjeta));
+        tarjeta.addEventListener('click', () => {
+            seleccionarPieza(pieza, tarjeta);
+            // La barra de direcciones refleja la pieza abierta, así el link
+            // que se comparte desde el navegador lleva directo a esa pieza.
+            const url = new URL(window.location.href);
+            url.searchParams.set('pieza', pieza.id);
+            history.replaceState(null, '', url);
+        });
+        tarjeta.dataset.pieza = pieza.id;
         grid.appendChild(tarjeta);
     });
+
+    // Link individual: coleccion.html?pieza=<id> abre esa pieza al entrar.
+    const idInicial = new URLSearchParams(window.location.search).get('pieza');
+    const piezaInicial = COLECCION.find(p => p.id === idInicial);
+    if (piezaInicial) {
+        seleccionarPieza(piezaInicial, grid.querySelector(`[data-pieza="${piezaInicial.id}"]`));
+    }
 });
